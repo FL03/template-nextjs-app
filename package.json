@@ -90,7 +90,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "latest",
-    "@opennextjs/cloudflare": "latest",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22",
     "@types/react": "^19",
