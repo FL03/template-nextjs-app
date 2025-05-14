@@ -25,16 +25,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
   constraint username_length check (char_length(username) >= 3 and char_length(username) <= 20)
 );
-
--- Create a new table for user notifications
-CREATE TABLE IF NOT EXISTS public.notifications (
-  id          uuid PRIMARY KEY NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-  username    TEXT NOT NULL REFERENCES public.profiles ON DELETE CASCADE,
-  message     TEXT NOT NULL DEFAULT ''::TEXT,
-  status      TEXT NOT NULL DEFAULT 'unread',
-  type        TEXT NOT NULL DEFAULT 'info'
-);
-
 -- Profile table functions and triggers
 -- ----------------------------------
 -- This function is triggered whenever a new user is created.
@@ -90,11 +80,6 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   ON auth.users
   FOR each ROW EXECUTE PROCEDURE public.handle_new_user();
 -- trigger for updating the timestamp for a profile
-CREATE OR REPLACE TRIGGER trg_notification_updated_at
-BEFORE UPDATE ON public.notifications
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp();
--- trigger for updating the timestamp for a profile
 CREATE OR REPLACE TRIGGER trg_profile_updated_at
 BEFORE UPDATE ON public.profiles
 FOR EACH ROW
@@ -102,15 +87,7 @@ EXECUTE FUNCTION update_timestamp();
 
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
-ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Authenticated users may manage their notifications" ON public.notifications
-  AS permissive
-  FOR ALL
-  TO authenticated 
-  USING (( SELECT auth.uid() AS uid) = uid) 
-  WITH check (( SELECT auth.uid() AS uid) = uid);
 
 CREATE POLICY "Anyone can view a user's profile" public.profiles
   FOR SELECT 
