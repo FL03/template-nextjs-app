@@ -12,15 +12,14 @@ import {
 export const LandingScreen = () => {
   return (
     <div className="flex flex-col flex-1 w-full">
-      <Card className="flex flex-col flex-1 gap-2 my-auto">
+      <Card className="flex flex-col gap-2 m-auto">
         <CardHeader className="flex flex-nowrap items-start gap-2 justify-start">
           <div className="flex flex-col gap-2 mr-auto">
             <CardTitle className="font-semibold text-xl tracking-tight">
-              Scattered-Systems, LLC
+              Template NextJS Application
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              A private company empowering the next generation of internet-based
-              experiences
+              A simple template application for NextJS
             </CardDescription>
           </div>
         </CardHeader>
