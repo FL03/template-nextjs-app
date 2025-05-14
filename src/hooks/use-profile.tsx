@@ -16,12 +16,26 @@ import {
 } from '@/lib/supabase';
 import logger from '@/lib/logger';
 import { useUsername } from './use-username';
+import { HookCallback } from '@/types';
 
 type UserProfileHookProps = {
   username?: string | null;
 };
 
-export const useUserProfile = (options?: UserProfileHookProps) => {
+type HookState = {
+  isLoading: boolean;
+};
+type HookOutput = {
+  isOwner: boolean;
+  profile: ProfileData | null;
+  state: HookState;
+  username: string;
+  loadProfile: () => Promise<ProfileData | null>;
+};
+
+export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
+  options?: UserProfileHookProps
+) => {
   // initialize the supabase client
   const supabase = createBrowserClient();
   // use the username hook to get the current user's username

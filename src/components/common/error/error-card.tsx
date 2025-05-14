@@ -39,7 +39,7 @@ export const ErrorCard: React.FC<
     <Comp
       {...props}
       ref={ref}
-      className={cn('flex flex-col m-auto z-auto', className)}
+      className={cn('flex flex-col flex-1 w-full', className)}
     >
       <CardHeader>
         <CardTitle className="text-xl tracking-tight">{title}</CardTitle>

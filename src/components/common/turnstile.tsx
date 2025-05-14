@@ -39,22 +39,22 @@ type TurnstileProps = {
   onSuccess?: (token: string) => void;
 };
 
-const _Turnstile: React.FC<Omit<React.ComponentPropsWithRef<'div'>, 'id'>> = ({
-  ref,
-  ...props
-}) => {
-  return <div {...props} id="cf-turnstile" ref={ref} />;
+const cloudflareTurnstileSiteKey = () => {
+  return (
+    process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY ||
+    process.env.CF_TURNSTILE_SITE_KEY ||
+    process.env.CF_TURNSTILE_PUBLIC_KEY
+  );
 };
-
 export const CloudflareTurnstile: React.FC<
   Omit<React.ComponentPropsWithRef<'div'>, 'id'> & TurnstileProps
 > = ({
   ref,
   action = 'submit',
   siteKey: siteKeyProp,
-  onSuccess,
   onError,
   onExpire,
+  onSuccess,
   ...props
 }) => {
   const [widgetId, setWidgetId] = React.useState<string | null>(null);
@@ -102,7 +102,7 @@ export const CloudflareTurnstile: React.FC<
 
   return (
     <React.Suspense fallback={<LoaderIcon className="w-4 h-4 animate-spin" />}>
-      <_Turnstile {...props} ref={ref} />
+      <div {...props} id="cf-turnstile" ref={ref} />
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         onLoad={() => setIsLoaded(true)}

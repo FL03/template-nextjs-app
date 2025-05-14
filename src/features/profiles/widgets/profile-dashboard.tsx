@@ -21,6 +21,10 @@ import {
 // feature-specific
 import { useProfile } from '../provider';
 import Link from 'next/link';
+import {
+  DashboardContent,
+  DashboardScaffold,
+} from '@/components/common/dashboard';
 
 export const ProfileDashboard: React.FC<
   React.ComponentPropsWithRef<'div'> & {
@@ -53,12 +57,81 @@ export const ProfileDashboard: React.FC<
       setIsRefreshing(false);
     }
   };
+
+  const renderSecondary = () => {
+    return (
+      <DashboardContent>
+        <Card className="flex flex-col flex-shrink-0 w-full">
+          <CardHeader className="flex flex-row flex-nowrap items-center gap-2 justify-between">
+            <div className="mr-auto flex flex-wrap gap-2 items-center justify-items-start">
+              <CardTitle className="inline-flex gap-2">
+                <span className="text-nowrap font-medium">
+                  {profile?.display_name}
+                </span>
+              </CardTitle>
+              <CardDescription className="text-sm inline-flex flex-nowrap gap-2">
+                <span className="text-sm font-medium text-nowrap">
+                  (@{profile?.username})
+                </span>
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <span className="text-muted-foreground text-sm">
+              {profile?.bio}
+            </span>
+          </CardContent>
+        </Card>
+        <Card className="flex flex-col flex-1 w-full">
+          <CardHeader>
+            <CardTitle>Socials</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 min-h-full w-full">
+            <div className="flex flex-col gap-2 w-full mt-3">
+              <ul className="flex flex-col gap-2">
+                {profile?.socials?.map((social, idx) => {
+                  const url = new URL(social);
+                  const handleUrl = (item: string): string => {
+                    switch (item) {
+                      case item.match(/github\.com/)?.input as string:
+                        return 'GitHub';
+                      default:
+                        return item;
+                    }
+                  };
+                  return (
+                    <li
+                      key={idx}
+                      className="flex flex-row flex-nowrap items-center gap-2"
+                    >
+                      <Link
+                        href={url.href}
+                        className={cn(
+                          'text-sm text-foreground',
+                          'hover:underline hover:text-foreground/75'
+                        )}
+                      >
+                        <span className="not-sr-only">
+                          {handleUrl(url.hostname)}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </DashboardContent>
+    );
+  };
   return (
     <div
       {...props}
       ref={ref}
       className={cn('relative h-full w-full', className)}
     >
+      {/* dashboard header */}
       <section className="flex flex-row flex-nowrap items-center gap-2 justify-between">
         <div className="inline-flex flex-col flex-1 mr-auto">
           {title && (
@@ -77,79 +150,10 @@ export const ProfileDashboard: React.FC<
           />
         </div>
       </section>
-      <section className="w-full flex flex-1 flex-col min-h-full">
-        <div
-          className={cn(
-            'flex flex-1 flex-wrap w-full min-h-full overflow-hidden',
-            'rounded-xl shadow-inner bg-card/75 border border-card/75'
-          )}
-        >
-          {/* Secondary View */}
-          <Card className="flex flex-col min-h-full px-4 py-2 sm:w-full md:max-w-md">
-            <CardHeader className="flex flex-row flex-nowrap items-center gap-2 justify-between">
-              <div className="mr-auto flex flex-wrap gap-2 items-center justify-items-start">
-                <CardTitle className="inline-flex gap-2">
-                  <span className="text-nowrap font-medium">
-                    {profile?.display_name}
-                  </span>
-                </CardTitle>
-                <CardDescription className="text-sm inline-flex flex-nowrap gap-2">
-                  <span className="text-sm font-medium text-nowrap">
-                    (@{profile?.username})
-                  </span>
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 min-h-full w-full">
-              <div className="inline-flex flex-row flex-nowrap ml-auto items-center gap-2 lg:gap-4">
-                <span>{profile?.bio}</span>
-              </div>
-              <div className="flex flex-col gap-2 w-full mt-3">
-                <span className="font-semibold">Socials</span>
-                <ul className="flex flex-col gap-2">
-                  {profile?.socials?.map((social, idx) => {
-                    const url = new URL(social);
-                    const handleUrl = (item: string): string => {
-                      switch (item) {
-                        case item.match(/github\.com/)?.input as string:
-                          return 'GitHub';
-                        default:
-                          return item;
-                      }
-                    };
-                    return (
-                      <li
-                        key={idx}
-                        className="flex flex-row flex-nowrap items-center gap-2"
-                      >
-                        <Link
-                          href={url.href}
-                          className={cn(
-                            'text-sm text-foreground',
-                            'hover:underline hover:text-foreground/75'
-                          )}
-                        >
-                          <span className="not-sr-only">
-                            {handleUrl(url.hostname)}
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-          {/* Primary View */}
-          <Card
-            className={cn(
-              'flex flex-col flex-1 w-full min-h-full overflow-hidden'
-            )}
-          >
-            {children}
-          </Card>
-        </div>
-      </section>
+      {/* content */}
+      <DashboardScaffold panel={renderSecondary()}>
+        {children}
+      </DashboardScaffold>
     </div>
   );
 };

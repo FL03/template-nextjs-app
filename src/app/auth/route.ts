@@ -11,7 +11,7 @@ import { NextRequest } from 'next/server';
 // project
 import { getDefaultSignInView } from '@/lib/supabase';
 
-export const GET = async (req: NextRequest) => {
+export async function GET() {
   const cookieStore = await cookies();
   const preferredSignInView = cookieStore.get('preferredSignInView')?.value;
   const defaultView = getDefaultSignInView(preferredSignInView || null);
@@ -19,11 +19,11 @@ export const GET = async (req: NextRequest) => {
   redirect(`/auth/${defaultView}`);
 };
 
-export const POST = async (req: NextRequest) => {
+export async function POST(req: NextRequest) {
   const origin = new URL(req.url);
   const view = origin.searchParams.get('view') || 'login';
 
-  if (view === 'signup') {
+  if (['signup', 'sign-up'].includes(view) || view.toLowerCase().startsWith('regist')) {
     return redirect(`/auth/register`);
   }
   redirect(`/auth/${view}`);

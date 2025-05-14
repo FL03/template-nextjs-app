@@ -9,14 +9,13 @@
 import * as React from 'react';
 import { Subscription, SupabaseClient } from '@supabase/supabase-js';
 // project
-import { createBrowserClient } from '@/lib/supabase';
+import { CACHE_KEY_USERNAME } from '@/lib/constants';
 import { logger } from '@/lib/logger';
+import { createBrowserClient } from '@/lib/supabase';
 
 type HookOptions = {
   client?: SupabaseClient<any, 'public', any>;
 };
-
-const CACHE_KEY = 'scsys_io_cached_username';
 
 /**
  * Memoized hook for getting the current user's username; invokes the "public.username" function deployed on the database using
@@ -31,7 +30,7 @@ export const useUsername = (opts?: HookOptions) => {
   const initialUsername = React.useMemo(() => {
     if (typeof window === 'undefined') return null;
     try {
-      return window.localStorage.getItem(CACHE_KEY) || null;
+      return window.localStorage.getItem(CACHE_KEY_USERNAME) || null;
     } catch (e) {
       return null;
     }
@@ -52,7 +51,7 @@ export const useUsername = (opts?: HookOptions) => {
         // clear the cached username
         if (typeof window !== 'undefined') {
           try {
-            window.localStorage.removeItem(CACHE_KEY);
+            window.localStorage.removeItem(CACHE_KEY_USERNAME);
           } catch (e) {
             logger.warn('Failed to clear cached username', e);
           }
@@ -62,7 +61,7 @@ export const useUsername = (opts?: HookOptions) => {
         _setUsername(data);
         if (data && typeof window !== 'undefined') {
           try {
-            window.localStorage.setItem(CACHE_KEY, data);
+            window.localStorage.setItem(CACHE_KEY_USERNAME, data);
           } catch (e) {
             logger.warn('Failed to cache username', e);
           }

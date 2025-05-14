@@ -6,20 +6,23 @@
 
 import React from "react";
 
-export type AsChildProps<T> = T & { asChild?: boolean }; 
+export type AsChild = { asChild?: boolean };
+
+export type AsChildProps<T> = T & AsChild 
+/** A simple type literal for the four sides of a 2-dimensional surface; i.e. left, right, top, bottom. */
+export type LRTB = 'left' | 'right' | 'top' | 'bottom';
 
 
-export type BaseFormProps<T = any> = {
-  asChild?: string;
-  className?: string;
-  key?: React.Key;
-  id?: string;
-  defaultValues?: Partial<T> | null;
-  values?: Partial<T> | null;
+export type BaseFormProps<TData = unknown> = {
+  defaultValues?: Partial<TData>;
+  values?: TData;
   onCancel?: () => void;
-  onSubmitError?: (error: Error) => void;
-  onSubmitSuccess?: (values: Partial<T>) => void;
-};
+  onError?: (error: Error) => void;
+  onSubmit?: (values?: TData) => void;
+  onSubmitSuccess?: (values: TData) => void;
+} & AsChild;
+
+export type StandardFormProps<TData = unknown> = BaseFormProps<TData> & Omit<React.ComponentPropsWithRef<'form'>, 'children' | 'title' | 'onSubmit'>
 
 export type FormOverlayProps<T = any> = {
   className?: string;

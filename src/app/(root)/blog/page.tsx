@@ -1,7 +1,7 @@
 // page.tsx
-import { BlogScreenView } from '@/features/blog';
+import { BlogScreen } from '@/features/blog';
 
 export default function Page() {
-  return <BlogScreenView />;
+  return <BlogScreen/>;
 }
 Page.displayName = 'BlogPage';

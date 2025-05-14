@@ -1,1 +1,2 @@
 // server.ts
+'use server';

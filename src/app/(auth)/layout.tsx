@@ -1,22 +1,20 @@
-'use server';
-// imports
+// layout.tsx
 import { PropsWithChildren } from 'react';
 // components
 import { PlatformScaffold } from '@/components/platform';
-import { ProfileProvider } from '@/features/profiles';
-
-export default async function Layout({
-  children,
-  searchParams,
-}: Readonly<PropsWithChildren> & {
-  searchParams: Promise<{ username?: string }>;
-}) {
-  const { username } = await searchParams;
-
+import { AuthProvider } from '@/features/auth';
+/**
+ * The base layout for authenticated routes
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#layouts
+ * @param {Readonly<PropsWithChildren>} props - the props for the template; note that children
+ * are readonly and required.
+ */
+export default function Layout({ children }: Readonly<PropsWithChildren>) {
   return (
-    <ProfileProvider username={username} className="min-h-full w-full flex-1">
+    <AuthProvider>
       <PlatformScaffold>{children}</PlatformScaffold>
-    </ProfileProvider>
+    </AuthProvider>
   );
 }
 Layout.displayName = 'AuthLayout';

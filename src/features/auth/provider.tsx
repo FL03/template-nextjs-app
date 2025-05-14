@@ -11,18 +11,20 @@ import { Session, Subscription, User } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
 import { createBrowserClient } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
-import { useSupabaseAuth } from '@/hooks/use-supabase';
+import { useAuth } from '@/hooks/use-supabase';
 
-type AuthContext = ReturnType<typeof useSupabaseAuth>;
+type AuthContext = ReturnType<typeof useAuth>;
 
 const AuthContext = React.createContext<AuthContext | null>(null);
 
 /** A hook dedicated to the supabase auth features */
-export const useAuth = () => {
-  const hookAuth = useSupabaseAuth();
+export const useAuthProvider = () => {
+  const hookAuth = useAuth();
   const context = React.useContext(AuthContext ?? hookAuth);
   if (!context) {
-    logger.error('useAuth must be used within an `AuthProvider`; falling-back to the hook');
+    logger.error(
+      'useAuth must be used within an `AuthProvider`; falling-back to the hook'
+    );
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
@@ -140,23 +142,41 @@ export const AuthProvider = React.forwardRef<
     [_isAuthenticated, _isLoading]
   );
 
+  const _onSignout = React.useCallback(() => {
+    // nullify the current session
+    _setSession(null);
+    // remove the user from the local state
+    _setUser(undefined);
+    // ensure the auth state is false
+    _setIsAuthenticated(false);
+  }, [_setIsAuthenticated, _setSession, _setUser]);
+
   // redeclare stateful variables and public-facing methods
   const session = _session;
-  const user = _user ?? undefined;
-  const userId = _user?.id;
-  const username = _user?.user_metadata?.username;
   const getUser = _getUser;
+  const signOut = React.useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      logger.error('Error signing out the user: ', error.message);
+      throw new Error(error.message);
+    }
+    logger.info('Successfully signed out the user...');
+    // process signout routines
+    _onSignout();
+    return;
+  }, [supabase, _onSignout]);
 
   const ctx = React.useMemo(
     () => ({
       session,
-      user,
-      userId,
-      username,
+      user: session?.user,
+      userId: session?.user?.id,
+      username: session?.user?.user_metadata?.username,
       state,
       getUser,
+      signOut,
     }),
-    [session, state, user, userId, username, getUser]
+    [session, state, getUser, signOut]
   );
   return (
     <AuthContext.Provider value={ctx} {...props}>

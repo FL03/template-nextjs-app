@@ -63,18 +63,46 @@ export const AuthGate: React.FC<
   const [captcha, setCaptcha] = React.useState<string | undefined>(undefined);
 
   // use the useParams hook to get the view
+  const isRegister =
+    ['signup', 'sign-up'].includes(view) || view.startsWith('regist');
+  const isPasswordless = ['magic', 'passkey', 'passwordless'].includes(view);
+  const isEmailPassword = [
+    'login',
+    'email-password',
+    'sign-in',
+    'signin',
+  ].includes(view);
 
-  const isRegister = ['register', 'registration'].includes(view);
-  const isPasswordless = ['magic', 'passkey'].includes(view);
-  const isEmailPassword = ['login', 'email-password', 'sign-in'].includes(view);
 
-  const title = isRegister ? 'Register' : 'Login';
+  const headerMap = {
+    login: {
+      description: 'Sign in to your account',
+      title: 'Login',
+    },
+    register: {
+      description: 'Create an account to get started.',
+      title: 'Register',
+    },
+    passwordless: {
+      description: 'Sign in with a magic link sent to your email.',
+      title: 'Passwordless Login',
+    },
+  };
 
-  const description = isRegister
-    ? 'Create an account to get started.'
-    : isPasswordless
-      ? 'Sign in with a magic link sent to your email.'
-      : 'Sign in with your email and password.';
+  const resolveDescription = () => {
+    if (isRegister) return headerMap.register.description;
+    else if (isPasswordless) return headerMap.passwordless.description;
+    else return headerMap.login.description;
+  };
+
+  const resolveTitle = () => {
+    if (isRegister) return headerMap.register.title;
+    else if (isPasswordless) return headerMap.passwordless.title;
+    else return headerMap.login.title;
+  };
+
+
+
 
   const isCentered = centered ?? isMobile;
 
@@ -83,7 +111,7 @@ export const AuthGate: React.FC<
       return (
         <RegistrationForm
           captchaToken={captcha}
-          onSubmitSuccess={() => router.push('/admin')}
+          onSubmitSuccess={() => router.push('/')}
         />
       );
     }
@@ -91,7 +119,7 @@ export const AuthGate: React.FC<
       return (
         <PasswordlessLoginForm
           captchaToken={captcha}
-          onSubmitSuccess={() => router.push('/admin')}
+          onSubmitSuccess={() => router.push('/')}
         />
       );
     }
@@ -99,7 +127,7 @@ export const AuthGate: React.FC<
       return (
         <EmailPasswordForm
           captchaToken={captcha}
-          onSubmitSuccess={() => router.push('/admin')}
+          onSubmitSuccess={() => router.push('/')}
         />
       );
     }
@@ -128,8 +156,8 @@ export const AuthGate: React.FC<
       >
         <div className="relative flex flex-col w-full">
           <section className="flex flex-col left-0 mb-2 w-full">
-            <div className="font-semibold text-xl tracking-tight">{title}</div>
-            <span className="text-muted-foreground text-sm">{description}</span>
+            <div className="font-semibold text-xl tracking-tight">{resolveTitle()}</div>
+            <span className="text-muted-foreground text-sm">{resolveDescription()}</span>
           </section>
           {renderForm()}
           <Separator className="my-2" />

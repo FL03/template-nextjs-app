@@ -55,7 +55,7 @@ export const SettingsTabs: React.FC<
 > = ({ className, ref, defaultTab = 'profile', ...props }) => {
   const [tab, setTab] = React.useState(defaultTab);
 
-  const { profile, isLoading } = useProfile();
+  const { profile, state } = useProfile();
 
   return (
     <Tabs
@@ -103,7 +103,7 @@ export const SettingsTabs: React.FC<
           </div>
         </TabsContent>
         <TabsContent value="profile" className="h-full w-full">
-          <ProfileSettingsTab isLoading={isLoading} profile={profile} />
+          <ProfileSettingsTab isLoading={state.isLoading} profile={profile} />
         </TabsContent>
       </div>
     </Tabs>

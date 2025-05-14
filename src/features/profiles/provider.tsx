@@ -23,13 +23,15 @@ import { useUsername } from '@/hooks/use-username';
 import type { ProfileData } from './types';
 import { fetchUserProfile } from './utils';
 
-type ProfileContext = {
-  profile: ProfileData | null;
-  loadProfile: () => Promise<ProfileData | null>;
-  uid?: string | null;
-  username: string;
-  isOwner: boolean;
+type ProviderState = {
   isLoading: boolean;
+};
+type ProfileContext = {
+  isOwner: boolean;
+  profile: ProfileData | null;
+  state: ProviderState;
+  username: string;
+  loadProfile: () => Promise<ProfileData | null>;
 };
 
 export const ProfileContext = React.createContext<ProfileContext | null>(null);
@@ -154,9 +156,16 @@ export const ProfileProvider = React.forwardRef<
       }
     };
   }, [supabase, username, channelRef, _createProfileChannel]);
+
   // redeclare stateful parameters and public facing methods
   const profile = _profile;
-  const isLoading = _isLoading;
+  // memoize a state object to group all states for the provider
+  const state = React.useMemo(
+    () => ({
+      isLoading: _isLoading,
+    }),
+    [_isLoading]
+  );
 
   const loadProfile = React.useCallback(
     async () => _loadProfile(username),
@@ -169,11 +178,11 @@ export const ProfileProvider = React.forwardRef<
       profile: profile,
       uid: profile?.id,
       username,
-      isLoading,
       isOwner,
+      state,
       loadProfile,
     }),
-    [username, profile, isLoading, isOwner, loadProfile]
+    [username, profile, isOwner, state, loadProfile]
   );
   return (
     <ProfileContext.Provider value={ctx}>

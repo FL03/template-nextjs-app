@@ -12,34 +12,37 @@ import { supabaseCreds } from './consts';
 
 const authenticationEndpoint = '/auth';
 
-export async function handleUserSession(request: NextRequest) {
+/**
+ * The middleware for integrate the application with supabase;
+ * @param {NextRequest} request - the initial request object for the current request.
+ * @returns {Promise<NextResponse>} - the response object for the current request.
+ */
+export async function handleUserSession(
+  request: NextRequest
+): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({
     request,
   });
   const { url, anonKey } = supabaseCreds();
 
-  const supabase = createServerClient(
-    url,
-    anonKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
+  const supabase = createServerClient(url, anonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value)
+        );
+        supabaseResponse = NextResponse.next({
+          request,
+        });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
 
   // IMPORTANT: Avoid writing any logic between createServerClient and
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug

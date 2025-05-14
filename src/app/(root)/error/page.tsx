@@ -13,7 +13,7 @@ import { ErrorCard } from '@/components/common/error';
 export default function Page() {
   const searchParams = useSearchParams();
   return (
-    <div className="flex flex-col w-full items-center justify-center justify-items-center min-h-svh">
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4">
       <ErrorCard
         message={searchParams.get('message') ?? 'Something went wrong...'}
       />

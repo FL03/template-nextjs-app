@@ -15,7 +15,7 @@ import { AuthProviderButtons } from '@/features/auth';
 import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 // components
-import { DetailHeader } from '@/components/common/details';
+import { PopoverHeader } from '@/components/common/headers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -79,12 +79,9 @@ const parseValues = (profile: any) => {
   });
 };
 
-export const ProfileForm: React.FC<React.ComponentProps<"form"> & { defaultValues?: any, values?: any } > = ({
-  className,
-  defaultValues,
-  values,
-  ...props
-}) => {
+export const ProfileForm: React.FC<
+  React.ComponentProps<'form'> & { defaultValues?: any; values?: any }
+> = ({ className, defaultValues, values, ...props }) => {
   // setup providers
   const router = useRouter();
   // handle values args
@@ -119,7 +116,7 @@ export const ProfileForm: React.FC<React.ComponentProps<"form"> & { defaultValue
         { event, profile: form.getValues() },
         'Successfully updated the user profile'
       );
-      toast.dismiss()
+      toast.dismiss();
       // trigger a toast notification
       toast.success('Successfully updated the profile');
       // reset the form
@@ -129,7 +126,7 @@ export const ProfileForm: React.FC<React.ComponentProps<"form"> & { defaultValue
     } catch (error) {
       logger.error({ error }, 'Failed to update the user profile');
       // dismiss the previous toast notification
-      toast.dismiss()
+      toast.dismiss();
       // trigger a toast notification
       toast.error('Failed to update the profile');
     }
@@ -242,13 +239,12 @@ export const ProfileForm: React.FC<React.ComponentProps<"form"> & { defaultValue
 };
 
 export const ProfileFormCard: React.FC<
-  React.ComponentProps<typeof Card> &
-    {
-      description?: React.ReactNode;
-      defaultValues?: any;
-      title?: React.ReactNode;
-      values?: any;
-    }
+  React.ComponentProps<typeof Card> & {
+    description?: React.ReactNode;
+    defaultValues?: any;
+    title?: React.ReactNode;
+    values?: any;
+  }
 > = ({
   className,
   description = 'Update your account settings',
@@ -262,14 +258,14 @@ export const ProfileFormCard: React.FC<
       className={cn('w-full flex flex-col flex-1 dark:bg-dark', className)}
       {...props}
     >
-      <DetailHeader description={description} title={title} />
+      <PopoverHeader description={description} title={title} />
       <CardContent>
         <ProfileForm
           className="max-w-sm"
           defaultValues={defaultValues}
           values={values}
         />
-        <AuthProviderButtons mode="link"/>
+        <AuthProviderButtons mode="link" />
       </CardContent>
     </Card>
   );
@@ -277,4 +273,3 @@ export const ProfileFormCard: React.FC<
 ProfileFormCard.displayName = 'ProfileFormCard';
 
 export default ProfileForm;
-

@@ -1,19 +1,19 @@
 /**
- * Created At: 2025-04-03:17:30:51
+ * Created At: 2025.05.12:23:20:21
  * @author - @FL03
- * @description - the root layout for the application
  * @file - layout.tsx
  */
 // imports
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { ThemeProvider } from 'next-themes';
+import { PropsWithChildren } from 'react';
 import { Toaster } from 'sonner';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 // stylesheet
-import './globals.css';
+import '@/public/styles/globals.css'; // './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,23 +25,31 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+/**
+ * The root layout for the application;
+ *
+ * @param {Readonly<PropsWithChildren>} children - The children to render.
+ *
+ */
 export default async function RootLayout({
   children,
-}: Readonly<React.PropsWithChildren>) {
+}: Readonly<PropsWithChildren>) {
   const cookieStore = await cookies();
 
   const defaultTheme = cookieStore.get('theme')?.value ?? 'system';
   return (
     <html lang="en" suppressContentEditableWarning suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-svh`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-full z-0`}
       >
         <ThemeProvider
+          disableTransitionOnChange
           enableColorScheme
           enableSystem
           attribute="class"
-          storageKey='theme'
           defaultTheme={defaultTheme}
+          storageKey="theme"
+          themes={['light', 'dark']}
         >
           {children}
           <Analytics />
@@ -54,17 +62,21 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
-  applicationName: 'Template',
+  applicationName: 'Puzzled',
   authors: [
     {
       name: 'FL03',
       url: 'https://github.com/FL03',
     },
+    {
+      name: 'Scattered-Systems, LLC',
+      url: 'https://scsys.io',
+    },
   ],
   category: 'Technology',
-  classification: 'template',
+  classification: 'platform',
   creator: 'FL03',
-  description: 'A template application built with NextJS, React, and TypeScript.',
+  description: 'A template for creating data-centric Next.js applications.',
   icons: [
     {
       url: '/logo.svg',
@@ -107,19 +119,19 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
   ),
   publisher: 'Scattered-Systems, LLC',
-  title: { absolute: 'Scattered-Systems', template: 'scsys (%s)' },
+  title: { absolute: 'Puzzled', template: 'pzzld (%s)' },
   twitter: {
     card: 'summary',
     creator: '@jo3mccain',
-    site: '@blog.scsys.io',
+    site: '@template-nextjs-app.vercel.app',
+    title: 'Template NextJS - App',
   },
   openGraph: {
-    description:
-      'A template application built with NextJS, React, and TypeScript.',
+    description: 'A template for creating data-centric Next.js applications.',
 
-    siteName: 'scsys-io',
+    siteName: 'App',
     locale: 'en_US',
-    title: 'Template',
+    title: 'Template NextJS - App',
     type: 'website',
     url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
     images: [

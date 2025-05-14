@@ -9,8 +9,9 @@ import { logger } from '@/lib/logger';
 // feature-specific
 import { createBrowserClient } from './client';
 import { createServerClient } from './server';
-import { SupaClient, ClientOptions, SupabaseHandlerProps } from './types';
+import { ClientOptions, SupabaseHandlerProps } from './types';
 import { PublicDatabase } from '@/types/database.types';
+import { SupaClient } from '@/types/supabase';
 
 /** a universal adapter to create supabase clients for NextJS
  * 

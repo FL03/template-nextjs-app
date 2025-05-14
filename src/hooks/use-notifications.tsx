@@ -21,8 +21,8 @@ import { logger } from '@/lib/logger';
 import {
   createBrowserClient,
   handleRealtimeSubscription,
-  SupaSubscriptionCallback,
 } from '@/lib/supabase';
+import { SupaSubscriptionCallback } from '@/types/supabase';
 // hooks
 import { useUsername } from './use-username';
 

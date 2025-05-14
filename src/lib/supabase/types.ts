@@ -3,22 +3,7 @@
   Contrib: @FL03
 */
 
-import { REALTIME_SUBSCRIBE_STATES, SupabaseClient } from "@supabase/supabase-js";
-
-export type SupabaseQueryOptions<T> = {
-  limit?: number;
-  orderBy?: {
-    column: keyof T;
-    ascending?: boolean;
-  };
-};
-
-export type SupabaseQueryHandler<TData, TOut = TData[]> = (props?: SupabaseQueryOptions<TData>) => Promise<TOut>;
-
-export type SupaSubscriptionCallback = (
-  status: REALTIME_SUBSCRIBE_STATES,
-  err?: Error
-) => void;
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export type SupaClient<Database = any, SchemaName extends string & keyof Database = 'public' extends keyof Database
     ? 'public'

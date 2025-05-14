@@ -13,7 +13,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { default: Post } = await import(`@/features/blog/data/${slug}.mdx`);
+  const { default: Post } = await import(`@/lib/content/${slug}.mdx`);
 
   return (
     <PostCard>

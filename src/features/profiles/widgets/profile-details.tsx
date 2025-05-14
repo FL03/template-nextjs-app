@@ -23,7 +23,7 @@ import { ProfileSettingsButton } from './profile-settings-button';
 
 type WidgetProps = {
   asChild?: boolean;
-}
+};
 /** This component renders a view of the user's profile providing a detailed summary of their activities and contributions.*/
 export const ProfileDetails: React.FC<
   Omit<React.ComponentPropsWithRef<'div'>, 'children'> & WidgetProps
@@ -37,7 +37,11 @@ export const ProfileDetails: React.FC<
   const Comp = props.asChild ? Slot : 'div';
   // get the component type
   return (
-    <Comp ref={ref} className={cn('w-full flex flex-1 flex-col', className)} {...props}>
+    <Comp
+      ref={ref}
+      className={cn('w-full flex flex-1 flex-col', className)}
+      {...props}
+    >
       <CardHeader className="border-b">
         <div className="w-full inline-flex flex-row flex-nowrap items-center gap-2  ">
           <ProfileAvatar profile={profile} />

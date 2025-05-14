@@ -9,7 +9,8 @@ import { logger } from '@/lib/logger';
 import { resolveOrigin } from '@/lib/utils';
 // feature-specific
 import { ProfileData } from '../types';
-import { createBrowserClient, SupaSubscriptionCallback } from '@/lib/supabase';
+import { createBrowserClient,  } from '@/lib/supabase';
+import { SupaSubscriptionCallback } from '@/types/supabase';
 
 /** Fetch the user profile from the database using the dedicated api.  */
 export const fetchUserProfile = async (

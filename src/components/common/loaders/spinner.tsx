@@ -10,26 +10,23 @@ import { Slot } from '@radix-ui/react-slot';
 import { Loader2Icon } from 'lucide-react';
 // project
 import { cn } from '@/lib/utils';
-
-export const PulseLabel: React.FC<
-  React.ComponentPropsWithRef<'span'> & { asChild?: boolean }
-> = ({ ref, className, asChild = false, ...props }) => {
-  // if asChild is true, use Slot component from Radix UI
-  const Comp = asChild ? Slot : 'span';
-  // render the component
-  return (
-    <Comp ref={ref} className={cn('animate-pulse', className)} {...props} />
-  );
-};
+// feature-specific
+import { AnimatedLabel } from './label';
+import { loaderVariants, LoaderVariants } from './load';
 
 export const SpinnerIcon: React.FC<
-  React.ComponentPropsWithRef<typeof Loader2Icon>
-> = ({ className, ref, ...props }) => {
+  React.ComponentPropsWithRef<typeof Loader2Icon> & LoaderVariants
+> = ({ className, ref, anim, flavor, size, variant, ...props }) => {
   return (
     <Loader2Icon
       ref={ref}
       className={cn(
-        'animate-spin h-8 w-8 text-green-300 border-green-300',
+        loaderVariants({
+          anim,
+          flavor,
+          size,
+          variant,
+        }),
         className
       )}
       {...props}
@@ -65,9 +62,9 @@ export const Spinner: React.FC<
     >
       <SpinnerIcon className={className} />
       {showLabel && (
-        <PulseLabel className="text-xl font-bold text-foreground animate-pulse">
+        <AnimatedLabel className="text-xl font-bold text-foreground animate-pulse">
           {label}
-        </PulseLabel>
+        </AnimatedLabel>
       )}
     </div>
   );

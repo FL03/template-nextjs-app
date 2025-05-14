@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 // feature-specific
 import { ProfileAvatar } from './profile-avatar';
-import { Profile } from '../types'
+import { Profile } from '../types';
 
 const statusToColor = (status: string): string => {
   if (['available', 'active', 'online'].includes(status)) {
@@ -38,13 +38,12 @@ export const ProfileCard: React.FC<
   //  if there is no profile, return null
   if (!profile) return null;
 
-
   // destructure the profile object
   const { status, username } = profile;
   return (
     <Card ref={ref} className={cn('w-full', className)} {...props}>
       <CardHeader className="flex flex-row items-center gap-2">
-      <ProfileAvatar profile={profile} />
+        <ProfileAvatar profile={profile} />
         <div className="inline-block text-nowrap overflow-x-hidden gap-2">
           <CardTitle className="text-sm text-start">@{username}</CardTitle>
         </div>
