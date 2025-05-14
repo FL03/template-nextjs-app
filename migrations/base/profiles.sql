@@ -40,7 +40,7 @@ BEGIN
   SELECT p.username INTO username
   FROM public.profiles p
   WHERE p.id = profile_id;
-  
+
   RETURN username;
 END;
 $$;
@@ -52,14 +52,14 @@ LANGUAGE plpgsql
 SECURITY definer
 AS $$
 DECLARE
-  current_username TEXT;
+  _username TEXT;
 BEGIN
   -- Retrieve the username for the current user
-  SELECT username INTO current_username
+  SELECT username INTO _username
   FROM public.profiles
   WHERE id = (SELECT auth.uid());
 
-  RETURN current_username;
+  RETURN _username;
 END;
 $$;
 
