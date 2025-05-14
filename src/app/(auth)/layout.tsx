@@ -1,4 +1,9 @@
-// layout.tsx
+/**
+ * Created At: 2025.05.13:21:40:18
+ * @author - @FL03
+ * @file - layout.tsx
+ * @description - This is a protected layout enabled for all authenticated route; /*
+ */
 import { PropsWithChildren } from 'react';
 // components
 import { PlatformScaffold } from '@/components/platform';

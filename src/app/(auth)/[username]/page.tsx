@@ -1,10 +1,16 @@
+/**
+ * Created At: 2025.05.13:21:39:56
+ * @author - @FL03
+ * @file - page.tsx
+ * @description - The main page for the user-profile dashboard. This is the main entry point for all user-profile related pages.
+ */
 'use server';
 // imports
 import { ResolvingMetadata } from 'next';
 // project
 import { logger } from '@/lib/logger';
 // components
-import { ProfileScreen } from '@/features';
+import { ProfileScreen } from '@/features/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
