@@ -8,7 +8,7 @@ import { ProfileScreen } from '@/features/users/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ view?: string }>;
+  searchParams: Promise<{ view?: string, userId?: string }>;
 };
 
 export default async function Page({ params, searchParams }: PageProps) {

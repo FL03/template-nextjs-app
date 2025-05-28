@@ -108,7 +108,7 @@ export const PlatformNavbar: React.FC<
           <NavButton href="/" label="Home" />
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavButton href="/blog" label="Blog" />
+          <NavButton href="/about" label="about" />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

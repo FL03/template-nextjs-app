@@ -14,17 +14,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import Link from 'next/link';
 
-type LandingScreenProps = {
+type AboutScreenViewProps = {
   description?: React.ReactNode;
   title?: React.ReactNode;
   asChild?: boolean;
 };
 
-export const LandingScreen: React.FC<
+export const AboutScreenView: React.FC<
   Omit<React.ComponentPropsWithRef<'div'>, 'title' | 'children'> &
-    LandingScreenProps
+    AboutScreenViewProps
 > = ({
   ref,
   className,
@@ -70,13 +69,14 @@ export const LandingScreen: React.FC<
         </CardContent>
         <CardFooter className="flex justify-end gap-4 lg:gap-6 w-full min-h-1/12">
           <CardAction className="inline-flex flex-nowrap items-center gap-2">
-            <Link href="/about">Learn More</Link>
+            <span>Author</span>
+            <span>Joe McCain III</span>
           </CardAction>
         </CardFooter>
       </Card>
     </Comp>
   );
 };
-LandingScreen.displayName = 'LandingScreen';
+AboutScreenView.displayName = 'AboutScreenView';
 
-export default LandingScreen;
+export default AboutScreenView;

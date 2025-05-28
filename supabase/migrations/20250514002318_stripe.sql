@@ -1,84 +1,105 @@
--- Timestamp: 2025-01-09
--- Version: 0.0.1
+-- Description: Setup the stripe integration with Supabase
+
+-- create the Stripe schema and foreign tables
+CREATE extension IF NOT EXISTS wrappers WITH SCHEMA extensions;
+-- ensure the stripe schema exists
+CREATE SCHEMA IF NOT EXISTS stripe;
+-- create the stripe wrapper for foreign data
+CREATE foreign DATA wrapper stripe_wrapper
+  handler stripe_fdw_handler
+  validator stripe_fdw_validator;
+-- create the stripe server with the API key
+CREATE server IF NOT EXISTS stripe_server
+  foreign data wrapper stripe_wrapper
+  options (
+    api_key_name 'stripe_secret_key' -- The Key Name from above, required if api_key_id is not specified.
+  );
 
 -- Create the table for public.pricing
 CREATE TABLE IF NOT EXISTS public.pricing (
-    id              UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
-    title           TEXT NO NULL DEFAULT ''::text,
-    description     TEXT,
-    price           NUMERIC(10, 2),
-    currency        TEXT not null default 'usd'::text,
-    interval        TEXT default 'monthly'::text,
-    trial_period    INT default 0::int,
-    metadata        jsonb
+  id              UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+  title           TEXT NOT NULL DEFAULT ''::TEXT,
+  description     TEXT DEFAULT ''::TEX,
+  price           NUMERIC(10, 2) DEFAULT '0.00'::numeric,
+  currency        TEXT NOT NULL DEFAULT 'usd'::TEX,
+  interval        TEXT DEFAULT 'monthly'::TEXT,
+  trial_period    INT DEFAULT 0::int,
+  metadata        jsonb DEFAULT '{}'::jsonb
 ); 
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
 ALTER TABLE public.pricing ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Anyone can view the product pricing table." on public.pricing
+CREATE POLICY "Anyone can view the product pricing table." ON public.pricing
   FOR SELECT
   USING (true);
 
--- Create the Stripe schema and foreign tables
-create extension if not exists wrappers with schema extensions;
+-- ** Foreign Tables **
+-- Description: Create foreign tables for the Stripe API
 
-create schema if not exists stripe;
-
-create foreign data wrapper stripe_wrapper
-  handler stripe_fdw_handler
-  validator stripe_fdw_validator;
-
-CREATE OR REPLACE SERVER stripe_server
-  foreign data wrapper stripe_wrapper
-  options (
-    api_key_id '8b6ff443-ae30-446d-8400-a8c3f73c2c8a' -- The Key ID from above, required if api_key_name is not specified.
-  );
-
--- Create foreign tables for the Stripe API
+-- create a foreign table for the stripe accounts
 create foreign table if not exists stripe.accounts (
-  id text,
-  business_type text,
-  country text,
-  email text,
-  type text,
-  created timestamp,
-  attrs jsonb
+  id              TEXT,
+  business_type   TEXT,
+  country         TEXT,
+  email           TEXT,
+  type            TEXT,
+  created         timestamptz NOT NULL DEFAULT now(),
+  attrs           jsonb
 )
-
+-- configure the stripe server to use the 'accounts' object
 server stripe_server
 options (
   object 'accounts'
 );
-
-create foreign table if not exists stripe.products (
-  id text,
-  name text,
-  active bool,
-  default_price text,
-  description text,
-  created timestamp,
-  updated timestamp,
-  attrs jsonb
+-- create a foreign table for the stripe customers
+create foreign table if not exists stripe.customers (
+  id              TEXT,
+  email           TEXT,
+  name            TEXT,
+  description     TEXT,
+  created         timestamptz NOT NULL DEFAULT now(),
+  attrs           jsonb
 )
+-- configure the stripe server to use the 'customers' object
+server stripe_server
+options (
+  object 'customers',
+  rowid_column 'id'
+);
+-- create a foreign table for the stripe prices
+create foreign table if not exists stripe.prices (
+  id              TEXT,
+  active          bool,
+  currency        TEXT,
+  unit_amount     numeric,
+  recurring       jsonb,
+  product         TEXT,
+  created         timestamptz NOT NULL DEFAULT now(),
+  attrs           jsonb
+)
+-- configure the stripe server to use the 'prices' object
+server stripe_server
+options (
+  object 'prices',
+  rowid_column 'id'
+);
 
+-- create a foreign table for the stripe products
+create foreign table if not exists stripe.products (
+  id              TEXT,
+  name            TEXT,
+  active          bool,
+  default_price   TEXT,
+  description     TEXT,
+  created         timestamptz NOT NULL DEFAULT now(),
+  updated         timestamptz NOT NULL DEFAULT now(),
+  attrs           jsonb
+)
+-- configure the stripe server to use the 'products' object
 server stripe_server
 options (
   object 'products',
   rowid_column 'id'
 );
 
-create foreign table if not exists stripe.customers (
-  id text,
-  email text,
-  name text,
-  description text,
-  created timestamp,
-  attrs jsonb
-)
-
-server stripe_server
-options (
-  object 'customers',
-  rowid_column 'id'
-);

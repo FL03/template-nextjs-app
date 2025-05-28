@@ -3,7 +3,6 @@
 import * as React from 'react';
 // project
 import { AuthButton } from '@/features/users/auth';
-import { cn } from '@/lib/utils';
 // hooks
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/use-auth';
@@ -31,13 +30,13 @@ export const PlatformAppBar: React.FC<
   const isMobile = useIsMobile();
   // render the component
   return (
-    <Appbar {...props} ref={ref}>
+    <Appbar {...props} ref={ref} flavor={flavor} variant={variant}>
       <AppbarLeading>
         <AppLogo className="h-6 w-6" />
         <AppbarTitle className="sr-only md:not-sr-only">scsys</AppbarTitle>
       </AppbarLeading>
       <AppbarContent>
-        <PlatformNavbar className="overflow-x-auto" />
+        <PlatformNavbar className="overflow-x-auto z-auto" />
       </AppbarContent>
       <AppbarTrailing>
         <ActionGroup>

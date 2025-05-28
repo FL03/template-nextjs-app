@@ -155,48 +155,41 @@ export const PlatformSidebar: React.FC<
       </SidebarHeader>
       {/* Sidebar Content */}
       <SidebarContent className="relative bg-secondary/90 overflow-x-clip flex flex-col flex-1 h-full w-full justify-end">
-        {/* public routes */}
+        {/* platform */}
         <_SidebarNavGroup
-          className="flex-shrink-0 top-0"
-          title="Information"
+          className="flex-1 h-full top-0"
+          title="Apps & Services"
           links={[
             {
-              name: 'Blog',
-              icon: <Lucide.RssIcon />,
-              href: { pathname: '/blog', query: { userId: profile?.id } },
+              name: 'Dashboard',
+              icon: <Lucide.LayoutDashboardIcon />,
+              href: {
+                pathname: `/users/${username}`,
+                query: { userId: profile?.id, username, view: 'dashboard' },
+              },
             },
+            {
+              name: 'Portal',
+              icon: <Lucide.LucideEdit2 />,
+              href: {
+                pathname: `/${username}/portal`,
+                query: { userId: profile?.id, view: 'dashboard' },
+              },
+            },
+            
           ]}
         />
-        {/* apps */}
-        {!!username && (
-          <_SidebarNavGroup
-            className={cn('flex-1')}
-            title="Apps"
-            links={[
-              {
-                name: 'Editor',
-                icon: <Lucide.LucideEdit2 />,
-                href: {
-                  pathname: `/${username}/portal`,
-                  query: { userId: profile?.id, view: 'editor' },
-                },
-              },
-              {
-                name: 'Dashboard',
-                icon: <Lucide.LayoutDashboardIcon />,
-                href: {
-                  pathname: `/admin`,
-                  query: { userId: profile?.id, username, view: 'dashboard' },
-                },
-              },
-            ]}
-          />
-        )}
+        {/* platform */}
         <SidebarSeparator />
         <_SidebarNavGroup
           className="bottom-0 flex-shrink-0"
           title="Platform"
           links={[
+            {
+              name: 'About',
+              icon: <Lucide.RssIcon />,
+              href: '/about',
+            },
             {
               name: 'Profile',
               icon: <Lucide.User2Icon />,
