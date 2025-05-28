@@ -1,7 +1,7 @@
 compatibility_date = "2025-05-16"
 compatibility_flags = ["nodejs_compat"]
 main = ".open-next/worker.js"
-name = "scsys-io-app"
+name = 'template-nextjs-app'
 workers_dev = true 
 
 [assets]
@@ -12,7 +12,7 @@ directory = ".open-next/assets"
 enabled = true
 
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://platform.scsys.io"
+NEXT_PUBLIC_SITE_URL = "https://template.scsys.io"
 NEXT_PUBLIC_SUPABASE_URL="https://gilqgzjkzkmhbbcqidqb.supabase.co"
 NEXT_TELEMETRY_DISABLED = 1
 NODE_ENV = "production"
@@ -24,5 +24,5 @@ NODE_VERSION = 22
 
 [[routes]]
 custom_domain = true
-pattern = "stag.scsys.io"
+pattern = "template.scsys.io"
 zone_id = "scsys.io"
