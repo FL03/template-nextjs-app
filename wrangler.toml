@@ -4,6 +4,9 @@ main = ".open-next/worker.js"
 name = 'template-nextjs-app'
 workers_dev = true 
 
+[build]
+command = "opennextjs-cloudflare build"
+
 [assets]
 binding = "ASSETS"
 directory = ".open-next/assets"
