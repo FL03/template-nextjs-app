@@ -4,8 +4,6 @@
  * @file - layout.tsx
  */
 // imports
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { cookies } from 'next/headers';
@@ -52,8 +50,6 @@ export default async function RootLayout({
           themes={['light', 'dark']}
         >
           {children}
-          <Analytics />
-          <SpeedInsights />
           <Toaster />
         </ThemeProvider>
       </body>
