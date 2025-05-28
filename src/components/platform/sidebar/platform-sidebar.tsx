@@ -10,10 +10,10 @@ import * as Lucide from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 // project
-import { AuthButton } from '@/features/auth';
-import { ProfileAvatar, ProfileCard } from '@/features/profiles';
+import { AuthButton } from '@/features/users/auth';
+import { ProfileAvatar, ProfileCard } from '@/features/users/profiles';
 import { useUserProfile } from '@/hooks/use-profile';
-import { LinkAttributes } from '@/types';
+import { LinkProps } from '@/types';
 import { cn } from '@/lib/utils';
 // components
 import { DialogTitle } from '@/components/ui/dialog';
@@ -47,11 +47,6 @@ export type PlatformSidebarProps = {
   collapsible?: 'offcanvas' | 'icon' | 'none';
 };
 
-type LinkProps = LinkAttributes & {
-  description?: React.ReactNode;
-  disabled?: boolean;
-  name?: React.ReactNode;
-};
 const SidebarLink: React.FC<
   React.ComponentProps<typeof SidebarMenuItem> & LinkProps
 > = ({ className, description, disabled, href, icon, name, ...props }) => {
@@ -143,9 +138,7 @@ export const PlatformSidebar: React.FC<
         <Link
           href={{
             pathname: `/${username}`,
-            query: {
-              view: 'details',
-            },
+            query: { userId: profile?.id, view: 'details' },
           }}
         >
           {isOpen ? (
@@ -161,70 +154,76 @@ export const PlatformSidebar: React.FC<
         )}
       </SidebarHeader>
       {/* Sidebar Content */}
-      <SidebarContent className="bg-secondary/90 overflow-x-clip flex flex-col flex-1 h-full w-full justify-end">
-        {/* trailing menu */}
-        {username && (
-          <>
-            <_SidebarNavGroup
-              className="flex-1"
-              title="Apps"
-              links={[
-                {
-                  name: 'Blog',
-                  icon: <Lucide.RssIcon />,
-                  href: '/blog',
+      <SidebarContent className="relative bg-secondary/90 overflow-x-clip flex flex-col flex-1 h-full w-full justify-end">
+        {/* public routes */}
+        <_SidebarNavGroup
+          className="flex-shrink-0 top-0"
+          title="Information"
+          links={[
+            {
+              name: 'Blog',
+              icon: <Lucide.RssIcon />,
+              href: { pathname: '/blog', query: { userId: profile?.id } },
+            },
+          ]}
+        />
+        {/* apps */}
+        {!!username && (
+          <_SidebarNavGroup
+            className={cn('flex-1')}
+            title="Apps"
+            links={[
+              {
+                name: 'Editor',
+                icon: <Lucide.LucideEdit2 />,
+                href: {
+                  pathname: `/${username}/portal`,
+                  query: { userId: profile?.id, view: 'editor' },
                 },
-                {
-                  name: 'Editor',
-                  icon: <Lucide.LucideEdit2 />,
-                  href: {
-                    pathname: `/${username}/content`,
-                    query: { view: 'editor' },
-                  },
+              },
+              {
+                name: 'Dashboard',
+                icon: <Lucide.LayoutDashboardIcon />,
+                href: {
+                  pathname: `/admin`,
+                  query: { userId: profile?.id, username, view: 'dashboard' },
                 },
-                {
-                  name: 'Dashboard',
-                  icon: <Lucide.LayoutDashboardIcon />,
-                  href: {
-                    pathname: `/${username}/admin`,
-                    query: { view: 'dashboard' },
-                  },
-                },
-              ]}
-            />
-            <_SidebarNavGroup
-              className="flex-shrink-0 mt-auto"
-              title="Platform"
-              links={[
-                {
-                  name: 'Profile',
-                  icon: <Lucide.User2Icon />,
-                  href: {
-                    pathname: `/users/${username}`,
-                    query: { view: 'details' },
-                  },
-                },
-                {
-                  name: 'Notifications',
-                  icon: <Lucide.BellIcon />,
-                  href: {
-                    pathname: `/${username}/notifications`,
-                    query: { filter: 'all', sortBy: 'newest' },
-                  },
-                },
-                {
-                  name: 'Settings',
-                  icon: <Lucide.SettingsIcon />,
-                  href: {
-                    pathname: `/${username}/settings`,
-                    query: { defaultTab: 'profile' },
-                  },
-                },
-              ]}
-            />
-          </>
+              },
+            ]}
+          />
         )}
         <SidebarSeparator />
+        <_SidebarNavGroup
+          className="bottom-0 flex-shrink-0"
+          title="Platform"
+          links={[
+            {
+              name: 'Profile',
+              icon: <Lucide.User2Icon />,
+              href: {
+                pathname: `/users/${username}`,
+                query: { userId: profile?.id, view: 'details' },
+              },
+            },
+            {
+              name: 'Notifications',
+              icon: <Lucide.BellIcon />,
+              href: {
+                pathname: `/${username}/notifications`,
+                query: { filter: 'all', sortBy: 'newest', userId: profile?.id },
+              },
+            },
+            {
+              name: 'Settings',
+              icon: <Lucide.SettingsIcon />,
+              href: {
+                pathname: `/${username}/settings`,
+                query: { defaultTab: 'profile', userId: profile?.id },
+              },
+            },
+          ]}
+        />
+        {/* trailing menu */}
       </SidebarContent>
       <SidebarFooter className="bg-secondary/90">
         {/* Actions */}

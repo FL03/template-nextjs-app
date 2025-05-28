@@ -4,7 +4,7 @@ import { ResolvingMetadata } from 'next';
 // project
 import { logger } from '@/lib/logger';
 // components
-import { ProfileScreen } from '@/features';
+import { ProfileScreen } from '@/features/users/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -12,14 +12,16 @@ type PageProps = {
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
+  // await the routes params
   const { username } = await params;
+  // await the routes search params
   const { view } = await searchParams;
-
-  // logger
-  logger.trace(`Viewing profile dashboard for ${username}`);
+  // trace the event
+  logger.trace(`Viewing profile screen for ${username} using the ${view} view`);
+  // render the profile screen
   return <ProfileScreen username={username} view={view} />;
 }
-Page.displayName = 'ProfileDetailsPage';
+Page.displayName = 'UserProfilePage';
 
 export async function generateMetadata(
   { params }: PageProps,
@@ -34,7 +36,7 @@ export async function generateMetadata(
       ...parentMetadata.openGraph,
       images: [...previousImages],
     },
-    description: `The dashboard for ${username}`,
-    title: `scsys (@${username})`,
+    description: `The user-profile page for ${username}`,
+    title: `Profile (@${username})`,
   };
 }

@@ -8,11 +8,11 @@
 // imports
 import { ResolvingMetadata } from 'next';
 // project
-import { AuthGate } from '@/features/auth';
+import { AuthGate } from '@/features/users';
 
-type PageParams = { view: string };
+type PageRouteProps = { params: Promise<{ view: string }> };
 
-export default async function Page(props: { params: Promise<PageParams> }) {
+export default async function Page(props: PageRouteProps) {
   // extract the view from the params
   const { view } = await props.params;
   // render the auth gate with the view
@@ -21,7 +21,7 @@ export default async function Page(props: { params: Promise<PageParams> }) {
 Page.displayName = 'AuthPage';
 
 export const generateMetadata = async (
-  props: { params: Promise<PageParams> },
+  props: PageRouteProps,
   parent: ResolvingMetadata
 ) => {
   const { view } = await props.params;

@@ -11,7 +11,7 @@ import { logger } from '@/lib/logger';
 import {
   handleEmailPasswordLogin,
   verifyTurnstileToken,
-} from '@/features/auth';
+} from '@/features/users';
 
 export async function POST(request: NextRequest) {
   try {

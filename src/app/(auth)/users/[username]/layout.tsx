@@ -1,17 +1,20 @@
 // imports
 import { PropsWithChildren } from 'react';
 // components
-import { ProfileProvider } from '@/features/profiles';
+import { ProfileProvider } from '@/features/users/profiles';
+
+type RouteParams = {
+  params: Promise<{ username: string }>;
+};
 
 export default async function Layout({
   children,
   params,
-}: Readonly<PropsWithChildren> & { params: Promise<{ username: string }> }) {
-  // const { username } = useParams<{ username: string }>();
+}: Readonly<PropsWithChildren> & RouteParams) {
   const { username } = await params;
 
   return (
-    <ProfileProvider username={username} className="h-full w-full flex-1">
+    <ProfileProvider username={username} className="flex-1 w-full h-full">
       {children}
     </ProfileProvider>
   );

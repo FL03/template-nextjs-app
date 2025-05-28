@@ -15,6 +15,16 @@ import { createBrowserClient } from '@/lib/supabase';
 
 type HookOptions = {
   client?: SupabaseClient<any, 'public', any>;
+  onDataChange?: (data: string | null) => void;
+  onError?: (error: Error) => void;
+};
+
+type UsernameHookReturnT = {
+  username: string;
+  state: {
+    isAuthenticated: boolean;
+    isLoading: boolean;
+  };
 };
 
 /**
@@ -23,71 +33,99 @@ type HookOptions = {
  *
  * @returns the current user's username
  */
-export const useUsername = (opts?: HookOptions) => {
+export const useUsername = (opts?: HookOptions): UsernameHookReturnT => {
   // initialize the supabase client
   const supabase = opts?.client ?? createBrowserClient();
-  // Try to get the initial value from cache
-  const initialUsername = React.useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      return window.localStorage.getItem(CACHE_KEY_USERNAME) || null;
-    } catch (e) {
-      return null;
-    }
-  }, []);
   // initialize stateful variables
-  const [_username, _setUsername] = React.useState<string | null>(
-    initialUsername
-  );
-  // refs
+  const [_username, _setUsername] = React.useState<string | null>(null);
+  // create a ref to store the auth subscription
   const authSubRef = React.useRef<Subscription | null>(null);
-  // state(s)
-  const [_isLoading, _setIsLoading] = React.useState<boolean>(true);
+  // declare a loading state; default to true
+  const [_isLoading, _setIsLoading] = React.useState(true);
 
-  const _handleOnChange = React.useCallback(
-    (data: string | null) => {
-      if (!data) {
-        _setUsername(null);
-        // clear the cached username
-        if (typeof window !== 'undefined') {
-          try {
-            window.localStorage.removeItem(CACHE_KEY_USERNAME);
-          } catch (e) {
-            logger.warn('Failed to clear cached username', e);
-          }
+  const [_isRefreshing, _setIsRefreshing] = React.useState(false);
+  const _isAuthenticated = React.useMemo<boolean>(
+    () => !!_username,
+    [_username]
+  );
+  const _isMounted = React.useMemo<boolean>(
+    () => typeof window !== 'undefined',
+    []
+  );
+
+  // memoize all the non-data-bearing vars
+  const _state = React.useMemo(
+    () => ({
+      isAuthenticated: _isAuthenticated,
+      isLoading: _isLoading,
+      isMounted: _isMounted,
+    }),
+    [_username, _isLoading]
+  );
+  /** cache the username */
+  const _cacheUsername = React.useCallback((u?: string | null) => {
+    if (!u) {
+      // clear the cached username
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem(CACHE_KEY_USERNAME);
+          logger.info('successfully cleared the cached username');
+        } catch (e) {
+          logger.warn('Failed to clear cached username', e);
         }
       }
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(CACHE_KEY_USERNAME, u);
+        logger.info('successfully cached the username:', u);
+      } catch (e) {
+        logger.warn('Failed to cache username', e);
+      }
+    }
+  }, []);
+  /** a callback to handle changes to the username */
+  const _handleOnChange = React.useCallback(
+    (data?: string | null) => {
+      // check that the username has changed
       if (data !== _username) {
-        _setUsername(data);
-        if (data && typeof window !== 'undefined') {
-          try {
-            window.localStorage.setItem(CACHE_KEY_USERNAME, data);
-          } catch (e) {
-            logger.warn('Failed to cache username', e);
-          }
-        }
+        // cache the username
+        _cacheUsername(data);
+        // update the local store
+        _setUsername(data ?? null);
       }
     },
     [_username, _setUsername]
   );
-
+  /** invoke the "public.username" function deployed on the database using supabase's "rpc" method */
   const _getUsername = React.useCallback(async (): Promise<string> => {
-    if (!_isLoading) _setIsLoading(true);
     logger.trace('useUsername', 'fetching username...');
+    // use the client to call the rpc function
     const { data, error } = await supabase.rpc('username');
     // check for errors
     if (error) {
-      logger.error(error, 'Error fetching username from the database...');
-      throw new Error('Error fetching username from the database...');
+      logger.error(
+        'Error fetching username from the database: ',
+        error.message
+      );
+      throw new Error(error.message);
     }
     // log the event
     logger.info('Successfully fetched the username from the database', data);
     // set the username state variable
     _handleOnChange(data);
-
+    // return the username
     return data;
-  }, [supabase, _isLoading, _setIsLoading, _handleOnChange]);
-
+  }, [_isLoading, supabase, _handleOnChange]);
+  // loading effects
+  React.useEffect(() => {
+    if (_isLoading) _getUsername().finally(() => _setIsLoading(false));
+    return () => {
+      // ensure the loading state is set to false on unmount
+      _setIsLoading(false);
+    };
+  }, [_getUsername, _setIsLoading, _isLoading]);
   // handle the subscription to the auth state changes
   const _initAuthSub = React.useCallback(() => {
     const {
@@ -116,15 +154,6 @@ export const useUsername = (opts?: HookOptions) => {
     });
     return subscription;
   }, [supabase, _username, _getUsername, _handleOnChange, _setUsername]);
-
-  // handle loading effects
-  React.useEffect(() => {
-    if (_isLoading) _getUsername().finally(() => _setIsLoading(false));
-    return () => {
-      // ensure the loading state is set to false on unmount
-      _setIsLoading(false);
-    };
-  }, [_getUsername, _isLoading, _setIsLoading]);
   // subscribe to the auth state changes
   React.useEffect(() => {
     // on null, initialize the subscription
@@ -137,7 +166,30 @@ export const useUsername = (opts?: HookOptions) => {
     };
   }, [_initAuthSub, authSubRef]);
 
-  const username = _username ?? '';
+  // redeclare public vars & methods
+  const username = _username || '';
+  // set the username state variable
+  const state = _state;
 
-  return React.useMemo(() => username, [username]);
+  const refresh = React.useCallback(async () => {
+    // double check that we aren't already loading
+    if (_isLoading) {
+      logger.info('already loading; skipping refresh...');
+      return;
+    }
+    // ensure the refreshing state is toggled
+    if (!_isRefreshing) _setIsRefreshing(true);
+    logger.trace('useUsername', 'fetching username...');
+    //
+    try {
+      await _getUsername();
+    } finally {
+      _setIsLoading(false);
+    }
+  }, [_isRefreshing, _isLoading, _getUsername, _setIsLoading]);
+
+  return React.useMemo(
+    () => ({ state, username, refresh }),
+    [state, username, refresh]
+  );
 };

@@ -1,30 +1,79 @@
 'use client';
 // imports
 import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
+// project
+import { cn } from '@/lib/utils';
 // components
 import {
   Card,
+  CardAction,
+  CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 
-export const LandingScreen = () => {
+type LandingScreenProps = {
+  description?: React.ReactNode;
+  title?: React.ReactNode;
+  asChild?: boolean;
+};
+
+export const LandingScreen: React.FC<
+  Omit<React.ComponentPropsWithRef<'div'>, 'title' | 'children'> &
+    LandingScreenProps
+> = ({
+  ref,
+  className,
+  description = 'A private company empowering the next generation of internet-based experiences',
+  title = 'Scattered-Systems, LLC',
+  asChild,
+  ...props
+}) => {
+  const Comp = asChild ? Slot : 'div';
   return (
-    <div className="flex flex-col flex-1 w-full">
-      <Card className="flex flex-col gap-2 m-auto">
-        <CardHeader className="flex flex-nowrap items-start gap-2 justify-start">
-          <div className="flex flex-col gap-2 mr-auto">
-            <CardTitle className="font-semibold text-xl tracking-tight">
-              Template NextJS Application
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              A simple template application for NextJS
-            </CardDescription>
-          </div>
+    <Comp
+      ref={ref}
+      className={cn(
+        'relative flex flex-1 items-center justify-center w-full h-full',
+        className
+      )}
+      {...props}
+    >
+      <Card className="flex flex-col w-full">
+        <CardHeader>
+          {title && (
+            <CardTitle className="text-2xl tracking-tight">{title}</CardTitle>
+          )}
+          {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
+        <CardContent className="flex flex-1 flex-wrap justify-start gap-4 lg:gap-6 w-full">
+          <div className="flex flex-col flex-1 w-full gap-2">
+            <h3 className="font-semibold text-lg tracking-tight">About Us</h3>
+            <span className="text-sm font-normal">
+              Scattered-Systems, LLC is a private company dedicated to
+              revolutionizing the way we interact with technology. Our mission
+              is to create innovative solutions that empower individuals and
+              businesses alike.
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h3 className="font-semibold text-lg tracking-tight">Our Vision</h3>
+            <span className="text-sm font-normal">
+              We envision a world where technology seamlessly integrates into
+              everyday life, enhancing productivity and creativity.
+            </span>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end gap-4 lg:gap-6 w-full min-h-1/12">
+          <CardAction className="inline-flex flex-nowrap items-center gap-2">
+            <span>Learn More</span>
+          </CardAction>
+        </CardFooter>
       </Card>
-    </div>
+    </Comp>
   );
 };
 LandingScreen.displayName = 'LandingScreen';

@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - links.tsx
  */
-import { LinkAttributes } from '@/types/links';
+import { LinkProps } from '@/types/links';
 import * as Lucide from 'lucide-react';
 
 export type DynamicLink = (
@@ -86,19 +86,17 @@ export const platformLinks = (username: string) => {
   };
 };
 
-type LinkTreeStaticLink =
-  | LinkAttributes
-  | (() => Record<string, LinkAttributes>);
+type LinkTreeStaticLink = LinkProps | (() => Record<string, LinkProps>);
 
 type LinkTreeDynamicLink<
   TParams extends { [key: string]: any } = Record<string, string>,
 > = (
   params: TParams,
   searchParams?: URLSearchParams
-) => Record<string, LinkAttributes>;
+) => Record<string, LinkProps>;
 
 type LinkTreeValue =
-  | (() => Record<string, LinkAttributes>)
+  | (() => Record<string, LinkProps>)
   | LinkTreeDynamicLink<{ [key: string]: any }>;
 
 type LinkTree = Record<string, LinkTreeValue>;

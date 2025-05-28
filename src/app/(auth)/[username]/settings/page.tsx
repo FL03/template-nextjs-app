@@ -4,7 +4,7 @@
 */
 'use client';
 
-import { ConfigurationPanel } from '@/features/settings';
+import { ConfigurationPanel } from '@/features/users/settings';
 
 export default function Page() {
 

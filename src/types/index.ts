@@ -1,6 +1,7 @@
 // types 
 export * from './core';
 export * from './events';
+export * from './handlers';
 export * from './hooks';
 export * from './links';
 export * from './props';

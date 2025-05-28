@@ -8,28 +8,59 @@ import React from "react";
 
 export type AsChild = { asChild?: boolean };
 
-export type AsChildProps<T> = T & AsChild 
+export type AsChildProps<T> = T & AsChild
 /** A simple type literal for the four sides of a 2-dimensional surface; i.e. left, right, top, bottom. */
 export type LRTB = 'left' | 'right' | 'top' | 'bottom';
 
+export type PropsWithDescription = {
+  description?: React.ReactNode;
+}
 
-export type BaseFormProps<TData = unknown> = {
-  defaultValues?: Partial<TData>;
-  values?: TData;
+export type PropsWithTitle = {
+  title?: React.ReactNode;
+}
+
+export type PropsWithSides = {
+  side?: LRTB;
+}
+
+export type HeaderProps = PropsWithTitle & PropsWithDescription;
+
+/** 
+ * This type defines a standard interface for implemented forms. It provides access to various methods that enable users to have 
+ * granular external control over the form and its behaviours. 
+ */
+export type FormConfig<TForm = unknown> = {
+  defaultValues?: Partial<TForm>;
+  values?: TForm;
   onCancel?: () => void;
-  onError?: (error: Error) => void;
-  onSubmit?: (values?: TData) => void;
-  onSubmitSuccess?: (values: TData) => void;
+  onError?: React.Dispatch<any>;
+  onSubmit?: React.Dispatch<TForm>;
+  onSubmitSuccess?: React.Dispatch<TForm>;
 } & AsChild;
 
-export type StandardFormProps<TData = unknown> = BaseFormProps<TData> & Omit<React.ComponentPropsWithRef<'form'>, 'children' | 'title' | 'onSubmit'>
+export type StandardFormProps<TData = unknown> = FormConfig<TData> & Omit<React.ComponentPropsWithRef<'form'>, 'children' | 'title' | 'onSubmit'>
 
-export type FormOverlayProps<T = any> = {
+type BaseModalProps = {
+  asChild?: boolean;
   className?: string;
   description?: React.ReactNode;
   title?: React.ReactNode;
-  showLabel?: boolean;
   defaultOpen?: boolean;
   open?: boolean;
-  onOpenChange?: React.Dispatch<React.SetStateAction<boolean>>;
-} & BaseFormProps<T>;
+  onOpenChange?: React.Dispatch<boolean>;
+  onCancel?: () => void;
+} 
+
+export type ModalProps<TForm = unknown> = BaseModalProps & FormConfig<TForm>;
+
+export type ModalPropsWithSides<TForm = unknown> = BaseModalProps & FormConfig<TForm> & { side?: LRTB };
+
+export type ModalWithTriggerProps<TForm = unknown> = {
+  showLabel?: boolean;
+  triggerClassName?: string;
+  triggerLabel?: string;
+  triggerIcon?: React.ReactNode;
+  triggerSize?: 'default' | 'sm' | 'lg' | 'icon';
+  triggerVariant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+} & ModalProps<TForm>;

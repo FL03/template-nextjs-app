@@ -2,11 +2,11 @@
 // imports
 import * as React from 'react';
 // project
-import { AuthButton } from '@/features/auth';
+import { AuthButton } from '@/features/users/auth';
 import { cn } from '@/lib/utils';
 // hooks
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/hooks/use-supabase';
+import { useAuth } from '@/hooks/use-auth';
 // feature-specific
 import { PlatformNavbar } from './platform-navbar';
 import { CustomSidebarTrigger } from '../sidebar';

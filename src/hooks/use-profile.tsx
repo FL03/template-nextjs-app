@@ -9,7 +9,7 @@
 import * as React from 'react';
 import { RealtimeChannel } from '@supabase/supabase-js';
 // project
-import { fetchUserProfile, ProfileData } from '@/features/profiles';
+import { fetchUserProfile, ProfileData } from '@/features/users';
 import {
   createBrowserClient,
   handleRealtimeSubscription,
@@ -38,17 +38,28 @@ export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
 ) => {
   // initialize the supabase client
   const supabase = createBrowserClient();
-  // use the username hook to get the current user's username
+  // use the username hook to get the current users username
   const currentUser = useUsername({ client: supabase });
-  // destructure the options
-  let { username } = options || {};
-  const isOwner = currentUser === username;
+  // declare the a local username variable
+  let username = options?.username;
+  // handle the case where no username is passed
   if (!username || username.trim() === '') {
     logger.warn('No params provided; using current user');
-    username = currentUser;
+    username = currentUser.username;
   }
+  // check if the username being used is assigned to the current user
+  const isOwner = currentUser.username === username;
+  // initialize a state for managing the profile data
+  const [_data, _setData] = React.useState<ProfileData | null>(null);
+  // declare the loading state
   const [_isLoading, _setIsLoading] = React.useState<boolean>(true);
-  const [_profile, _setProfile] = React.useState<ProfileData | null>(null);
+
+  const _state = React.useMemo(
+    () => ({
+      isLoading: _isLoading,
+    }),
+    [_isLoading]
+  );
 
   // initialize a reference to the channel
   const _profileChannelRef = React.useRef<RealtimeChannel | null>(null);
@@ -58,14 +69,14 @@ export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
     async (u: string): Promise<ProfileData | null> => {
       try {
         const data = await fetchUserProfile({ username: u });
-        _setProfile(data);
+        _setData(data);
         return data;
       } catch (error) {
         logger.error(error);
         throw error;
       }
     },
-    [_setProfile]
+    [_setData]
   );
   // create a callback for loading the profile data
   const _loadUserProfile =
@@ -107,17 +118,17 @@ export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
                 payload.eventType,
                 'Updating the local instance of the users profile'
               );
-              _setProfile(data);
+              _setData(data);
             }
             if (['DELETE'].includes(payload.eventType)) {
               logger.info('Deleting the user profile');
-              _setProfile(null);
+              _setData(null);
             }
           }
         )
         .subscribe(handleRealtimeSubscription);
     },
-    [supabase, _setProfile]
+    [supabase, _setData]
   );
   // loading-related effects
   React.useEffect(() => {
@@ -146,15 +157,10 @@ export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
     };
   }, [_profileChannelRef, supabase, _createProfileChannel]);
   // redeclare various parameters before returning
-  const profile = _profile;
+  const profile = _data;
   const loadProfile = _loadUserProfile;
 
-  const state = React.useMemo(
-    () => ({
-      isLoading: _isLoading,
-    }),
-    [_isLoading]
-  );
+  const state = _state;
   // return the memoized values
   return React.useMemo(() => {
     return {

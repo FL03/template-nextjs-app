@@ -71,30 +71,42 @@ export type Database = {
       }
       notifications: {
         Row: {
+          category: string | null
           created_at: string
+          description: string | null
           id: string
           kind: string
           message: string | null
+          metadata: Json | null
+          originator: string
           priority: number
           status: string
           updated_at: string
           username: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           kind?: string
           message?: string | null
+          metadata?: Json | null
+          originator?: string
           priority?: number
           status?: string
           updated_at?: string
           username?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           kind?: string
           message?: string | null
+          metadata?: Json | null
+          originator?: string
           priority?: number
           status?: string
           updated_at?: string
@@ -177,7 +189,7 @@ export type Database = {
           display_name?: string | null
           email?: string[] | null
           first_name?: string | null
-          id: string
+          id?: string
           last_name?: string | null
           metadata?: Json | null
           middle_name?: string | null
@@ -189,7 +201,7 @@ export type Database = {
           status?: string | null
           titles?: string[] | null
           updated_at?: string
-          username: string
+          username?: string
           website?: string | null
         }
         Update: {
@@ -342,6 +354,10 @@ export type Database = {
       }
       get_user_id_by_username: {
         Args: { username_input: string }
+        Returns: string
+      }
+      get_username: {
+        Args: { profile_id: string }
         Returns: string
       }
       username: {

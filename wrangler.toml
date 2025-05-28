@@ -1,0 +1,28 @@
+compatibility_date = "2025-05-16"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+name = "scsys-io-app"
+workers_dev = true 
+
+[assets]
+binding = "ASSETS"
+directory = ".open-next/assets"
+
+[observability.logs]
+enabled = true
+
+[vars]
+NEXT_PUBLIC_SITE_URL = "https://platform.scsys.io"
+NEXT_PUBLIC_SUPABASE_URL="https://gilqgzjkzkmhbbcqidqb.supabase.co"
+NEXT_TELEMETRY_DISABLED = 1
+NODE_ENV = "production"
+NODE_VERSION = 22
+
+[env.preview]
+
+[env.production]
+
+[[routes]]
+custom_domain = true
+pattern = "stag.scsys.io"
+zone_id = "scsys.io"

@@ -62,10 +62,10 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
-  applicationName: 'Puzzled',
+  applicationName: 'Template NextJS Platform',
   authors: [
     {
-      name: 'FL03',
+      name: 'Joe McCain III',
       url: 'https://github.com/FL03',
     },
     {
@@ -74,64 +74,64 @@ export const metadata: Metadata = {
     },
   ],
   category: 'Technology',
-  classification: 'platform',
+  classification: 'application',
   creator: 'FL03',
-  description: 'A template for creating data-centric Next.js applications.',
+  description: 'A template application built with Next.js v15, React v19, and Tailwind CSS v4.',
   icons: [
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '16x16',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '32x32',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '48x48',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '64x64',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '128x128',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '256x256',
       type: 'image/x-svg',
     },
     {
-      url: '/logo.svg',
+      url: '/favico.svg',
       sizes: '512x512',
       type: 'image/x-svg',
     },
   ],
-  keywords: ['technology', 'network', 'platform', 'virtualization'],
+  keywords: ['scsys', 'template', 'nextjs', 'react', 'tailwindcss', 'typescript', 'supabase'],
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
   ),
   publisher: 'Scattered-Systems, LLC',
-  title: { absolute: 'Puzzled', template: 'pzzld (%s)' },
+  title: { absolute: 'Template', template: 'platform (%s)' },
   twitter: {
     card: 'summary',
     creator: '@jo3mccain',
-    site: '@template-nextjs-app.vercel.app',
-    title: 'Template NextJS - App',
+    site: '@stag.scsys.io',
+    title: 'Template NextJS Platform',
   },
   openGraph: {
-    description: 'A template for creating data-centric Next.js applications.',
+    description: 'A template application built with Next.js v15, React v19, and Tailwind CSS v4.',
 
-    siteName: 'App',
+    siteName: 'scsys',
     locale: 'en_US',
-    title: 'Template NextJS - App',
+    title: 'Template NextJS Platform',
     type: 'website',
     url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
     images: [

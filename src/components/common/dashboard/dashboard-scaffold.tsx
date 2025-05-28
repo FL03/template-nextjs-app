@@ -5,6 +5,24 @@ import { Slot } from '@radix-ui/react-slot';
 // import { useIsMobile } from '@/hooks/use-mobile';
 // project
 import { cn } from '@/lib/utils';
+import { cva, VariantProps } from 'class-variance-authority';
+
+
+const dashboardContentVariants = cva('gap-4 lg:gap-6 overflow-auto px-4 py-2', {
+  defaultVariants: {
+    flavor: 'default',
+    variant: 'default',
+  },
+  variants: {
+    flavor: {
+      default: 'rounded-none border-none ring-none',
+      card: 'rounded-2xl bg-card text-card-foreground border border-muted shadow-sm',
+    },
+    variant: {
+      default: 'flex flex-col flex-1 w-full',
+    },
+  },
+});
 
 /**
  * A collection of classNames that are passed to their corresponding components within the `DashboardScaffold` component.
@@ -16,21 +34,25 @@ export type DashboardClassNames = {
   panelClassName?: string;
 };
 
-/**
- * @param {DashboardClassNames} classes - the props for the `DashboardScaffold` component
- * @param {React.ReactNode} panel - the smaller, optional _panel_ used to display additional content
- */
-type DashboardContentProps = {
-  classes?: DashboardClassNames;
-  panel?: React.ReactNode;
-  asChild?: boolean;
-};
 /** This component defines the scaffolding used to manage the dynamics of the various dashboard views. */
 export const DashboardScaffold: React.FC<
   Omit<React.ComponentPropsWithRef<'div'>, 'title'> &
-    React.PropsWithChildren &
-    DashboardContentProps
-> = ({ ref, className, children, panel, asChild, classes = {}, ...props }) => {
+    React.PropsWithChildren & {
+      classes?: DashboardClassNames;
+      panel?: React.ReactNode;
+      asChild?: boolean;
+      showPanel?: boolean;
+    }
+> = ({
+  ref,
+  className,
+  children,
+  panel,
+  asChild,
+  classes = {},
+  showPanel,
+  ...props
+}) => {
   // destructure the classNames object
   const { contentClassName, panelClassName } = classes;
   // fallback onto a Slot component if asChild is true
@@ -42,29 +64,20 @@ export const DashboardScaffold: React.FC<
       ref={ref}
       className={cn(
         'relative flex flex-1 flex-wrap overflow-hidden h-full w-full',
-        'gap-4 lg:gap-6 mt-2 lg:mt-4 z-0',
+        'gap-4 lg:gap-6 mt-2 lg:mt-4 z-auto',
         className
       )}
     >
       {/* Secondary */}
-      {panel && (
-        <DashboardPanel
-          asChild={asChild}
-          className={cn(
-            'flex flex-col w-full h-full gap-4 lg:gap-6',
-            panelClassName
-          )}
-        >
+      {showPanel && (
+        <DashboardPanel className={cn('', panelClassName)}>
           {panel}
         </DashboardPanel>
       )}
       {/* Primary View */}
       <DashboardDisplay
         withSecondary={!!panel}
-        className={cn(
-          'flex flex-col flex-1 w-full h-full gap-4 lg:gap-6',
-          contentClassName
-        )}
+        className={cn('', contentClassName)}
       />
     </Comp>
   );
@@ -72,21 +85,58 @@ export const DashboardScaffold: React.FC<
 
 /** This component streamlines the implementation of various views, ensuring the widget expands to fill the bounds of its parent element. */
 export const DashboardContent: React.FC<
-  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & { asChild?: boolean }
-> = ({ ref, className, asChild, ...props }) => {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
+    description?: React.ReactNode;
+    title?: React.ReactNode;
+    asChild?: boolean;
+    showHeader?: boolean;
+  } & VariantProps<typeof dashboardContentVariants>
+> = ({
+  ref,
+  children,
+  className,
+  description,
+  title,
+  flavor = 'default',
+  variant = 'default',
+  asChild,
+  showHeader = false,
+  ...props
+}) => {
   // render as a Slot component as a fallback whenever asChild is true
   const Comp = asChild ? Slot : 'div';
+  // determine if the header should be shown
+  const withHeader: boolean = showHeader && !!(title || description);
   // render the Sidebar component
   return (
     <Comp
       {...props}
       ref={ref}
       className={cn(
-        'flex flex-col flex-1 w-full gap-4 lg:gap-6',
-        'overflow-auto rounded-2xl border-none ring-none',
+        dashboardContentVariants({ flavor, variant }),
         className
       )}
-    />
+    >
+      {/* Header */}
+      <section className="flex flex-nowrap w-full items-center justify-between top-0">
+        {withHeader && (
+          <div className="flex flex-col flex-1 w-full gap-2 lg:gap-4">
+            {title && (
+              <div className="text-xl font-bold tracking-tight">{title}</div>
+            )}
+            {description && (
+              <span className="text-muted-foreground text-sm">
+                {description}
+              </span>
+            )}
+          </div>
+        )}
+      </section>
+      {/* Content */}
+      <section className="flex flex-nowrap items-center w-full gap-2 lg:gap-4">
+        {children}
+      </section>
+    </Comp>
   );
 };
 DashboardContent.displayName = 'DashboardContent';
@@ -130,7 +180,7 @@ export const DashboardPanel: React.FC<
       ref={ref}
       className={cn(
         'flex flex-col flex-shrink-0 px-4 py-2',
-        'gap-4 lg:gap-6 h-fit lg:h-full w-full lg:max-w-1/3',
+        'gap-4 lg:gap-6 h-fit lg:h-full w-full lg:max-w-1/3 left-0 top-0',
         className
       )}
     />

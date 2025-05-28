@@ -1,4 +1,10 @@
-// template.tsx
+/**
+ * Created At: 2025.05.16:12:23:35
+ * @author - @FL03
+ * @file - (auth)/template.tsx
+ */
+'use client';
+// imports
 import { PropsWithChildren } from 'react';
 
 /** 

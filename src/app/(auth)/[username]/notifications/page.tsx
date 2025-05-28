@@ -7,7 +7,7 @@ import { ResolvingMetadata } from 'next';
 import {
   NotificationCenter,
   NotificationProvider,
-} from '@/features/notifications';
+} from '@/features/users/notifications';
 
 type PageParams = { username: string };
 

@@ -16,7 +16,7 @@ import {
   Notification,
   NotificationData,
   fetchNotifications,
-} from '@/features/notifications';
+} from '@/features/users';
 import { logger } from '@/lib/logger';
 import {
   createBrowserClient,
@@ -41,7 +41,7 @@ export const useNotifications = ({
   // instantiate the client-side supabase client
   const supabase = createBrowserClient();
   // get the current username with the hook
-  const currentUsername = useUsername({ client: supabase });
+  const { username: currentUsername } = useUsername({ client: supabase });
   // default to the current users username
   username ??= currentUsername;
   // setup a reference to the realtime channel

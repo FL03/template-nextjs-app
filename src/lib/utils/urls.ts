@@ -7,6 +7,11 @@
 // project
 import { logger } from '@/lib/logger';
 
+export const createEndpointUrl = (endpoint: string, path?: string) => {
+  if (!path) return new URL(endpoint, resolveOrigin());
+  return new URL([endpoint, path].join('/'), resolveOrigin());
+}
+
 export const buildEndpoint = (...path: string[]): string => {
   return path.join('/');
 };

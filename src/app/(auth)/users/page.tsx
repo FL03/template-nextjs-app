@@ -1,12 +1,10 @@
 /**
- * Created At: 2025-04-09:22:27:42
+ * Created At: 2025.05.16:12:22:29
  * @author - @FL03
- * @file - page.tsx
+ * @file - [username]/page.tsx
  */
-'use server';
-// imports
 
-export default async function Page() {
+export default function Page() {
   return (
     <div className="flex flex-col flex-1 min-h-full w-full gap-4">
       {/* Header */}
@@ -21,16 +19,4 @@ export default async function Page() {
     </div>
   );
 }
-Page.displayName = 'ProfilePage';
-
-// export async function generateMetadata(
-//   { params }: { params: Promise<{ alias: string }> },
-//   parent: ResolvingMetadata
-// ) {
-//   const { alias } = await params;
-//   return {
-//     ...parent,
-//     description: `The profile details for ${alias}`,
-//     title: `@${alias}`,
-//   };
-// };
+Page.displayName = 'UserProfilesLanding';

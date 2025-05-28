@@ -1,13 +1,14 @@
 /**
- * Created At: 2025.05.13:21:40:18
+ * Created At: 2025.05.16:12:23:35
  * @author - @FL03
- * @file - layout.tsx
- * @description - This is a protected layout enabled for all authenticated route; /*
+ * @file - (auth)/layout.tsx
  */
+'use client';
+// imports
 import { PropsWithChildren } from 'react';
 // components
 import { PlatformScaffold } from '@/components/platform';
-import { AuthProvider } from '@/features/auth';
+import { AuthProvider } from '@/features/users/auth';
 /**
  * The base layout for authenticated routes
  *

@@ -9,19 +9,48 @@ import * as React from 'react';
 import Link from 'next/link';
 // project
 import { cn } from '@/lib/utils';
-// hooks
-import { useAuth } from '@/hooks/use-supabase';
 // components
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuLink,
   navigationMenuTriggerStyle,
-  NavigationMenuTrigger,
 } from '@/ui/navigation-menu';
-import { linktree } from '@/lib';
+import { Button } from '@/components/ui/button';
+
+const NavButton: React.FC<
+  Omit<
+    React.ComponentPropsWithRef<typeof Button>,
+    'asChild' | 'children' | 'title' | 'onClick'
+  > &
+    React.PropsWithChildren<{
+      icon?: React.ReactNode;
+      label?: React.ReactNode;
+      href: React.ComponentPropsWithRef<typeof Link>['href'];
+      asTrigger?: boolean;
+    }>
+> = ({
+  ref,
+  children,
+  href,
+  icon,
+  label,
+  size = 'sm',
+  variant = 'link',
+  asTrigger,
+  ...props
+}) => {
+  return (
+    <Button {...props} asChild ref={ref} size={size} variant={variant}>
+      <Link href={href}>
+        {icon && <div className="leading-none">{icon}</div>}
+        {label && <span>{label}</span>}
+      </Link>
+    </Button>
+  );
+};
+NavButton.displayName = 'NavButton';
 
 const NavLink: React.FC<
   Omit<React.ComponentPropsWithRef<typeof Link>, 'title'> &
@@ -31,7 +60,7 @@ const NavLink: React.FC<
     }>
 > = ({ ref, children, label, asTrigger, ...props }) => {
   return (
-    <Link {...props} legacyBehavior passHref ref={ref}>
+    <Link {...props} ref={ref}>
       <NavigationMenuLink
         className={cn('', asTrigger && navigationMenuTriggerStyle())}
       >
@@ -70,16 +99,16 @@ export const PlatformNavbar: React.FC<
       {...props}
       ref={ref}
       className={cn(
-        'inline-flex flex-nowrap items-center justify-start gap-2 lg:gap-4',
+        'inline-flex flex-nowrap items-center justify-start gap-2 lg:gap-4 z-auto',
         className
       )}
     >
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavLink href="/" label="Home" />
+          <NavButton href="/" label="Home" />
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavLink href="/blog" label="Blog" />
+          <NavButton href="/blog" label="Blog" />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
