@@ -18,7 +18,7 @@ import logger from '@/lib/logger';
 import { useUsername } from './use-username';
 import { HookCallback } from '@/types';
 
-type UserProfileHookProps = {
+type HookProps = {
   username?: string | null;
 };
 
@@ -33,8 +33,8 @@ type HookOutput = {
   loadProfile: () => Promise<ProfileData | null>;
 };
 
-export const useUserProfile: HookCallback<UserProfileHookProps, HookOutput> = (
-  options?: UserProfileHookProps
+export const useUserProfile: HookCallback<HookProps, HookOutput> = (
+  options?: HookProps
 ) => {
   // initialize the supabase client
   const supabase = createBrowserClient();
