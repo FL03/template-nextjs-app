@@ -1,9 +1,43 @@
-import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
+import { RemotePattern } from 'next/dist/shared/lib/image-config';
 
 const nextBuildOutput = (): "export" | "standalone" | undefined => {
   const value = process.env['NEXT_PUBLIC_BUILD_OUTPUT'] ?? process.env['BUILD_OUTPUT'];
   return value === 'export' || value === 'standalone' ? value : undefined;
+}
+
+const nextConfigImages = (options?: { supabaseProjectUrl?: string }): NextConfig['images'] => {
+  let remotePatterns: (URL | RemotePattern)[] = [
+    {
+      hostname: 'images.unsplash.com',
+      pathname: '/**',
+      protocol: 'https',
+    },
+    {
+      hostname: 'avatars.githubusercontent.com',
+      pathname: '/**',
+      protocol: 'https',
+    },
+  ];
+
+  if (options?.supabaseProjectUrl) {
+    try {
+      const url = new URL(options.supabaseProjectUrl);
+      remotePatterns.push({
+        hostname: url.hostname,
+        pathname: '/storage/**',
+        protocol: 'https',
+      });
+    } catch (error) {
+      console.error('Invalid Supabase URL:', options.supabaseProjectUrl, error);
+    }
+  }
+
+  return {
+    remotePatterns: [
+      ...remotePatterns,
+    ]
+  };
 }
 
 /**
@@ -14,31 +48,13 @@ const nextBuildOutput = (): "export" | "standalone" | undefined => {
  */
 const nextConfig: NextConfig = {
   output: nextBuildOutput(),
-  images: {
-    remotePatterns: [
-      {
-        hostname: 'images.unsplash.com',
-        pathname: '/**',
-        protocol: 'https',
-      },
-      {
-        hostname: 'avatars.githubusercontent.com',
-        pathname: '/**',
-        protocol: 'https',
-      },
-      {
-        hostname: 'gilqgzjkzkmhbbcqidqb.supabase.co',
-        pathname: '/storage/**',
-        protocol: 'https',
-      },
-    ],
-  },
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  images: nextConfigImages({ supabaseProjectUrl: process.env.NEXT_PUBLIC_SUPABASE_URL }),
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   publicRuntimeConfig: {
     SITE_URL: process.env.SITE_URL,
   },
   turbopack: {
-    resolveExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+    resolveExtensions: ['js', 'jsx', 'ts', 'tsx'],
   },
   experimental: {
     serverActions: {
@@ -47,9 +63,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withMDX = createMDX({
-  extension: /\.(md|mdx)$/,
-});
+export default nextConfig;
 
-// Merge MDX config with Next.js config
-export default withMDX(nextConfig);
+// const withMDX = createMDX({
+//   extension: /\.(md|mdx)$/,
+// });
+
+// // Merge MDX config with Next.js config
+// export default withMDX(nextConfig);
