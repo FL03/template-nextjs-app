@@ -14,7 +14,8 @@ type ScreenProps = {
   asChild?: boolean;
 };
 
-export const ProfileScreen: React.FC<ScreenProps> = ({
+/** The `UserProfileScreen` component is a dynamic display capable of rendering the profile dashboard or the details view, depending upon the passed parameters. */
+export const UserProfileScreen: React.FC<ScreenProps> = ({
   username,
   view = 'dashboard',
 }) => {
@@ -50,6 +51,6 @@ export const ProfileScreen: React.FC<ScreenProps> = ({
     <ProfileProvider username={username}>{renderView()}</ProfileProvider>
   );
 };
-ProfileScreen.displayName = 'ProfileScreen';
+UserProfileScreen.displayName = 'ProfileScreen';
 
-export default ProfileScreen;
+export default UserProfileScreen;

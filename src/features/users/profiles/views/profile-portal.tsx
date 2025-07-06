@@ -2,7 +2,6 @@
 'use client';
 // imports
 import * as React from 'react';
-import { Slot } from '@radix-ui/react-slot';
 // components
 import {
   DashboardContent,
@@ -14,12 +13,16 @@ type PortalScaffoldProps = {
   username?: string;
 };
 
-export const ProfilePortalScaffold: React.FC<
+export const UserPortal: React.FC<
   PortalScaffoldProps & React.ComponentPropsWithRef<typeof DashboardScaffold>
 > = ({ ref, children, panel, ...props }) => {
   const renderPanel = () => {
     if (!panel) return null;
-    return <DashboardContent className="w-full lg:max-w-sm">{panel}</DashboardContent>;
+    return (
+      <DashboardContent className="w-full lg:max-w-sm">
+        {panel}
+      </DashboardContent>
+    );
   };
   // render the component
   return (
@@ -30,6 +33,6 @@ export const ProfilePortalScaffold: React.FC<
     </DashboardScaffold>
   );
 };
-ProfilePortalScaffold.displayName = 'ProfilePortalScaffold';
+UserPortal.displayName = 'UserPortalScaffold';
 
-export default ProfilePortalScaffold;
+export default UserPortal;

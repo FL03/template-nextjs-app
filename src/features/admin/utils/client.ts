@@ -1,2 +1,0 @@
-// client.ts
-'use client';

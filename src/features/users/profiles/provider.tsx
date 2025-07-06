@@ -25,7 +25,9 @@ import { fetchUserProfile } from './utils';
 
 type ProviderState = {
   isLoading: boolean;
+  isSaving: boolean;
 };
+
 type ProfileContext = {
   isOwner: boolean;
   profile: ProfileData | null;
@@ -65,21 +67,30 @@ export const ProfileProvider = React.forwardRef<
   // initialize the supabase client for the browser
   const supabase = createBrowserClient();
   // initialize the profile state
-  const [_profile, _setProfile] = React.useState<ProfileData | null>(null);
-  const [_isLoading, _setIsLoading] = React.useState<boolean>(true);
+  const [_data, _setData] = React.useState<ProfileData | null>(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  // memoize the various states used to indicate a particular action
+  const _state = React.useMemo(
+    () => ({
+      isLoading,
+      isSaving,
+    }),
+    [isLoading, isSaving]
+  );
   // initialize a reference to the channel
   const channelRef = React.useRef<RealtimeChannel | null>(null);
   // create a callback for loading the profile data
-  const _loadProfile = React.useCallback(
+  const _loadUserProfile = React.useCallback(
     async (alias: string): Promise<ProfileData | null> => {
       // ensure the loading toggle is triggered
-      if (!_isLoading) _setIsLoading(true);
+      if (!isLoading) setIsLoading(true);
       // try to fetch the profile data
       logger.trace(`Loading profile for ${alias}`);
       try {
         const data = await fetchUserProfile({ username: alias });
         // if a profile is returned, set it to the state
-        if (data) _setProfile(data);
+        if (data) _setData(data);
         // return the data
         return data;
       } catch (error) {
@@ -87,29 +98,29 @@ export const ProfileProvider = React.forwardRef<
         throw error;
       } finally {
         // set the loading state to false
-        _setIsLoading(false);
+        setIsLoading(false);
       }
     },
-    [_setProfile, _setIsLoading, _isLoading]
+    [_setData, setIsLoading, isLoading]
   );
-  const _onProfileChange = React.useCallback(
+  const _handlePayload = React.useCallback(
     (payload: RealtimePostgresChangesPayload<ProfileData>) => {
       const data = payload.new as ProfileData;
 
       if (payload.eventType === 'INSERT') {
         logger.info('A new user profile has been created');
-        _setProfile(data);
+        _setData(data);
       }
       if (payload.eventType === 'UPDATE') {
         logger.info('Updating the user profile');
-        _setProfile(data);
+        _setData(data);
       }
       if (payload.eventType === 'DELETE') {
         logger.info('Profile deleted');
-        _setProfile(null);
+        _setData(null);
       }
     },
-    [_setProfile]
+    [_setData]
   );
   // a callback for creating a channel
   const _createProfileChannel = React.useCallback(
@@ -124,20 +135,20 @@ export const ProfileProvider = React.forwardRef<
             table: 'profiles',
             filter: `username=eq.${alias}`,
           },
-          _onProfileChange
+          _handlePayload
         )
         .subscribe(handleRealtimeSubscription);
     },
-    [supabase, _onProfileChange]
+    [supabase, _handlePayload]
   );
   // loading effects
   React.useEffect(() => {
     // handle profile loading
-    if (_isLoading && username) _loadProfile(username);
+    if (isLoading && username) _loadUserProfile(username);
     return () => {
-      _setIsLoading(false);
+      setIsLoading(false);
     };
-  }, [username, _isLoading, _setIsLoading, _loadProfile]);
+  }, [username, isLoading, setIsLoading, _loadUserProfile]);
   // realtime effects
   React.useEffect(() => {
     // if a username is passed and the channel is not already created, create a new channel
@@ -157,19 +168,13 @@ export const ProfileProvider = React.forwardRef<
     };
   }, [supabase, username, channelRef, _createProfileChannel]);
 
-  // redeclare stateful parameters and public facing methods
-  const profile = _profile;
-  // memoize a state object to group all states for the provider
-  const state = React.useMemo(
-    () => ({
-      isLoading: _isLoading,
-    }),
-    [_isLoading]
-  );
+  // redeclare public variables and methods for clarity
+  const profile = _data;
+  const state = _state;
 
   const loadProfile = React.useCallback(
-    async () => _loadProfile(username),
-    [username, _loadProfile]
+    async () => _loadUserProfile(username),
+    [username, _loadUserProfile]
   );
 
   // create the context object

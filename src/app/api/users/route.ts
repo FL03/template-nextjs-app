@@ -10,11 +10,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createServerClient } from '@/lib/supabase';
 
-export const GET = async (req: NextRequest) => {
+export const GET = async ({ url }: NextRequest) => {
   // initialize the supabase client
   const supabase = await createServerClient<any, "public">();
 
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(url);
   const username = searchParams.get('username');
   const userId = searchParams.get('uid') ?? searchParams.get('userId') ?? searchParams.get('user_id');
 
@@ -34,5 +34,10 @@ export const GET = async (req: NextRequest) => {
     logger.error(error, 'Error querying the database...');
     throw new Error(error.message);
   }
+  if (!data) {
+    logger.warn({ username, userId }, 'No data found for the given username or userId...');
+    return NextResponse.json({ message: 'No data found' }, { status: 404 });
+  }
+  
   return NextResponse.json(data, { status: 200 });
 };

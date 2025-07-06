@@ -10,6 +10,9 @@ import { cookies } from 'next/headers';
 import { ThemeProvider } from 'next-themes';
 import { PropsWithChildren } from 'react';
 import { Toaster } from 'sonner';
+// vercel
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 // stylesheet
 import '@/public/styles/globals.css'; // './globals.css';
 
@@ -38,7 +41,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressContentEditableWarning suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-full z-0`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-full -z-0`}
       >
         <ThemeProvider
           disableTransitionOnChange
@@ -50,7 +53,11 @@ export default async function RootLayout({
           themes={['light', 'dark']}
         >
           {children}
+          {/* Sonner Toasts */}
           <Toaster />
+          {/* Vercel */}
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
@@ -58,7 +65,7 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
-  applicationName: 'Template NextJS Platform',
+  applicationName: 'Puzzled',
   authors: [
     {
       name: 'Joe McCain III',
@@ -72,7 +79,8 @@ export const metadata: Metadata = {
   category: 'Technology',
   classification: 'application',
   creator: 'FL03',
-  description: 'A template application built with Next.js v15, React v19, and Tailwind CSS v4.',
+  description:
+    'A template application built with Next.js v15, React v19, and Tailwind CSS v4.',
   icons: [
     {
       url: '/favico.svg',
@@ -110,32 +118,37 @@ export const metadata: Metadata = {
       type: 'image/x-svg',
     },
   ],
-  keywords: ['scsys', 'template', 'nextjs', 'react', 'tailwindcss', 'typescript', 'supabase'],
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-  ),
+  keywords: [
+    'scsys',
+    'template',
+    'nextjs',
+    'react',
+    'tailwindcss',
+    'typescript',
+    'supabase',
+  ],
+  metadataBase: new URL('https://app.pzzld.org'),
   publisher: 'Scattered-Systems, LLC',
-  title: { absolute: 'Template', template: 'platform (%s)' },
+  title: { absolute: 'Puzzled', template: '%s | pzzld' },
   twitter: {
     card: 'summary',
     creator: '@jo3mccain',
-    site: '@stag.scsys.io',
-    title: 'Template NextJS Platform',
+    site: '@app.pzzld.org',
+    title: 'Puzzled',
   },
   openGraph: {
-    description: 'A template application built with Next.js v15, React v19, and Tailwind CSS v4.',
-
-    siteName: 'scsys',
+    description: 'The puzzled application is home to a portfolio platform containing various projects and experiments.',
+    siteName: 'pzzld',
     locale: 'en_US',
-    title: 'Template NextJS Platform',
+    title: 'Puzzled',
     type: 'website',
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+    url: 'https://app.pzzld.org',
     images: [
       {
         url: '/logo.svg',
         width: 1200,
         height: 630,
-        alt: 'Scattered-Systems, LLC',
+        alt: 'Puzzled Logo',
       },
     ],
   },

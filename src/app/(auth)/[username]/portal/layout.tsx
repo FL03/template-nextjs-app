@@ -5,7 +5,7 @@
  */
 'use server';
 // features
-import { ProfilePortalScaffold } from '@/features/users/profiles';
+import { UserPortal } from '@/features/users/profiles';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -18,8 +18,6 @@ type LayoutProps = {
  */
 export default async function Layout({ children, panel }: LayoutProps) {
   // render the parallel layout
-  return (
-    <ProfilePortalScaffold panel={panel}>{children}</ProfilePortalScaffold>
-  );
+  return <UserPortal panel={panel}>{children}</UserPortal>;
 }
 Layout.displayName = 'DynamicDashboardLayout';

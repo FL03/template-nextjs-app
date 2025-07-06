@@ -17,9 +17,9 @@ import {
   AppbarLeading,
   AppbarTitle,
   AppbarTrailing,
-} from '@/components/common/appbar';
-import { AppLogo } from '@/components/common/icons';
+} from '@/components/common/nav/appbar';
 import { ThemeButton } from '@/components/common/buttons';
+import {PzzldLogo} from '@/components/common/icons';
 
 /** The primary appbar used throughout the application  */
 export const PlatformAppBar: React.FC<
@@ -30,10 +30,10 @@ export const PlatformAppBar: React.FC<
   const isMobile = useIsMobile();
   // render the component
   return (
-    <Appbar {...props} ref={ref} flavor={flavor} variant={variant}>
+    <Appbar {...props} id="appbar" ref={ref} flavor={flavor} variant={variant}>
       <AppbarLeading>
-        <AppLogo className="h-6 w-6" />
-        <AppbarTitle className="sr-only md:not-sr-only">scsys</AppbarTitle>
+        <PzzldLogo className="h-6 w-6" />
+        <AppbarTitle className="sr-only md:not-sr-only">pzzld</AppbarTitle>
       </AppbarLeading>
       <AppbarContent>
         <PlatformNavbar className="overflow-x-auto z-auto" />

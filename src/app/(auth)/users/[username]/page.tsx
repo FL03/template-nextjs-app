@@ -1,10 +1,15 @@
+/**
+ * Created At: 2025.07.05:19:53:17
+ * @author - @FL03
+ * @file - users/page.tsx
+ */
 'use server';
 // imports
 import { ResolvingMetadata } from 'next';
 // project
 import { logger } from '@/lib/logger';
 // components
-import { ProfileScreen } from '@/features/users/profiles';
+import { UserProfileScreen } from '@/features/users/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -19,7 +24,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   // trace the event
   logger.trace(`Viewing profile screen for ${username} using the ${view} view`);
   // render the profile screen
-  return <ProfileScreen username={username} view={view} />;
+  return <UserProfileScreen username={username} view={view} />;
 }
 Page.displayName = 'UserProfilePage';
 

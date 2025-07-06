@@ -8,7 +8,6 @@ import React from "react";
 
 export type AsChild = { asChild?: boolean };
 
-export type AsChildProps<T> = T & AsChild
 /** A simple type literal for the four sides of a 2-dimensional surface; i.e. left, right, top, bottom. */
 export type LRTB = 'left' | 'right' | 'top' | 'bottom';
 

@@ -17,40 +17,7 @@ import {
   NavigationMenuLink,
   navigationMenuTriggerStyle,
 } from '@/ui/navigation-menu';
-import { Button } from '@/components/ui/button';
-
-const NavButton: React.FC<
-  Omit<
-    React.ComponentPropsWithRef<typeof Button>,
-    'asChild' | 'children' | 'title' | 'onClick'
-  > &
-    React.PropsWithChildren<{
-      icon?: React.ReactNode;
-      label?: React.ReactNode;
-      href: React.ComponentPropsWithRef<typeof Link>['href'];
-      asTrigger?: boolean;
-    }>
-> = ({
-  ref,
-  children,
-  href,
-  icon,
-  label,
-  size = 'sm',
-  variant = 'link',
-  asTrigger,
-  ...props
-}) => {
-  return (
-    <Button {...props} asChild ref={ref} size={size} variant={variant}>
-      <Link href={href}>
-        {icon && <div className="leading-none">{icon}</div>}
-        {label && <span>{label}</span>}
-      </Link>
-    </Button>
-  );
-};
-NavButton.displayName = 'NavButton';
+import { LinkButton } from '@/components/common/nav';
 
 const NavLink: React.FC<
   Omit<React.ComponentPropsWithRef<typeof Link>, 'title'> &
@@ -74,7 +41,7 @@ const NavLink: React.FC<
 };
 NavLink.displayName = 'NavLink';
 
-const ListItem: React.FC<
+const NavListItem: React.FC<
   Omit<React.ComponentPropsWithRef<typeof Link>, 'title'> &
     React.PropsWithChildren<{
       id?: string | number;
@@ -88,11 +55,23 @@ const ListItem: React.FC<
     </li>
   );
 };
-ListItem.displayName = 'ListItem';
+NavListItem.displayName = 'ListItem';
 
 export const PlatformNavbar: React.FC<
   Omit<React.ComponentPropsWithRef<typeof NavigationMenu>, 'children'>
 > = ({ ref, className, ...props }) => {
+  const renderPrimary = () => {
+    return (
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <LinkButton href="/" label="home" />
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <LinkButton href="/about" label="about" />
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    );
+  };
   // render the component
   return (
     <NavigationMenu
@@ -103,14 +82,7 @@ export const PlatformNavbar: React.FC<
         className
       )}
     >
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavButton href="/" label="Home" />
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavButton href="/about" label="about" />
-        </NavigationMenuItem>
-      </NavigationMenuList>
+      {renderPrimary()}
     </NavigationMenu>
   );
 };

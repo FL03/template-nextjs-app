@@ -3,73 +3,104 @@
  * @author - @FL03
  * @file - route.ts
  */
-'use server';
+"use server";
 // imports
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 // project
-import { logger } from '@/lib/logger';
-import { createServerClient, currentUser } from '@/lib/supabase';
-import { PublicDatabase } from '@/types/database.types';
+import { logger } from "@/lib/logger";
+import { createServerClient, currentUser } from "@/lib/supabase";
+import { PublicDatabase } from "@/types/database.types";
+// 
 
+import { ProfileIdentifiers } from "@/features/users";
+
+export const GET = async (req: NextRequest) => {
+  // initialize the server-side supabase client
+  const supabase = await createServerClient<PublicDatabase, "public">("public");
+  // create a new URL object from the request URL
+  const { searchParams } = new URL(req.url);
+
+  // destructure the search parameters to get the email, username, and userId
+  const { email, username, userId }: ProfileIdentifiers = {
+    email: searchParams.get("email") as string | null,
+    username: searchParams.get("username"),
+    userId: searchParams.get("userId") ?? searchParams.get("user_id") ?? searchParams.get("uid"),
+  }
+
+  if (!email && !username && !userId) {
+    logger.error({ username, userId }, "No username or userId provided...");
+    return NextResponse.error();
+  }
+
+  let query = supabase.from("profiles").select("*", { count: "estimated" });
+  
+  // handle the different cases for querying a profile
+  if (email) {
+    query = query.contains("email", email);
+  }
+
+  if (username) {
+    query = query.eq("username", username);
+  }
+
+  if (userId) {
+    query = query.eq("id", userId);
+  }
+
+  const { data, error } = (userId || username)
+    ? await query.single()
+    : await query;
+
+  if (error) {
+    logger.error(error, "Error querying the database...");
+    return NextResponse.error();
+  }
+  return NextResponse.json(data, { status: 200 });
+};
+/**
+ * Delete a user profile using a unique identifier, namely an: email, username, or userId.
+ */
 export const DELETE = async (req: NextRequest) => {
   // initialize the server-side supabase client
   const supabase = await createServerClient<any, "public">();
   // create a new URL object from the request URL
   const { searchParams } = new URL(req.url);
-  const username = searchParams.get('username');
-  const userId = searchParams.get('uid') ?? searchParams.get('userId') ?? searchParams.get('user_id');
 
-  if (!username && !userId) {
-    logger.error({ username, userId }, 'No username or userId provided...');
-    return NextResponse.error();
+  const { email, username, userId }: ProfileIdentifiers = {
+    email: searchParams.get("email"),
+    username: searchParams.get("username"),
+    userId: searchParams.get("userId") ?? searchParams.get("user_id") ?? searchParams.get("uid"),
   }
 
-  let query = supabase.from('profiles').delete({ count: 'exact' });
+  if (!email && !username && !userId) {
+    logger.error("No valid parameters were parse from the url...", {
+      email,
+      username,
+      userId,
+    });
+    // return a response
+    return NextResponse.error();
+  }
+  // initialize the query to delete a profile
+  let query = supabase.from("profiles").delete({ count: "exact" });
+  // handle the different cases for deleting a profile
+
+  if (email) {
+    query = query.contains("email", email);
+  }
 
   if (username) {
-    query = query.eq('username', username);
+    query = query.eq("username", username);
   }
 
   if (userId) {
-    query = query.eq('id', userId);
+    query = query.eq("id", userId);
   }
 
   const { data, error } = await query.single();
 
   if (error) {
-    logger.error({ error }, 'Error deleting the profile...');
-    return NextResponse.error();
-  }
-  return NextResponse.json(data, { status: 200 });
-}
-
-export const GET = async (req: NextRequest) => {
-  // initialize the server-side supabase client
-  const supabase = await createServerClient<PublicDatabase, "public">('public');
-  // create a new URL object from the request URL
-  const { searchParams } = new URL(req.url);
-  const username = searchParams.get('username');
-  const userId = searchParams.get('uid') ?? searchParams.get('userId') ?? searchParams.get('user_id');
-
-  if (!username && !userId) {
-    logger.error({ username, userId }, 'No username or userId provided...');
-    return NextResponse.error();
-  }
-
-  let query = supabase.from('profiles').select('*', { count: 'estimated' });
-
-  if (username) {
-    query = query.eq('username', username);
-  }
-
-  if (userId) {
-    query = query.eq('id', userId);
-  }
-
-  const { data, error } = (userId || username) ? await query.single() : await query;
-
-  if (error) {
-    logger.error(error, 'Error querying the database...');
+    logger.error({ error }, "Error deleting the profile...");
     return NextResponse.error();
   }
   return NextResponse.json(data, { status: 200 });
@@ -82,38 +113,38 @@ export const POST = async (req: NextRequest) => {
 
   const user = await currentUser(supabase);
   if (!user) {
-    logger.error(user, '[POST] User not authenticated...');
-    throw new Error('User needs to be authenticated to update the profile...');
+    logger.error(user, "[POST] User not authenticated...");
+    throw new Error("User needs to be authenticated to update the profile...");
   }
-  
+
   // destructure the user object to get the user id
   const { id: userId } = user;
   // get the form data from the request
   const form = await formData();
   // upsert the formData into the profiles table and return the entry
   const { data, error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .upsert(
       {
         id: userId,
-        avatar_url: form.get('avatar_url') as string,
-        bio: form.get('bio') as string,
-        display_name: form.get('display_name') as string,
-        role: form.get('role') as string,
-        status: form.get('status') as string,
-        username: form.get('username') as string,
+        avatar_url: form.get("avatar_url") as string,
+        bio: form.get("bio") as string,
+        display_name: form.get("display_name") as string,
+        role: form.get("role") as string,
+        status: form.get("status") as string,
+        username: form.get("username") as string,
       },
-      { onConflict: 'id' }
+      { onConflict: "id" },
     )
-    .eq('id', userId)
+    .eq("id", userId)
     .select()
     .single();
-    // check for errors
+  // check for errors
   if (error) {
-    logger.error(error, '[POST] Error upserting the profile...');
+    logger.error(error, "[POST] Error upserting the profile...");
     return NextResponse.error();
   }
   // log the success message
-  logger.info({ data }, 'Success: upserted the profile with the given data...');
+  logger.info({ data }, "Success: upserted the profile with the given data...");
   return NextResponse.json(data ?? {}, { status: 201 });
 };

@@ -9,3 +9,20 @@ export type ClientHandler<TQuery = any, TOut = any> = (
   query: TQuery,
   init?: RequestInit
 ) => Promise<TOut>;
+
+export type ClientOutput<TData = any> = {
+  data?: TData;
+  error?: Error;
+  message?: string;
+  status?: number;
+  metadata?: ClientOutputMetadata;
+}
+
+export type ClientOutputMetadata = {
+  count?: number;
+  page?: number;
+  pageSize?: number;
+  totalPages?: number;
+  totalCount?: number;
+  [key: string]: any; // Allow additional metadata properties
+}

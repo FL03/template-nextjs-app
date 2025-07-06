@@ -1,3 +1,9 @@
+/**
+ * Created At: 2025.07.05:19:55:45
+ * @author - @FL03
+ * @file - user/layout.tsx
+ */
+'use server';
 // imports
 import { PropsWithChildren } from 'react';
 // components

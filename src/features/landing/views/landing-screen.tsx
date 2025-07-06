@@ -1,20 +1,17 @@
+/**
+ * Created At: 2025.07.05:08:39:48
+ * @author - @FL03
+ * @file - landing-screen.tsx
+ */
 'use client';
 // imports
 import * as React from 'react';
+import Link from 'next/link';
 import { Slot } from '@radix-ui/react-slot';
 // project
 import { cn } from '@/lib/utils';
-// components
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import Link from 'next/link';
+import { ContentHead } from '@/components/common/headers';
+import { Button } from '@/components/ui/button';
 
 type LandingScreenProps = {
   description?: React.ReactNode;
@@ -23,57 +20,48 @@ type LandingScreenProps = {
 };
 
 export const LandingScreen: React.FC<
-  Omit<React.ComponentPropsWithRef<'div'>, 'title' | 'children'> &
+  Omit<React.ComponentPropsWithRef<'section'>, 'title' | 'children'> &
     LandingScreenProps
 > = ({
   ref,
   className,
-  description = 'A private company empowering the next generation of internet-based experiences',
-  title = 'Scattered-Systems, LLC',
+  description = 'Welcome to my portfolio!',
+  title = 'Puzzled',
   asChild,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'div';
+  const Comp = asChild ? Slot : 'section';
   return (
     <Comp
       ref={ref}
       className={cn(
-        'relative flex flex-1 items-center justify-center w-full h-full',
+        'relative flex flex-1 items-center w-full h-full',
         className
       )}
       {...props}
     >
-      <Card className="flex flex-col w-full">
-        <CardHeader>
-          {title && (
-            <CardTitle className="text-2xl tracking-tight">{title}</CardTitle>
-          )}
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent className="flex flex-1 flex-wrap justify-start gap-4 lg:gap-6 w-full">
-          <div className="flex flex-col flex-1 w-full gap-2">
-            <h3 className="font-semibold text-lg tracking-tight">About Us</h3>
-            <span className="text-sm font-normal">
-              Scattered-Systems, LLC is a private company dedicated to
-              revolutionizing the way we interact with technology. Our mission
-              is to create innovative solutions that empower individuals and
-              businesses alike.
-            </span>
+      {/* hero */}
+      <div
+        className={cn(
+          'flex flex-col w-full px-4 py-2 bg-accent text-accent-foreground',
+          'drop-shadow-2xl shadow-inner rounded-2xl'
+        )}
+      >
+        {/* header */}
+        <ContentHead title="pzzld" />
+        {/* footer */}
+        <div className="flex flex-nowrap items-center justify-end w-full gap-4 lg:gap-6 h-1/6">
+          <div className="ml-auto inline-flex justify-end gap-4 lg:gap-6 w-full ">
+            <Button
+              asChild
+              variant="link"
+              className="inline-flex flex-nowrap items-center gap-2"
+            >
+              <Link href="/about">Learn More</Link>
+            </Button>
           </div>
-          <div className="flex flex-col gap-2">
-            <h3 className="font-semibold text-lg tracking-tight">Our Vision</h3>
-            <span className="text-sm font-normal">
-              We envision a world where technology seamlessly integrates into
-              everyday life, enhancing productivity and creativity.
-            </span>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-4 lg:gap-6 w-full min-h-1/12">
-          <CardAction className="inline-flex flex-nowrap items-center gap-2">
-            <Link href="/about">Learn More</Link>
-          </CardAction>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </Comp>
   );
 };

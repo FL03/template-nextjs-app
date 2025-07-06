@@ -3,10 +3,9 @@
  * @author - @FL03
  * @file - about/page.tsx
  */
-'use server';
 import { AboutScreenView } from '@/features/landing';
 
-export default async function Page() {
+export default function Page() {
   return <AboutScreenView/>;
 }
 Page.displayName = 'AboutPage';

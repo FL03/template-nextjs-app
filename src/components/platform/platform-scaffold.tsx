@@ -21,7 +21,44 @@ type ScaffoldProps = {
   sidebarVariant?: 'sidebar' | 'floating' | 'inset';
 };
 
-/** The base scaffold for the application. */
+/**
+ * This component provide the core scaffold for all content within the platform, providing the 
+ * primary navigation elements and the display itself.
+ * 
+ */
+export const AppScaffold: React.FC<
+  React.ComponentPropsWithRef<typeof Scaffold> &
+    React.PropsWithChildren<ScaffoldProps>
+> = ({
+  ref,
+  className,
+  children,
+  fullWidth,
+  sidebarOpenByDefault = false,
+  sidebarOnCollapse = 'offcanvas',
+  sidebarPosition = 'right',
+  sidebarVariant = 'inset',
+  ...props
+}) => {
+  // render the scaffold with the app bar and sidebar
+  return (
+    <ScaffoldProvider>
+      {/* screen */}
+      <Scaffold {...props} ref={ref} className={cn('min-h-full', className)}>
+        {/* appbar */}
+        <PlatformAppBar />
+        {/* display */}
+        <ScaffoldContent asContainer={!fullWidth}>{children}</ScaffoldContent>
+      </Scaffold>
+    </ScaffoldProvider>
+  );
+};
+AppScaffold.displayName = 'AppScaffold';
+
+/** 
+ * This component extends the base scaffold with a sidebar that is only available to authenticated users.
+ * 
+*/
 export const PlatformScaffold: React.FC<
   React.ComponentPropsWithRef<typeof Scaffold> &
     React.PropsWithChildren<ScaffoldProps>
@@ -38,7 +75,10 @@ export const PlatformScaffold: React.FC<
 }) => {
   // render the scaffold with the app bar and sidebar
   return (
-    <SidebarProvider defaultOpen={sidebarOpenByDefault} className="flex-1 h-full w-full">
+    <SidebarProvider
+      defaultOpen={sidebarOpenByDefault}
+      className="flex-1 h-full w-full"
+    >
       <ScaffoldProvider>
         {/* screen */}
         <Scaffold {...props} ref={ref} className={cn('min-h-full', className)}>

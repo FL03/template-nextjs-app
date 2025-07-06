@@ -1,14 +1,19 @@
+/**
+ * Created At: 2025.07.05:23:00:44
+ * @author - @FL03
+ * @file - [username]/page.tsx
+ */
 'use server';
 // imports
 import { ResolvingMetadata } from 'next';
 // project
 import { logger } from '@/lib/logger';
 // components
-import { ProfileScreen } from '@/features/users/profiles';
+import { UserProfileScreen } from '@/features/users/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ view?: string, userId?: string }>;
+  searchParams: Promise<{ view?: string; userId?: string }>;
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
@@ -17,9 +22,9 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   // logger
   logger.trace(`Viewing profile dashboard for ${username}`);
-  return <ProfileScreen username={username} view={view} />;
+  return <UserProfileScreen username={username} view={view} />;
 }
-Page.displayName = 'ProfileDetailsPage';
+Page.displayName = 'UserProfilePage';
 
 export async function generateMetadata(
   { params }: PageProps,
@@ -34,7 +39,7 @@ export async function generateMetadata(
       ...parentMetadata.openGraph,
       images: [...previousImages],
     },
-    description: `The user-profile for ${username}`,
+    description: `The user profile for @${username}`,
     title: `Profile (@${username})`,
   };
 }

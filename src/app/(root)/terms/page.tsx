@@ -14,8 +14,8 @@ import {
 
 export default function Page() {
   return (
-    <div className="flex flex-col w-full items-center justify-center justify-items-center min-h-svh">
-      <Card className="m-auto container mx-auto">
+    <div className="flex-1 w-full">
+      <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Terms & Conditions</CardTitle>
           <CardDescription></CardDescription>

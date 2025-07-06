@@ -1,4 +1,4 @@
 
 
-export const APP_NAME = 'scsys'; // Application name
+export const APP_NAME = 'pzzld'; // Application name
 // 

@@ -46,6 +46,8 @@ const cloudflareTurnstileSiteKey = () => {
     process.env.CF_TURNSTILE_PUBLIC_KEY
   );
 };
+
+
 export const CloudflareTurnstile: React.FC<
   Omit<React.ComponentPropsWithRef<'div'>, 'id'> & TurnstileProps
 > = ({
@@ -59,7 +61,7 @@ export const CloudflareTurnstile: React.FC<
 }) => {
   const [widgetId, setWidgetId] = React.useState<string | null>(null);
   const [isLoaded, setIsLoaded] = React.useState(false);
-  const siteKey = siteKeyProp ?? process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY;
+  const siteKey = siteKeyProp ?? cloudflareTurnstileSiteKey();
 
   if (!siteKey) {
     logger.error('CfTurnstil: Missing NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY');

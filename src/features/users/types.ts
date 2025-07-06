@@ -7,3 +7,11 @@ export type UserProfileLinkParams = {
 };
 
 
+export type UserIdVariants = "userId" | "uid" | "user_id";
+
+export type ProfileIdentifiers = {
+  email?: string | null;
+  username?: string | null;
+} & {
+  [key in UserIdVariants]?: string | null;
+};
