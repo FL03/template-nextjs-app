@@ -1,0 +1,15 @@
+// Visit https://aka.ms/devcontainer.json to learn more about dev containers.
+// For a complete list of dev container features, see https://aka.ms/devcontainer-feature-reference
+{
+  "name": "Node.js",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-24",
+  "features": {
+    "node": {
+      "version": "lts"
+    },
+    "git": {}
+  },
+  "postCreateCommand": "npm i",
+  "remoteUser": "node",
+  "workspaceFolder": "/workspace"
+}
