@@ -3,6 +3,5 @@
  * @author - @FL03
  * @file - scaffold/index.ts
  */
-export * from './scaffold-provider';
-export * from './scaffold';
-export * from './scaffold-variants';
+export * from "./scaffold-provider";
+export * from "./scaffold";

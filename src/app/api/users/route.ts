@@ -36,7 +36,7 @@ export const GET = async ({ url }: NextRequest) => {
   }
   if (!data) {
     logger.warn({ username, userId }, 'No data found for the given username or userId...');
-    return NextResponse.json({ message: 'No data found' }, { status: 404 });
+    return NextResponse.json({ data: null, message: 'No data found' }, { status: 404 });
   }
   
   return NextResponse.json(data, { status: 200 });

@@ -1,66 +1,66 @@
 /**
- * Created At: 2025-04-04:22:12:39
+ * Created At: 2025.07.26:15:18:03
  * @author - @FL03
- * @description - common queries for supabase
  * @file - queries.ts
  */
-// project
-import { logger } from '@/lib/logger';
-// feature-specific
-import { createBrowserClient } from './client';
-import { createServerClient } from './server';
-import { ClientOptions, SupabaseHandlerProps } from './types';
-import { PublicDatabase } from '@/types/database.types';
-import { SupaClient } from '@/types/supabase';
+"use server";
+// imports
+import { SupabaseClient, User } from "@supabase/supabase-js";
+// local
+import { createServerClient } from "./server";
 
-/** a universal adapter to create supabase clients for NextJS
- * 
- * @description - this function creates a supabase client for the current environment (SSR or CSR) and returns it. It can be used in both server and client components.
- * @params {upabaseHandlerProps<Database, SchemaName>} props - the props for the supabase client. It can be a supabase client, schema name, or ssr flag.
- * 
+/**
+ * An asynchronous, server-side function for
+ * @returns {User} The current authenticated user.
  */
-export const supabaseClient = async <
-  Database = PublicDatabase,
-  SchemaName extends string & keyof Database = 'public' extends keyof Database
-    ? 'public'
-    : string & keyof Database,
->(
-  props?: SupabaseHandlerProps<Database, SchemaName>
-): Promise<SupaClient<Database, SchemaName>> => {
-  return props?.client
-    ? await props.client
-    : props?.ssr
-      ? createServerClient<Database, SchemaName>(props?.schema)
-      : createBrowserClient<Database, SchemaName>(props?.schema);
+export const getCurrentUser = async (
+  options?: { client: SupabaseClient },
+): Promise<User> => {
+  // use or initialize a server-side supabase client
+  const supabase = options?.client || (await createServerClient());
+
+  const currentUser = await supabase.auth.getUser().then(({ data, error }) => {
+    // destructure the user from the data
+    const { user } = data;
+    // handle the error
+    if (error) {
+      throw new Error(error.message);
+    }
+    // check if the user is authenticated
+    if (!user) {
+      throw new Error(
+        "Unable to get the current user; verify the user is authenticated and try again.",
+      );
+    }
+    return user;
+  });
+  // return the current user
+  return currentUser;
 };
 
-export const getUserId = async (props?: SupabaseHandlerProps) => {
-  const supabase = await supabaseClient(props);
-  return await supabase.rpc('get_current_user_id').then(({ data }) => data);
-};
-
+/**
+ * A server-side function to get the username of the current user by invoking the `public.username` function on the database using
+ * the rpc capabilities of the supabase client.
+ * @throws {Error} If the user is not authenticated or if there is an error fetching the username.
+ * @returns {string} The username of the current user.
+ */
 export const getUsername = async (
-  props?: SupabaseHandlerProps<PublicDatabase, 'public'>
-): Promise<string | undefined> => {
-  const supabase = await supabaseClient(props);
-  const { data, error } = await supabase.rpc('username');
-
+  options?: { client: SupabaseClient },
+): Promise<string> => {
+  // use or initialize a server-side supabase client
+  const supabase = options?.client || (await createServerClient());
+  // invoke the `username` RPC function to get the username
+  const { data, error } = await supabase.rpc("username");
+  // handle the error
   if (error) {
-    logger.error('Error getting username', error);
-    throw error;
+    throw new Error(
+      error.message || "Error fetching the username.",
+    );
   }
-  return data || undefined;
-};
-
-export const currentUser = async (
-  client?: SupaClient,
-  options?: ClientOptions
-) => {
-  const supabase = await supabaseClient({ client, ...options });
-  return supabase.auth
-    .getUser()
-    .catch((error) => {
-      throw error;
-    })
-    .then(({ data }) => data.user);
+  // handle the case where the username is not found
+  if (!data || data?.trim() === "") {
+    throw new Error("Username not found for the current user.");
+  }
+  // return the username
+  return data;
 };

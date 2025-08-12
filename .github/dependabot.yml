@@ -2,7 +2,15 @@ version: 2
 
 updates:
   - package-ecosystem: docker
-    directory: /
+    directories:
+      - /
+      - .docker
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker-compose
+    directories:
+      - /
+      - .docker
     schedule:
       interval: monthly
   - package-ecosystem: npm

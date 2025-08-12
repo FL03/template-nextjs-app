@@ -14,8 +14,10 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to generate types from Supabase schema."
     exit $LASTEXITCODE
 }
-# Ensure the output file was created
+# set the content type to utf8 no bom
+(Get-Content "$outdir/database.$schema.types.ts") | Set-Content -Encoding UTF8 "$outdir/database.$schema.types.ts"
+# Check if the file was created successfully
 if (-not (Test-Path -Path "$outdir/database.$schema.types.ts")) {
-    Write-Error "Output file not found: $outdir/database.$schema.types.ts"
+    Write-Error "Failed to create the output file."
     exit 1
 }

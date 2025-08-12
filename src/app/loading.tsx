@@ -3,14 +3,20 @@
  * @author - @FL03
  * @file - loading.tsx
  */
-import { Spinner } from '@/components/common/loaders';
+"use server";
+// imports
+import { LoadingScaffold, Spinner } from "@/components/common/loaders";
 
-export default function Page() {
+/**
+ * The `Loading` page for the platform.
+ */
+async function Loading() {
   return (
-    <div className="flex flex-1 items-center justify-center h-full w-full z-auto">
-      <Spinner showLabel className="z-50"/>
-    </div>
+    <LoadingScaffold>
+      <Spinner showLabel className="m-auto" />
+    </LoadingScaffold>
   );
-};
-Page.displayName = 'LoadingPage';
+}
+Loading.displayName = "LoadingPage";
 
+export default Loading;

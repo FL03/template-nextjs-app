@@ -4,62 +4,65 @@
  * @file - props.ts
  */
 
-import React from "react";
+import { ReactNode } from "react";
 
 export type AsChild = { asChild?: boolean };
 
+/** A type alias for defining all possible _text sizes_ provided by tailwindcss. */
+export type TextSize =
+  | "base"
+  | "xs"
+  | "sm"
+  | "lg"
+  | "xl"
+  | "2xl"
+  | "3xl"
+  | "4xl"
+  | "5xl"
+  | "6xl"
+  | "7xl"
+  | "8xl"
+  | "9xl";
+
+/** A type defining binary string variants of `left` or `right`. */
+export type SideX = "left" | "right";
+/** A type defining binary string variants of `top` or `bottom`. */
+export type SideY = "top" | "bottom";
 /** A simple type literal for the four sides of a 2-dimensional surface; i.e. left, right, top, bottom. */
-export type LRTB = 'left' | 'right' | 'top' | 'bottom';
+export type LRTB = SideX | SideY;
 
 export type PropsWithDescription = {
-  description?: React.ReactNode;
-}
+  description?: ReactNode;
+};
 
 export type PropsWithTitle = {
-  title?: React.ReactNode;
-}
+  title?: ReactNode;
+};
 
 export type PropsWithSides = {
   side?: LRTB;
-}
+};
 
-export type HeaderProps = PropsWithTitle & PropsWithDescription;
-
-/** 
- * This type defines a standard interface for implemented forms. It provides access to various methods that enable users to have 
- * granular external control over the form and its behaviours. 
- */
-export type FormConfig<TForm = unknown> = {
-  defaultValues?: Partial<TForm>;
-  values?: TForm;
-  onCancel?: () => void;
-  onError?: React.Dispatch<any>;
-  onSubmit?: React.Dispatch<TForm>;
-  onSubmitSuccess?: React.Dispatch<TForm>;
-} & AsChild;
-
-export type StandardFormProps<TData = unknown> = FormConfig<TData> & Omit<React.ComponentPropsWithRef<'form'>, 'children' | 'title' | 'onSubmit'>
-
-type BaseModalProps = {
-  asChild?: boolean;
-  className?: string;
-  description?: React.ReactNode;
-  title?: React.ReactNode;
+export type ModalProps = {
   defaultOpen?: boolean;
   open?: boolean;
-  onOpenChange?: React.Dispatch<boolean>;
+  onOpenChange?: (open: boolean) => void;
   onCancel?: () => void;
-} 
+};
 
-export type ModalProps<TForm = unknown> = BaseModalProps & FormConfig<TForm>;
+export type ModalPropsWithSides = ModalProps & { side?: LRTB };
 
-export type ModalPropsWithSides<TForm = unknown> = BaseModalProps & FormConfig<TForm> & { side?: LRTB };
-
-export type ModalWithTriggerProps<TForm = unknown> = {
+export type ModalWithTriggerProps = {
   showLabel?: boolean;
   triggerClassName?: string;
   triggerLabel?: string;
   triggerIcon?: React.ReactNode;
-  triggerSize?: 'default' | 'sm' | 'lg' | 'icon';
-  triggerVariant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-} & ModalProps<TForm>;
+  triggerSize?: "default" | "sm" | "lg" | "icon";
+  triggerVariant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
+} & ModalProps;

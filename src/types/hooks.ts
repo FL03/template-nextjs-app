@@ -1,4 +1,8 @@
-// hooks.ts
+/**
+ * Created At: 2025.07.15:09:53:46
+ * @author - @FL03
+ * @file - hooks.ts
+ */
 /** This type establishes a set of allowable primitive types for building custom hook states. */
 export type HookState = boolean | string | number;
 
@@ -18,7 +22,11 @@ export type HookCallbackState = {
 export type HookCallbackReturn<TOut> = TOut & {
   state: HookCallbackState;
 }
-/** This type describes the standard callback pattern for all implemented hooks within the project. */
+/** 
+ * A type alias for a function or method that accepts an optional set of parameters and returns a value of type TOut.
+ * @param {TOpts} options - an optional set of parameters that can be passed to the hook.
+ * @return {TOut} - returns a value of type TOut.
+ */
 export type HookCallback<TOpts, TOut> = (options?: TOpts) => TOut;
 
 export const DEFAULT_HOOK_STATE: HookCallbackState = ({

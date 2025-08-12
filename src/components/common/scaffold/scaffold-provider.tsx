@@ -3,12 +3,11 @@
  * @author - @FL03
  * @file - scaffold-provider.tsx
  */
-'use client';
+"use client";
 // imports
-import * as React from 'react';
+import * as React from "react";
 // project
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type ScaffoldContext = {
   isMobile: boolean;
@@ -16,32 +15,31 @@ type ScaffoldContext = {
 
 const ScaffoldContext = React.createContext<ScaffoldContext | null>(null);
 
+/** Access the shared context for the scaffold injected by the corresponding provider. */
 export const useScaffold = () => {
   const ctx = React.useContext(ScaffoldContext);
   if (!ctx) {
-    throw new Error('useScaffold must be used within a ScaffoldProvider');
+    throw new Error(
+      "`useScaffold` must be used within the bounds of a `ScaffoldProvider`",
+    );
   }
   return ctx;
 };
 
 // ScaffoldProvider
-export const ScaffoldProvider = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & Readonly<React.PropsWithChildren>
->(({ className, ...props }, ref) => {
+export const ScaffoldProvider: React.FC<
+  React.PropsWithChildren
+> = ({ children }) => {
+  // use the isMobile hook to determine if the device is mobile
   const isMobile = useIsMobile();
   // declare the memoized values for the scaffold provider
   const ctx = React.useMemo(() => ({ isMobile }), [isMobile]);
   return (
     <ScaffoldContext.Provider value={ctx}>
-      <div
-        ref={ref}
-        className={cn('flex flex-col flex-1 min-h-full w-full', className)}
-        {...props}
-      />
+      {children}
     </ScaffoldContext.Provider>
   );
-});
-ScaffoldProvider.displayName = 'ScaffoldProvider';
+};
+ScaffoldProvider.displayName = "ScaffoldProvider";
 
 export default ScaffoldProvider;

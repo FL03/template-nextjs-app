@@ -3,97 +3,113 @@
  * @author - @FL03
  * @file - use-texter.tsx
  */
-'use client';
+"use client";
+import logger from "@/lib/logger";
 // imports
-import React from 'react';
+import React from "react";
 
 export type TextEditorState = {
   isEditing: boolean;
-  isLoading: boolean;
   isSaving: boolean;
 };
 
 type EditorOptsT = {
-  data?: string;
-  defaultState?: TextEditorState;
-  onEdit?: (data: string) => void;
-  onSave?: (data: string) => void;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  onSave?: (value: string) => void;
 };
 
 type EditorReturn = {
   data: string | null;
   state: TextEditorState;
-  startEditing: () => void;
-  stopEditing: () => void;
-  toggleEditing: () => void;
+  write: (data: string) => void;
+  save: () => void;
 };
 
-type EditorT = (opts: EditorOptsT) => EditorReturn;
+type EditorT = (opts?: EditorOptsT) => EditorReturn;
 
-/**
- *
- * @returns {EditorReturn}
- */
-export const useTextEditor = ({
-  data: dataExt,
-  defaultState,
-  onEdit,
-  ...opts
-}: EditorOptsT = {}) => {
-  // declare data-based state variables
-  const [_data, _setData] = React.useState<string | null>(null);
-  // declare state variables
-  const [isEditing, setIsEditing] = React.useState<boolean>(
-    defaultState?.isEditing ?? false
-  );
-  const [isLoading, setIsLoading] = React.useState<boolean>(
-    defaultState?.isLoading ?? false
-  );
-  const [isSaving, setIsSaving] = React.useState<boolean>(
-    defaultState?.isSaving ?? false
-  );
-  // memoize the various state values to reduce re-renders
+/** */
+export const useText: EditorT = ({
+  value: valueProp,
+  defaultValue = "",
+  onValueChange,
+  onSave,
+} = {}) => {
+  // initialize the primary states
+  const [content, setContent] = React.useState<string>(defaultValue);
+  // define the various signals of the hook
+  const [isEditing, setIsEditing] = React.useState<boolean>(false);
+  const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  // aggregate the signals into a single, memoized state object
   const _state = React.useMemo<TextEditorState>(
     () => ({
       isEditing,
-      isLoading,
       isSaving,
     }),
-    [isEditing, isLoading, isSaving]
+    [isEditing, isSaving],
   );
-
   // handle the data change
-  const _onDataChange = React.useCallback(
+  const _onValueChange = React.useCallback(
+    (value: string) => (
+      setContent((prev) => {
+        // if the value is the same as the previous value, return the previous value
+        if (prev === value) return prev;
+        // if provided, call the onValueChange callback before updating the state
+        if (onValueChange) onValueChange(value);
+        // return the new value
+        return value;
+      })
+    ),
+    [onValueChange],
+  );
+  // save the data
+  const _save = React.useCallback(() => {
+    // if the content is empty, do not save
+    if (!content) {
+      logger.warn("No content to save.");
+      return;
+    }
+    // set the saving state to true
+    if (!isSaving) setIsSaving(true);
+    // use the callback, if provided, to process the data save
+    if (onSave) onSave(content);
+    // reset the editing state after saving
+    setIsEditing(false);
+    // reset the saving state after saving
+    setIsSaving(false);
+  }, [content, isSaving, onSave]);
+  // a callback for writing data to the editor
+  const _write = React.useCallback(
     (value: string) => {
-      // reflect the change(s) internally
-      _setData(value);
-      // use the callback, if provided, to process the data change
-      if (onEdit) onEdit(value);
+      // set the editing state to true
+      setIsEditing(true);
+      // update the internal data state
+      _onValueChange(value);
     },
-    [onEdit, _setData]
+    [_onValueChange],
   );
   // handle changes to the external data prop
   React.useEffect(() => {
     // ensure any external changes to the data are reflected internally
-    if (dataExt && _data !== dataExt) {
-      _onDataChange(dataExt);
+    if (valueProp && content !== valueProp) {
+      _onValueChange(valueProp);
     }
-  }, [dataExt, _data, _onDataChange]);
-  // handle the loading state
-  React.useEffect(() => {
-    if (isLoading) {
-
-    }
-    // handle the unmounting of the component
-    return () => {
-      // reset the loading state when the component unmounts
-      setIsLoading(false);
-    }
-  }, [isLoading, setIsLoading])
+  }, [valueProp, content, _onValueChange]);
   // redeclare public variables
-  const data = _data;
+  const data = content;
   const state = _state;
-  return React.useMemo(() => ({ data, state }), [data, state]);
+  // redeclare public methods
+  const save = _save;
+  const write = _write;
+
+  // memoize the output values to reduce re-renders
+  return React.useMemo(() => ({ data, state, save, write }), [
+    data,
+    state,
+    save,
+    write,
+  ]);
 };
 
-export default useTextEditor;
+export default useText;

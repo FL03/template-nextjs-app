@@ -68,6 +68,6 @@ export const ScsysLogo = React.forwardRef<
     );
   }
 );
-ScsysLogo.displayName = 'AppLogo';
+ScsysLogo.displayName = 'ScsysLogo';
 
 export default ScsysLogo;

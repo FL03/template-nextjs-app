@@ -3,41 +3,24 @@
  * @author - @FL03
  * @file - core.ts
  */
-
+/** A type alias for a _**nullish**_ type. More specifically, the type extends a generic object `T` to allow for undefined and null values. */
 export type Nullish<T = unknown> = T | null | undefined;
 
-export enum Crud {
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-}
+/** A type defining the possible variants of CRUD, namely: create, read, update, and delete. */
+export type CRUD = "create" | "read" | "update" | "delete";
 
-export type CrudLiteral = 'create' | 'read' | 'update' | 'delete';
-
-export type AsyncCallback<T = unknown, O = void> = (args: T) => Promise<O>;
-
-export type SetAction<T> =
-  | T
-  | ((prev: T) => T)
-  | ((prev: T) => Promise<T> | PromiseLike<T>);
-
-export type MaybeAsync<T = unknown> = T | Promise<T> | PromiseLike<T>;
-
-export type SetStateChangeHandler<TValue = unknown> = (
-  value?: SetAction<TValue>
-) => MaybeAsync<void>;
+/** The `SetAction` defines a type for the various interfaces capable of being used as a _**setter**_. */
+export type SetAction<T> = T | ((prev: T) => T);
 
 export type ChangeHandler<TValue extends any = unknown, TOut = void> = (
-  value?: SetAction<TValue>
-) => MaybeAsync<TOut>;
+  value?: SetAction<TValue>,
+) => TOut;
 
-export type MaybeAsyncHandler<TParams, TOut> = (
-  params?: TParams
-) => MaybeAsync<TOut>;
-
-export type NextMetaGenerator<TProps = any> = (
-  props: TProps,
-  parent: import('next').ResolvingMetadata
-) => Promise<import('next').Metadata>;
-
+/** a standard type of callback used to handle an api request. */
+export type ApiQueryHandler<
+  TQuery extends Record<string, string> = any,
+  TOut = any,
+> = (
+  query: TQuery,
+  init?: RequestInit,
+) => Promise<TOut>;

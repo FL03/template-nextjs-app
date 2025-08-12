@@ -65,23 +65,6 @@
 !**/*.example.env
 !**/*.example.env.*
 
-### IDE
-
-#### Atom
-**/.atom
-
-#### JetBrains
-**/.idea
-
-**/*.iml
-**/*.ipr
-**/*.iws
-
-#### Visual Studio Code
-**/.vscode
-
-!**/.vscode/settings.json
-
 ### Integrations
 
 #### Supabase
@@ -108,8 +91,6 @@
 
 **/*.db
 
-
-
 **/*.log
 **/*.log.*
 
@@ -134,3 +115,4 @@
 # OpenNext build output
 .open-next
 .vercel
+

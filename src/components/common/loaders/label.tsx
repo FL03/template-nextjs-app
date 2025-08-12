@@ -6,18 +6,14 @@ import { Slot } from '@radix-ui/react-slot';
 // project
 import { cn } from '@/lib/utils';
 // feature-specific
-import { LoaderVariants, loaderVariants } from './load';
-
-type WidgetProps = {
-  asChild?: boolean;
-} & LoaderVariants;
+import { LoaderVariants, loaderVariants } from './variants';
 
 export const AnimatedLabel: React.FC<
-  React.ComponentPropsWithRef<'span'> & WidgetProps
+  React.ComponentPropsWithRef<'span'> & LoaderVariants & { asChild?: boolean }
 > = ({
   ref,
   className,
-  asChild = false,
+  asChild,
   anim = 'pulse',
   flavor = 'default',
   size = 'default',

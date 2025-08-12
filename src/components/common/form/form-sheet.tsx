@@ -2,7 +2,6 @@
 import * as React from 'react';
 // project
 import { cn } from '@/lib/utils';
-import { ModalPropsWithSides } from '@/types';
 // components
 import {
   Sheet,
@@ -13,7 +12,9 @@ import {
 } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export const FormSheet: React.FC<React.PropsWithChildren<ModalPropsWithSides>> = ({
+import { ModalPropsWithSide } from './types';
+
+export const FormSheet: React.FC<React.PropsWithChildren<ModalPropsWithSide>> = ({
   children,
   className,
   description,

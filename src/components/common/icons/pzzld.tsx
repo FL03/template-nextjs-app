@@ -25,9 +25,7 @@ export const PzzldLogo = React.forwardRef<
       background = '#ffffff',
       className,
       color = '#000000',
-      height = '100%',
       opacity = '1',
-      width = '100%',
       ...props
     },
     ref
@@ -36,17 +34,15 @@ export const PzzldLogo = React.forwardRef<
       <svg
         ref={ref}
         className={cn(
-          'h-8 w-8 object-cover border-none rounded-full tracking-tight',
+          'h-8 w-8 object-cover border-none rounded-full',
           'transition-all duration-200 ease-in-out',
-          'hover:opacity-80 hover:ring-2 ring-offset-2 ring-offset-background',
+          'hover:opacity-80 hover:ring ring-offset-2 ring-offset-background',
           className
         )}
         enableBackground="new 0 0 736 736"
         role="img"
-        height={height}
         opacity={opacity}
         viewBox="0 0 736 736"
-        width={width}
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
@@ -57,7 +53,6 @@ export const PzzldLogo = React.forwardRef<
           width="100%"
           height="100%"
         />
-        <g transform="matrix(3.1063, 0, 0, 3.144185, -464.773933, -495.105842)">
           <path
             fill={color}
             stroke={color}
@@ -82,11 +77,10 @@ export const PzzldLogo = React.forwardRef<
             opacity={opacity}
             d="M451.708 387.765c6.857-11.833 13.546-23.34 20.18-34.88 1.283-2.23 2.467-4.176 5.578-4.151 13.148.103 26.297.036 39.446.057.964.002 2.024-.057 2.749 1.031.496 1.777-.81 3.043-1.606 4.426-15.111 26.24-30.308 52.432-45.307 78.736-1.885 3.306-3.891 4.624-7.797 4.565-10.971-.166-21.95.217-32.927.365-2.631.036-5.276.083-8.396-1.43 9.354-16.232 18.623-32.318 28.08-48.719zM402.232 327.816c2.266 4.39 5.312 7.997 6.559 12.414-2.002 1.561-3.898 1.068-5.66 1.07-29.812.032-59.625-.055-89.437.106-4.006.021-6.436-1.18-8.377-4.685-5.404-9.755-11.12-19.337-16.655-29.021-.967-1.693-2.324-3.275-2.272-5.421 1.418-1.761 3.381-1.191 5.13-1.195 30.145-.06 60.29-.04 90.436-.165 3.377-.014 5.52.944 7.194 4.042 4.114 7.613 8.583 15.035 13.082 22.855z"
           />
-        </g>
       </svg>
     );
   }
 );
-PzzldLogo.displayName = 'AppLogo';
+PzzldLogo.displayName = 'PzzldLogo';
 
 export default PzzldLogo;

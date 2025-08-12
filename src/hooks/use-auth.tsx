@@ -4,85 +4,154 @@
  * @description - useAuth hook for managing authentication state and user information.
  * @file - use-auth.tsx
  */
-'use client';
+"use client";
 // imports
-import * as React from 'react';
+import * as React from "react";
 import {
   AuthChangeEvent,
   Session,
   Subscription,
   User,
-} from '@supabase/supabase-js';
+} from "@supabase/supabase-js";
 // project
-import { logger } from '@/lib/logger';
-import { createBrowserClient } from '@/lib/supabase';
-import { HookCallback } from '@/types';
+import { logger } from "@/lib/logger";
+import { createBrowserClient } from "@/lib/supabase";
+import { CACHE_KEY_USER_ID } from "@/lib/constants";
 
 type SupabaseAuthStateHandler = (
   event: AuthChangeEvent,
-  session: Session | null
+  session: Session | null,
 ) => void;
 
-type AuthHookState = {
+type HookStateT = {
   isAuthenticated: boolean;
   isLoading: boolean;
 };
 
-type AuthHookOpts = {
-  client?: ReturnType<typeof createBrowserClient>;
+type OptsT = {
+  supabase?: ReturnType<typeof createBrowserClient<any, "public">>;
   onAuthStateChange?: SupabaseAuthStateHandler;
+  onError?: (error?: string) => void;
+  onUserChange?: (user?: User | null) => void;
 };
 
-type AuthHookReturn = {
-  getUser: () => Promise<User>;
+type AuthStatus = "unauthenticated" | "authenticated" | "guest";
+
+type ReturnT = {
+  getUser: () => Promise<User | null>;
   signOut: () => Promise<void>;
   session: Session | null;
-  state: AuthHookState;
+  state: HookStateT;
+  status: AuthStatus;
   user?: User;
   userId?: string;
   username?: string;
 };
 
-export const useAuth: HookCallback<AuthHookOpts, AuthHookReturn> = ({
-  client,
-  onAuthStateChange,
-} = {}) => {
-  const supabase = client ?? createBrowserClient();
+type HookT = (opts?: OptsT) => ReturnT;
+
+/**
+ * The `useAuth` hook is a custom wrapper around the Supabase authentication client, providing a way to manage user authentication state and actions.
+ * It handles user session management, state changes, and provides methods for signing out and retrieving user information.
+ * @param opts - Options for the useAuth hook
+ * @returns - An object containing user authentication state and methods
+ */
+export const useAuth: HookT = (options) => {
+  // destructure the options
+  const { supabase = createBrowserClient(), onAuthStateChange } = options || {};
   // store the subscription to the auth state changes as a reference
   const authSubRef = React.useRef<Subscription | null>(null);
   // local state
   const [_session, _setSession] = React.useState<Session | null>(null);
   const [_user, _setUser] = React.useState<User | undefined>();
   // loading states
-  const [_isSessionLoading, _setIsSessionLoading] = React.useState(true);
-  const [_isUserLoading, _setIsUserLoading] = React.useState(false);
-
-  const _isAuthenticated = React.useMemo(
-    () => !!_session?.user,
-    [_session]
+  const [loadingSession, setLoadingSession] = React.useState(true);
+  const [loadingUser, setLoadingUser] = React.useState(false);
+  // memoize the status of the auth session
+  const authStatus = React.useMemo<AuthStatus>(
+    () => {
+      if (_session && _session?.user) return "authenticated";
+      if (_session && !_session?.user) return "guest";
+      return "unauthenticated";
+    },
+    [_session],
   );
-  const _isLoading = React.useMemo(
-    () => _isSessionLoading || _isUserLoading,
-    [_isSessionLoading, _isUserLoading]
+  // declare the loading state
+  const isLoading = React.useMemo(
+    () => loadingSession || loadingUser,
+    [loadingSession, loadingUser],
   );
-
-  const _state = React.useMemo(
+  // memoize the various states for the hook to reduce re-renders
+  const authState = React.useMemo(
     () => ({
-      isAuthenticated: _isAuthenticated,
-      isLoading: _isLoading,
+      isAuthenticated: authStatus === "authenticated",
+      isLoading,
     }),
-    [_isAuthenticated, _isLoading]
+    [authStatus, isLoading],
+  );
+  // clear the cached userId
+  const clearCache = React.useCallback((): void => {
+    // exit early if the window is not defined
+    if (typeof window === "undefined") return;
+    // try to clear the cache
+    try {
+      window.localStorage.removeItem(CACHE_KEY_USER_ID);
+      logger.info("Successfully cleared the cached userId.");
+    } catch (e) {
+      logger.error(e, "Failed to clear the cached userId.");
+    }
+  }, []);
+
+  /** cache the userId */
+  const cache = React.useCallback(
+    (userId?: string | null, options?: { clearByDefault?: boolean }): void => {
+      // deconstruct the options and set their defaults
+      const { clearByDefault = false } = options || {};
+      // ensure the userId is defined
+      if (typeof window === "undefined") return;
+      // cache the userId if it is defined
+      if (userId) {
+        try {
+          window.localStorage.setItem(CACHE_KEY_USER_ID, userId);
+          logger.info("successfully cached the userId:");
+        } catch (e) {
+          logger.warn(e, "Failed to cache the userId");
+        }
+      } else if (clearByDefault) {
+        // clear the cached userId
+        return clearCache();
+      } else {
+        return logger.warn(
+          "No userId provided to cache, skipping cache operation.",
+        );
+      }
+    },
+    [clearCache],
   );
 
+  const _onUserChange = React.useCallback(
+    (newUser?: User) => (
+      // update the local user state
+      _setUser((prev) => {
+        // ensure the data has changed
+        if (newUser === _user) return prev;
+        // cache the userId
+        cache(newUser?.id, { clearByDefault: true });
+        // return the new state
+        return newUser || undefined;
+      })
+    ),
+    [cache],
+  );
   // this callback handles auth state changes
-  const _createAuthSub = React.useCallback(() => {
+  const setupAuthSubscription = React.useCallback(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       // log the event
       logger.trace(
         { event, id: session?.user?.id },
-        'Detected a change of auth state...'
+        "Detected a change of auth state...",
       );
       // if a method is passed, call it with the event and session
       // data **before** executing the default behaviors
@@ -91,137 +160,154 @@ export const useAuth: HookCallback<AuthHookOpts, AuthHookReturn> = ({
       // update the local session
       _setSession(session);
 
-      if (event === 'SIGNED_OUT') {
-        logger.info('Signing out the current user...');
+      if (event === "SIGNED_OUT") {
+        logger.info("Signing out the current user...");
         // nullify the local user instance
-        _setUser(undefined);
+        _onUserChange(undefined);
       }
       if (session) {
         const { user } = session;
         if (
           [
-            'PASSWORD_RECOVERY',
-            'SIGNED_IN',
-            'TOKEN_REFRESH',
-            'USER_UPDATED',
+            "PASSWORD_RECOVERY",
+            "SIGNED_IN",
+            "TOKEN_REFRESH",
+            "USER_UPDATED",
           ].includes(event)
         ) {
           logger.info(
             {
               event,
             },
-            'Reflecting the updated user instance in the local state...'
+            "Reflecting the updated user instance in the local state...",
           );
           // update the local user instance
-          _setUser(user);
+          _onUserChange(user);
         }
       }
     });
     return subscription;
-  }, [supabase, _setSession, _setUser, onAuthStateChange]);
+  }, [supabase.auth, onAuthStateChange, _onUserChange]);
   // use the supabase client to get the session
-  const _getSession = React.useCallback(async (): Promise<Session | null> => {
-    if (!_isSessionLoading) _setIsSessionLoading(true);
+  const _loadSession = React.useCallback(async (): Promise<Session | null> => {
+    if (!loadingSession) setLoadingSession(true);
     try {
       const {
         data: { session },
         error,
       } = await supabase.auth.getSession();
       if (error) {
-        logger.error(error, 'Error getting supabase auth session');
+        logger.error(error, "Error getting supabase auth session");
         throw error;
       }
       if (!session) {
         return null;
       }
+      // set the session state
       _setSession(session);
-      _setUser(session.user);
+      // update the user
+      _onUserChange(session.user);
       return session;
     } catch (error) {
-      logger.error(error, 'Error getting supabase auth session');
+      logger.error(error, "Error getting supabase auth session");
       throw error;
     } finally {
-      _setIsSessionLoading(false);
+      setLoadingSession(false);
     }
   }, [
     supabase,
-    _isSessionLoading,
-    _setIsSessionLoading,
-    _setSession,
-    _setUser,
+    loadingSession,
   ]);
   // use the supabase client to get the user
-  const _getUser = React.useCallback(async (): Promise<User> => {
-    if (!_isUserLoading) _setIsUserLoading(true);
+  const loadUser = React.useCallback(async (): Promise<User> => {
+    if (!loadingUser) setLoadingUser(true);
     try {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        logger.error(error, 'Error getting user');
+        logger.error(error, "Error getting user");
         throw error;
       }
       _setUser(data.user);
       return data.user;
     } catch (error) {
-      logger.error(error, 'Error getting user');
+      logger.error(error, "Error getting user");
       throw error;
     } finally {
-      _setIsUserLoading(false);
+      setLoadingUser(false);
     }
-  }, [supabase, _isUserLoading, _setIsUserLoading, _setUser]);
+  }, [supabase, loadingUser, _setUser]);
   // a callback handling the logout process for a user
-  const signOut = React.useCallback(async () => {
+  const _signOut = React.useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      logger.error('Error signing out the user: ', error.message);
-      throw new Error(error.message);
+      logger.error(error, "Unable to sign out the user");
+      return Promise.reject(error);
     }
-    logger.info('Successfully signed out the user...');
-    return;
-  }, [supabase]);
+    logger.info("Successfully signed out the user...");
+    // clear the cached userId
+    clearCache();
+    // reset the user state
+    _setUser(undefined);
+    // reset the session state
+    _setSession(null);
+    // resolve
+    return Promise.resolve();
+  }, [supabase.auth]);
   // session-specific loading effects
   React.useEffect(() => {
-    if (_isSessionLoading) _getSession();
+    if (loadingSession) _loadSession();
     // handle unmounting
     return () => {
       // cleanup loading states
-      _setIsSessionLoading(false);
+      setLoadingSession(false);
     };
-  }, [_isSessionLoading, _setIsSessionLoading, _getSession]);
+  }, [loadingSession, _loadSession]);
   // user-specific loading effects
   React.useEffect(() => {
     // trigger the user loading process if the session is loaded and the user is not
-    if (_isUserLoading) _getUser();
+    if (loadingUser) loadUser();
     // handle unmounting
     return () => {
       // cleanup loading states
-      _setIsUserLoading(false);
+      setLoadingUser(false);
     };
-  }, [_isUserLoading, _setIsUserLoading, _getUser]);
+  }, [loadingUser, loadUser]);
   // realtime-specific effects
   React.useEffect(() => {
     // if there isn't a reference to the subscription, create one
-    authSubRef.current ??= _createAuthSub();
+    if (!authSubRef.current) {
+      authSubRef.current = setupAuthSubscription();
+    }
     // handle unmounting
     return () => {
       // cleanup realtime effects
-      authSubRef.current?.unsubscribe();
-      authSubRef.current &&= null;
+      if (authSubRef.current) {
+        // unsubscribe from the auth state changes
+        authSubRef.current.unsubscribe();
+        // nullify the reference
+        authSubRef.current = null;
+      }
     };
-  }, [_createAuthSub]);
+  }, [setupAuthSubscription]);
 
-  // redeclare external methods and variables
-  const getUser = _getUser;
-  // memoize the return object
+  // redefine the output variables
+  const session = _session;
+  const user = _user;
+  // redeclare any public methods
+  const getUser = loadUser;
+  const signOut = _signOut;
+  // memoize and return the hook's output
   return React.useMemo(
     () => ({
-      session: _session,
-      state: _state,
-      user: _user,
-      userId: _user?.id,
-      username: _user?.user_metadata.username,
+      session,
+      state: authState,
+      status: authStatus,
+      user,
+      userId: user?.id,
+      username: user?.user_metadata.username,
       getUser,
       signOut,
     }),
-    [_session, _state, _user, getUser, signOut]
+    [authState, authStatus, session, user, getUser, signOut],
   );
 };

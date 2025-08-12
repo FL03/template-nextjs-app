@@ -4,13 +4,13 @@
  * @description - server-side functions for supabase
  * @file - server.ts
  */
-'use server';
+"use server";
 // imports
-import { cookies } from 'next/headers';
-import * as ssr from '@supabase/ssr';
+import { cookies } from "next/headers";
+import * as ssr from "@supabase/ssr";
 // project
-import { PublicDatabase } from '@/types/database.types';
-import { supabaseCreds } from './consts';
+import { PublicDatabase } from "@/types/database.types";
+import { supabaseCreds } from "./helpers";
 
 const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
   const jar = await cookies();
@@ -39,11 +39,11 @@ const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
  */
 export const createServerClient = async <
   Database = PublicDatabase,
-  SchemaName extends string & keyof Database = 'public' extends keyof Database
-    ? 'public'
+  SchemaName extends string & keyof Database = "public" extends keyof Database
+    ? "public"
     : string & keyof Database,
 >(
-  schema?: SchemaName
+  schema?: SchemaName,
 ) => {
   const { url, anonKey } = supabaseCreds();
   return ssr.createServerClient<Database, SchemaName>(url, anonKey, {

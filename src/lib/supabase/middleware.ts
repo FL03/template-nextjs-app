@@ -3,23 +3,23 @@
  * @author - @FL03
  * @file - middleware.ts
  */
-'use server';
+"use server";
 // imports
-import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 // feature-specific
-import { supabaseCreds } from './consts';
+import { supabaseCreds } from "./helpers";
 
-const authenticationEndpoint = '/auth';
+const authenticationEndpoint = "/auth";
 
 /**
  * The middleware for integrate the application with supabase;
  * @param {NextRequest} request - the initial request object for the current request.
  * @returns {Promise<NextResponse>} - the response object for the current request.
  */
-export async function handleUserSession(
-  request: NextRequest
-): Promise<NextResponse> {
+export const handleUserSession = async (
+  request: NextRequest,
+): Promise<NextResponse> => {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -70,4 +70,6 @@ export async function handleUserSession(
   // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
-}
+};
+
+export default handleUserSession;

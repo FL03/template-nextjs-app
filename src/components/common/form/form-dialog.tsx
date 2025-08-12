@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 // project
 import { cn } from '@/lib/utils';
-import { ModalProps, ModalWithTriggerProps } from '@/types';
 // components
 import {
   Dialog,
@@ -14,16 +13,17 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+// local
+import { ModalFormProps, ModalWithTriggerProps } from './types';
 
 
-export const FormDialog: React.FC<React.PropsWithChildren<ModalProps>> = ({
+export const FormDialog: React.FC<React.PropsWithChildren<ModalFormProps> > = ({
   children,
   className,
   description,
   title,
   defaultOpen = false,
   open: openProp,
-  asChild,
   onCancel,
   onOpenChange,
   ...props
@@ -49,10 +49,9 @@ export const FormDialog: React.FC<React.PropsWithChildren<ModalProps>> = ({
     }
   }, [isOpen]);
 
-  const Comp = asChild ? Slot : Dialog;
   // render the component
   return (
-    <Comp
+    <Dialog
       {...props}
       defaultOpen={defaultOpen}
       open={_open}
@@ -69,7 +68,7 @@ export const FormDialog: React.FC<React.PropsWithChildren<ModalProps>> = ({
         </DialogHeader>
         {children}
       </DialogContent>
-    </Comp>
+    </Dialog>
   );
 };
 FormDialog.displayName = 'FormDialog';

@@ -6,33 +6,40 @@
 'use client';
 // imports
 import * as React from 'react';
-import { Slot } from '@radix-ui/react-slot';
 import { Loader2Icon } from 'lucide-react';
 // project
 import { cn } from '@/lib/utils';
 // feature-specific
 import { AnimatedLabel } from './label';
-import { loaderVariants, LoaderVariants } from './load';
+import { loaderVariants, LoaderVariants } from './variants';
 
 export const SpinnerIcon: React.FC<
-  React.ComponentPropsWithRef<typeof Loader2Icon> & LoaderVariants
-> = ({ className, ref, anim, flavor, size, variant, ...props }) => {
-  return (
-    <Loader2Icon
-      ref={ref}
-      className={cn(
-        loaderVariants({
-          anim,
-          flavor,
-          size,
-          variant,
-        }),
-        className
-      )}
-      {...props}
-    />
-  );
-};
+  Omit<React.ComponentPropsWithRef<typeof Loader2Icon>, 'size' | 'title'> & LoaderVariants
+> = ({
+  className,
+  ref,
+  anim = 'default',
+  flavor = 'default',
+  size = 'default',
+  variant = 'default',
+  ...props
+}) => {
+    return (
+      <Loader2Icon
+        ref={ref}
+        className={cn(
+          loaderVariants({
+            anim,
+            flavor,
+            size,
+            variant,
+          }),
+          className
+        )}
+        {...props}
+      />
+    );
+  };
 SpinnerIcon.displayName = 'SpinnerIcon';
 
 /** A loader component */
@@ -41,34 +48,39 @@ export const Spinner: React.FC<
     label?: string;
     showLabel?: boolean;
     className?: string;
-    wrapperClassName?: string;
+    classNames?: {
+      iconClassName?: string;
+      labelClassName?: string;
+    };
   }
 > = ({
   ref,
   className,
-  wrapperClassName,
-  label = 'Loading...',
   showLabel,
+  classNames = {},
+  label = 'Loading...',
   ...props
 }) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'inline-flex flex-nowrap items-center justify-center gap-2 m-auto',
-        wrapperClassName
-      )}
-      {...props}
-    >
-      <SpinnerIcon className={className} />
-      {showLabel && (
-        <AnimatedLabel className="text-xl font-bold text-foreground animate-pulse">
-          {label}
-        </AnimatedLabel>
-      )}
-    </div>
-  );
-};
+    // deconstruct the classNames
+    const { iconClassName, labelClassName } = classNames;
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'inline-flex flex-nowrap items-center gap-2',
+          className
+        )}
+        {...props}
+      >
+        <Loader2Icon className={cn('h-8 w-8 animate-spin', iconClassName)} />
+        {showLabel && (
+          <span className={cn("font-semibold text-foreground text-2xl leading-none text-nowrap animate-pulse", labelClassName)}>
+            {label}
+          </span>
+        )}
+      </div>
+    );
+  };
 Spinner.displayName = 'Spinner';
 
 export const DashedCircleLoader = React.forwardRef<

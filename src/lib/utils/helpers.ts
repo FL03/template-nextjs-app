@@ -18,8 +18,11 @@ export const cleanParams = (params: Record<string, any> | { [key: string]: any }
 }
 
 export const coerceJsonInto = <TData = any, TOut = string>(values?: TData | null): TOut => {
+  // handle the case where values are null or undefined
   if (!values) return {} as TOut;
+  // lexify the values
   const lex = JSON.stringify(values as any);
+  // return the content as a json object parsed from the lexical string
   return JSON.parse(lex) as TOut;
 };
 

@@ -8,32 +8,33 @@
 import { NextRequest, NextResponse } from "next/server";
 // project
 import { logger } from "@/lib/logger";
-import { createServerClient, currentUser } from "@/lib/supabase";
+import { createServerClient, getCurrentUser } from "@/lib/supabase";
 import { PublicDatabase } from "@/types/database.types";
-// 
-
-import { ProfileIdentifiers } from "@/features/users";
+// features
+import { ProfileIdentifiers } from "@/features/profiles";
 
 export const GET = async (req: NextRequest) => {
   // initialize the server-side supabase client
   const supabase = await createServerClient<PublicDatabase, "public">("public");
   // create a new URL object from the request URL
   const { searchParams } = new URL(req.url);
-
   // destructure the search parameters to get the email, username, and userId
   const { email, username, userId }: ProfileIdentifiers = {
     email: searchParams.get("email") as string | null,
     username: searchParams.get("username"),
-    userId: searchParams.get("userId") ?? searchParams.get("user_id") ?? searchParams.get("uid"),
-  }
-
+    userId: searchParams.get("userId") ?? searchParams.get("user_id") ??
+      searchParams.get("uid"),
+  };
+  // ensure that at least one identifier is provided
   if (!email && !username && !userId) {
-    logger.error({ username, userId }, "No username or userId provided...");
-    return NextResponse.error();
+    logger.error(
+      { email, username, userId },
+      "No username or userId provided...",
+    );
+    return NextResponse.json(null, { status: 400 });
   }
-
+  // initialize the query to select a profile
   let query = supabase.from("profiles").select("*", { count: "estimated" });
-  
   // handle the different cases for querying a profile
   if (email) {
     query = query.contains("email", email);
@@ -69,16 +70,15 @@ export const DELETE = async (req: NextRequest) => {
   const { email, username, userId }: ProfileIdentifiers = {
     email: searchParams.get("email"),
     username: searchParams.get("username"),
-    userId: searchParams.get("userId") ?? searchParams.get("user_id") ?? searchParams.get("uid"),
-  }
+    userId: searchParams.get("userId") ?? searchParams.get("user_id") ??
+      searchParams.get("uid"),
+  };
 
   if (!email && !username && !userId) {
-    logger.error("No valid parameters were parse from the url...", {
-      email,
-      username,
-      userId,
-    });
-    // return a response
+    logger.error(
+      { email, username, userId },
+      "No username or userId provided...",
+    );
     return NextResponse.error();
   }
   // initialize the query to delete a profile
@@ -110,15 +110,15 @@ export const POST = async (req: NextRequest) => {
   const { formData } = req;
 
   const supabase = await createServerClient();
+  // get the current user
+  const currentUser = await getCurrentUser({ client: supabase });
 
-  const user = await currentUser(supabase);
-  if (!user) {
-    logger.error(user, "[POST] User not authenticated...");
-    throw new Error("User needs to be authenticated to update the profile...");
+  if (!currentUser) {
+    logger.error("[POST] User not authenticated...");
+    return NextResponse.error();
   }
-
   // destructure the user object to get the user id
-  const { id: userId } = user;
+  const { id: userId } = currentUser;
   // get the form data from the request
   const form = await formData();
   // upsert the formData into the profiles table and return the entry
