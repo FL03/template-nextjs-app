@@ -1,7 +1,7 @@
-compatibility_date = "2025-08-05"
+compatibility_date = "2025-08-018"
 compatibility_flags = ["nodejs_compat"]
 main = ".open-next/worker.js"
-name = "pzzld-org-app"
+name = "template-nextjs-app"
 workers_dev = true
 
 [build]
@@ -15,13 +15,13 @@ directory = ".open-next/assets"
 enabled = true
 
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://app.pzzld.org"
+NEXT_PUBLIC_SITE_URL = "https://template-nextjs-app.pzzld.workers.dev"
 NEXT_PUBLIC_SUPABASE_URL = "https://gilqgzjkzkmhbbcqidqb.supabase.co"
 NEXT_TELEMETRY_DISABLED = 1
 NODE_ENV = "production"
 NODE_VERSION = 24
 
-[[routes]]
-custom_domain = true
-pattern = "app.pzzld.org"
-zone_id = "pzzld.org"
+# [[routes]]
+# custom_domain = true
+# pattern = "app.pzzld.org"
+# zone_id = "pzzld.org"
