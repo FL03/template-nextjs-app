@@ -1,4 +1,4 @@
-compatibility_date = "2025-08-018"
+compatibility_date = "2025-08-18"
 compatibility_flags = ["nodejs_compat"]
 main = ".open-next/worker.js"
 name = "template-nextjs-app"
