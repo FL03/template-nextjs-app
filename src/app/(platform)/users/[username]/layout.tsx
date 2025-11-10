@@ -7,7 +7,7 @@
 // imports
 import * as React from "react";
 // components
-import { ProfileProvider } from "@/features/profiles";
+import { UserProfileProvider } from "@/features/profiles";
 
 type RouteParams = {
   params: Promise<{ username: string }>;
@@ -20,9 +20,11 @@ export default async function Layout({
   const { username } = await params;
 
   return (
-    <ProfileProvider username={username}>
-      {children}
-    </ProfileProvider>
+    <UserProfileProvider username={username}>
+      <div className="container mx-auto flex-1 h-full w-full">
+        {children}
+      </div>
+    </UserProfileProvider>
   );
 }
 Layout.displayName = "UserProfileLayout";

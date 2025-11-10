@@ -4,10 +4,8 @@
  * @file - dashboard/index.ts
  */
 export * from "./modal";
-export * from "./variants";
 
 export * from "./dashboard";
-export * from "./dashboard-header";
 export * from "./dashboard-panel";
 export * from "./dashboard-provider";
 export * from "./dashboard-scaffold";

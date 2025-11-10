@@ -1,33 +1,35 @@
 /**
- * Created At: 2025-04-04:18:05:28
+ * Created At: 2025.09.28:09:50:46
  * @author - @FL03
- * @description - the root auth route handler
+ * @directory - src/app/auth
  * @file - route.ts
  */
 "use server";
-import { redirect } from "next/navigation";
+// imports
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 // project
-import { getDefaultSignInView } from "@/lib/supabase";
+import { getDefaultSignInView, isRegistration } from "@/features/auth";
 
-export async function GET() {
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const url = new URL(req.url);
+  // get the cookies
   const cookieStore = await cookies();
   const preferredSignInView = cookieStore.get("preferredSignInView")?.value;
   const defaultView = getDefaultSignInView(preferredSignInView || null);
+
+  const redirectTo = new URL(`/auth/${defaultView}`, url.origin);
   // redirect to the default view
-  redirect(`/auth/${defaultView}`);
+  return NextResponse.redirect(redirectTo);
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const origin = new URL(req.url);
-  const view = origin.searchParams.get("view") || "login";
+  const view = origin.searchParams.get("view")?.toString().toLowerCase() ??
+    "login";
 
-  if (
-    ["signup", "sign-up"].includes(view) ||
-    view.toLowerCase().startsWith("regist")
-  ) {
-    return redirect(`/auth/register`);
+  if (isRegistration(view)) {
+    return NextResponse.redirect("/auth/register", 302);
   }
-  redirect(`/auth/${view}`);
+  return NextResponse.redirect(`/auth/${view}`, 302);
 }

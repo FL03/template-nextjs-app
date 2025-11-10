@@ -12,9 +12,13 @@ type PageProps = {
 };
 
 export default async function Page() {
-  return <ProfileDetailsView />;
+  return (
+    <div className="flex-1 h-full w-full container mx-auto">
+      <ProfileDetailsView />
+    </div>
+  );
 }
-Page.displayName = "UserProfileDetailsPage";
+Page.displayName = "UserProfilePage";
 
 export async function generateMetadata(
   { params }: PageProps,

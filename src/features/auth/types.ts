@@ -6,92 +6,51 @@
 
 export type RegistrationView = "register" | "registration";
 export type LoginView = "login" | "email-password" | "sign-in";
-export type PasswordlessView = "magic" | "passkey";
+export type PasswordlessView = "magic" | "passkey" | "passwordless";
 export type ResetPasswordView = "reset-password" | "forgot-password";
 
-
-
-export type AuthPages =
+export type AuthGateMode =
   | "login"
   | "register"
-  | "passwordless"
+  | "forgot-password"
   | "reset-password"
-  | "forgot-password";
+  | "passwordless";
 
-export type AuthView =
-  | RegistrationView
-  | LoginView
-  | PasswordlessView
-  | ResetPasswordView;
-
-export enum AuthGateStage {
-  Login = "login",
-  Register = "register",
-  ForgotPassword = "forgot-password",
-  ResetPassword = "reset-password",
-  Confirm = "confirm",
-}
-
-export class AuthGateMode {
-  private value: string;
-
+export class AuthMode extends String {
   constructor(value: string) {
-    if (!Object.values(AuthGateStage).includes(value as AuthGateStage)) {
-      throw new Error(`Invalid auth gate mode: ${value}`);
-    }
-    this.value = value;
+    super(value);
   }
 
-  set view(value: string) {
-    if (!Object.values(AuthGateStage).includes(value as AuthGateStage)) {
-      throw new Error(`Invalid auth gate mode: ${value}`);
-    }
-    this.value = value;
+  static login(): AuthMode {
+    return new AuthMode("login");
   }
 
-  get view(): AuthPages {
-    switch (this.value) {
-      case AuthGateStage.Login:
-        return "login";
-      case AuthGateStage.Register:
-        return "register";
-      case AuthGateStage.ForgotPassword:
-        return "forgot-password";
-      case AuthGateStage.ResetPassword:
-        return "reset-password";
-      default:
-        throw new Error(`Unknown auth gate mode: ${this.value}`);
-    }
+  static register(): AuthMode {
+    return new AuthMode("register");
   }
 
-  /** Converts the current mode into an enum */
-  asEnum(): AuthGateMode {
-    switch (this.value) {
-      case AuthGateStage.Login:
-        return new AuthGateMode(AuthGateStage.Login);
-      case AuthGateStage.Register:
-        return new AuthGateMode(AuthGateStage.Register);
-      case AuthGateStage.ForgotPassword:
-        return new AuthGateMode(AuthGateStage.ForgotPassword);
-      case AuthGateStage.ResetPassword:
-        return new AuthGateMode(AuthGateStage.ResetPassword);
-      default:
-        throw new Error(`Unknown auth gate mode: ${this.value}`);
-    }
+  static forgotPassword(): AuthMode {
+    return new AuthMode("forgot_password");
   }
 
-  toView(): AuthView {
-    switch (this.value) {
-      case AuthGateStage.Login:
-        return "login";
-      case AuthGateStage.Register:
-        return "register";
-      case AuthGateStage.ForgotPassword:
-        return "forgot-password";
-      case AuthGateStage.ResetPassword:
-        return "reset-password";
-      default:
-        throw new Error(`Unknown auth gate mode: ${this.value}`);
-    }
+  get isLogin(): boolean {
+    return new RegExp(/^(?:(?:login|signin|sign-in))$/).test(this.valueOf());
+  }
+
+  get isRegister(): boolean {
+    return new RegExp(/^(?:(?:register|signup|sign-up))$/).test(this.valueOf());
+  }
+
+  get isPasswordless(): boolean {
+    return new RegExp(/^(?:(?:magic|passkey|passwordless))$/).test(
+      this.valueOf(),
+    );
+  }
+
+  /** Resolves the object into a `AuthView` type */
+  toView(): AuthGateMode {
+    if (this.isRegister) return "register";
+    if (this.isPasswordless) return "passwordless";
+    return "login";
   }
 }

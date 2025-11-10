@@ -3,7 +3,4 @@
  * @author - @FL03
  * @file - utils/index.ts
  */
-export * from './client';
-// export * from './helpers';
-// export * from './queries';
-// export * from './server';
+export * from "./api";

@@ -4,4 +4,4 @@
  * @file - views/index.ts
  */
 export * from "./auth-screen";
-export * from "./not-authorized";
+export * from "./verify-screen";

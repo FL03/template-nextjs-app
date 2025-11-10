@@ -4,9 +4,9 @@
  * @file - (public)/page.tsx
  */
 // imports
-import { LandingScreen } from "@/features/platform";
+import { HomePage } from "@/features/platform";
 
 export default function Page() {
-  return <LandingScreen />;
+  return <HomePage />;
 }
 Page.displayName = "LandingPage";

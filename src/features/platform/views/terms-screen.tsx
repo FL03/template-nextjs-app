@@ -6,27 +6,27 @@
 "use client";
 // imports
 import * as React from "react";
-// project
+// content
 import Terms from "../content/terms.mdx";
-import { ContentCard } from "../widgets";
+// components
+import { ContentCard } from "@/components/common/cards";
 
 export const TermScreen: React.FC<
   Omit<
-    React.ComponentPropsWithRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ContentCard>,
     "author" | "description" | "title" | "children"
   >
-> = ({ ref, ...props }) => {
-  return (
-    <ContentCard
-      {...props}
-      ref={ref}
-      author="Joe McCain III"
-      title="Terms & Conditions"
-    >
-      <Terms />
-    </ContentCard>
-  );
-};
+> = ({ ...props }) => (
+  <ContentCard
+    {...props}
+    showDescription
+    author="Joe McCain III"
+    title="Terms of Service"
+    description="This is an example content card to demonstrate the structure."
+  >
+    <Terms />
+  </ContentCard>
+);
 TermScreen.displayName = "TermScreen";
 
 export default TermScreen;

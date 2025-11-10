@@ -1,3 +1,63 @@
+# Development
+
+## Configuration Files
+**/.config/*.config.*
+
+!**/.config/example.config.*
+!**/.config/default.config.*
+
+### dotenv
+*.env
+*.env.*
+
+!.env.default*
+!*.env.default.*
+
+!*.default.env
+!*.default.env.*
+
+!*.env.example
+!*.env.example.*
+
+!*.example.env
+!*.example.env.*
+
+## IDEs
+
+### JetBrains Intellij
+**/.idea
+
+*.iml
+*.iws
+*.ipr
+
+### Visual Studio Code
+**/.vscode
+**/.vscode-test
+
+!**/.vscode/extensions.json
+!**/.vscode/launch.json
+!**/.vscode/settings.json
+
+## Services and Platforms
+
+### Nix
+!**/flake.lock
+
+### Windows Subsystem for Linux (WSL)
+**/*:Zone.identifier
+
+### OpenNext (Cloudflare)
+**/.open-next
+**/.wrangler
+**/.vercel
+
+### Supabase
+**/supabase/temp
+
+### Vercel
+**/.vercel
+
 # Language Specific
 
 ## Node.js
@@ -8,6 +68,10 @@
 **/.yarn/install-state.gz
 **/build
 **/node_modules
+
+#### Jest
+**/.swc
+**/coverage
 
 ### File Extensions
 !**/*.lock
@@ -28,7 +92,6 @@
 
 **/next-env.d.ts
 
-
 ## Python
 **/__pycache__
 **/.pytest_cache
@@ -37,82 +100,43 @@
 ## Rust
 **/target
 
-!Cargo.lock
+!**/Cargo.lock
 
 **/*.rs.bk
 **/*.rs.bk.*
 
 # Miscellaneous
-
-## Development
-
-### Configuration
-
-#### Custom Configurations
-**/.config/*.config.*
-
-#### dotenv
-**/.env.*
-**/*.env
-**/*.env.*
-
-!**/.env.default*
-!**/*default.env
-
-!**/*.env.example
-!**/*.env.example.*
-
-!**/*.example.env
-!**/*.example.env.*
-
-### Integrations
-
-#### Supabase
-**/supabase/temp
-
-#### Vercel
-**/.vercel
-
-## Directories
+**/.DS_Store
+**/.artifacts/data
+**/.artifacts/logs
+**/.artifacts/tmp
 **/build
+**/coverage
 **/debug
 **/dist
 **/release
 
-### testing
-**/coverage
-
 ## File Extensions
-**/*.bak
-**/*.bak.*
+*.bak
+*.bak.*
 
-**/*.bk
-**/*.bk.*
+*.bk
+*.bk.*
 
-**/*.db
+*.db
+*.db.*
 
-**/*.log
-**/*.log.*
+*.log
+*.log.*
 
-**/*.pem
+*.pem
+*.pem.*
 
-**/*.gz
+*.gz
+*.gz.*
 
-**/*.sqlite
+*.sqlite
+*.sqlite.*
 
-**/*.zip
-
-## Operating Systems
-
-### NixOs
-!**/flake.lock
-
-### Windows
-
-#### Windows Subsystem for Linux (WSL)
-**/*:Zone.identifier
-
-# OpenNext build output
-.open-next
-.vercel
-
+*.zip
+*.zip.*

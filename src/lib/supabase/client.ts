@@ -9,31 +9,26 @@
 import * as ssr from "@supabase/ssr";
 import { SupabaseClient } from "@supabase/supabase-js";
 // project
-import { PublicDatabase } from "@/types/database.types";
-// feature-specific
+import type { Database } from "@/types/database.types";
+// local
 import { supabaseCreds } from "./helpers";
-
-export type SupabaseBrowserClientProps<
-  Database = any,
-  SchemaName extends string & keyof Database = "public" extends keyof Database
-    ? "public"
-    : string & keyof Database,
-> = ReturnType<typeof createBrowserClient<Database, SchemaName>>;
+import type { SupabaseSchemaName } from "./types";
 
 /**
  * @param schema - the schema to use for the database connection, defaults to 'public'
  * @returns {SupabaseClient} a new instance of the supabase client for use in the browser
  */
 export const createBrowserClient = <
-  Db = PublicDatabase,
-  SchemaId extends string & keyof Db = "public" extends keyof Db ? "public"
-    : string & keyof Db,
+  Db = Database,
+  Schema extends SupabaseSchemaName<Db> = "public" extends
+    keyof Omit<Db, "__InternalSupabase"> ? "public"
+    : string & keyof Omit<Db, "__InternalSupabase">,
 >(
-  schema?: SchemaId,
-): SupabaseClient<Db, SchemaId> => {
+  schema?: Schema,
+): SupabaseClient<Db, Schema> => {
   const { url, anonKey } = supabaseCreds();
 
-  return ssr.createBrowserClient<Db, SchemaId>(url, anonKey, {
+  return ssr.createBrowserClient<Db, Schema>(url, anonKey, {
     db: { schema },
   });
 };

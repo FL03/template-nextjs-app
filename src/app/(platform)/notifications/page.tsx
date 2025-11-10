@@ -15,11 +15,10 @@ export const metadata: Metadata = {
 type RouteParamsT = {
   searchParams: Promise<
     {
-      filter?: string;
       limit?: number;
+      filterBy?: string;
       sortBy?: string;
       username?: string;
-      userId?: string;
     }
   >;
 };
@@ -30,6 +29,8 @@ export default async function Page({
   // await the search parameters
   const { username } = await searchParams;
   // render the page
-  return <NotificationScreen username={username} />;
+  return (
+    <NotificationScreen username={username} className="container mx-auto" />
+  );
 }
 Page.displayName = "NotificationsPage";

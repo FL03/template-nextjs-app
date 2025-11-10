@@ -1,3 +1,9 @@
+/**
+ * Created At: 2025.10.23:11:19:45
+ * @author - @FL03
+ * @directory - src/features/profiles/types
+ * @file - user-profile.ts
+ */
 // imports
 import { v4 } from "uuid";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -7,129 +13,177 @@ import { logger } from "@/lib/logger";
 import { Json, PublicDatabase } from "@/types/database.types";
 // feature-specific
 import { ProfileData, ProfileUpdate } from "../types";
+import { getUserProfile } from "../utils";
+
+const defaultProfileData = (values?: Partial<ProfileData>): ProfileData => ({
+  id: values?.id ?? v4(),
+  username: values?.username ?? `user-${Math.floor(Math.random() * 10000)}`,
+  avatar_url: values?.avatar_url ?? null,
+  emails: values?.emails ?? [],
+  primary_email: values?.primary_email ?? "",
+  bio: values?.bio ?? null,
+  department: values?.department ?? null,
+  phone: values?.phone ?? [],
+  role: values?.role ?? "user",
+  status: values?.status ?? "active",
+  socials: values?.socials ?? [],
+  titles: values?.titles ?? [],
+  website: values?.website ?? null,
+  metadata: values?.metadata ?? {},
+  subscription_status: values?.subscription_status ?? "inactive",
+  name_prefix: values?.name_prefix ?? null,
+  name_suffix: values?.name_suffix ?? null,
+  first_name: values?.first_name ?? null,
+  middle_name: values?.middle_name ?? null,
+  last_name: values?.last_name ?? null,
+  display_name: values?.display_name ?? null,
+  customer_id: values?.customer_id ?? null,
+  primary_organization: values?.primary_organization ?? null,
+  created_at: values?.created_at ?? new Date().toISOString(),
+  updated_at: values?.updated_at ?? new Date().toISOString(),
+});
 
 /**
  * The UserProfile class represents a user profile and is used to manage user data.
  */
-export class UserProfile implements ProfileData {
+export class UserProfile extends Object {
   private _data: ProfileData;
   private supabase: SupabaseClient<PublicDatabase, "public">;
 
   constructor(values?: Partial<ProfileData>) {
-    this.supabase = createBrowserClient<any, "public">();
+    super();
+    this.supabase = createBrowserClient<PublicDatabase, "public">();
     this._data = {
       id: values?.id ?? v4(),
-      username: values?.username ?? "",
+      username: values?.username ?? `user-${Math.floor(Math.random() * 10000)}`,
       avatar_url: values?.avatar_url ?? null,
-      email: values?.email ?? [],
-      created_at: values?.created_at ?? new Date().toISOString(),
-      updated_at: values?.updated_at ?? new Date().toISOString(),
+      emails: values?.emails ?? [],
+      primary_email: values?.primary_email ?? "",
       bio: values?.bio ?? null,
       department: values?.department ?? null,
       phone: values?.phone ?? [],
-      role: values?.role ?? null,
-      status: values?.status ?? null,
+      role: values?.role ?? "user",
+      status: values?.status ?? "active",
       socials: values?.socials ?? [],
       titles: values?.titles ?? [],
+      website: values?.website ?? null,
+      metadata: values?.metadata ?? {},
+      subscription_status: values?.subscription_status ?? "inactive",
       name_prefix: values?.name_prefix ?? null,
       name_suffix: values?.name_suffix ?? null,
       first_name: values?.first_name ?? null,
       middle_name: values?.middle_name ?? null,
       last_name: values?.last_name ?? null,
       display_name: values?.display_name ?? null,
-      metadata: values?.metadata ?? {},
-      website: values?.website ?? null,
       customer_id: values?.customer_id ?? null,
+      primary_organization: values?.primary_organization ?? null,
+      created_at: values?.created_at ?? new Date().toISOString(),
+      updated_at: values?.updated_at ?? new Date().toISOString(),
     };
+  }
+  /** Load the user profile from the database. */
+  static async load(
+    params?: { userId?: string; username?: string },
+  ): Promise<UserProfile | null> {
+    const data = await getUserProfile(params);
+    return new UserProfile(data ?? undefined);
   }
 
   // getters
 
   /** The unique identifier associated with each profile. */
   get id(): string {
-    return this._data.id;
+    return this.read("id");
   }
   /** A unique alias chosen by the user */
   get username(): string {
-    return this._data.username;
+    return this.read("username");
   }
   /** An optional url associated with the user for use as their avatar. */
   get avatar_url(): string | null {
-    return this._data.avatar_url;
+    return this.read("avatar_url");
   }
   /** */
   get bio(): string | null {
-    return this._data.bio;
+    return this.read("bio");
   }
 
   get department(): string | null {
-    return this._data.department;
+    return this.read("department");
   }
 
-  get email(): string[] | null {
-    return this._data.email;
+  get primary_email(): string {
+    return this.read("primary_email");
   }
 
-  get phone(): string[] | null {
-    return this._data.phone;
+  get emails(): string[] {
+    return this.read("emails");
   }
 
-  get role(): string | null {
-    return this._data.role;
+  get phone(): string[] {
+    return this.read("phone");
   }
 
-  get status(): string | null {
-    return this._data.status;
+  get role(): string {
+    return this.read("role");
   }
-  get socials(): string[] | null {
-    return this._data.socials;
+
+  get status(): string {
+    return this.read("status");
   }
-  get titles(): string[] | null {
-    return this._data.titles;
+  get socials(): string[] {
+    return this.read("socials");
+  }
+  get titles(): string[] {
+    return this.read("titles");
+  }
+
+  get subscription_status(): string {
+    return this.read("subscription_status");
   }
   // name-related fields
   get name_prefix(): string | null {
-    return this._data.name_prefix;
+    return this.read("name_prefix");
   }
 
   get name_suffix(): string | null {
-    return this._data.name_suffix;
+    return this.read("name_suffix");
   }
 
   get first_name(): string | null {
-    return this._data.first_name;
+    return this.read("first_name");
   }
 
   get middle_name(): string | null {
-    return this._data.middle_name;
+    return this.read("middle_name");
   }
 
   get last_name(): string | null {
-    return this._data.last_name;
+    return this.read("last_name");
   }
 
   get display_name(): string | null {
-    return this._data.display_name;
+    return this.read("display_name");
   }
 
   get metadata(): Json {
-    return this._data.metadata ?? {};
+    return this.read("metadata");
   }
 
   get website(): string | null {
-    return this._data.website;
+    return this.read("website");
   }
 
   get customer_id(): string | null {
-    return this._data.customer_id;
+    return this.read("customer_id");
   }
 
   get created_at(): string {
-    return this._data.created_at;
+    return this.read("created_at");
   }
 
   get updated_at(): string {
-    return this._data.updated_at;
+    return this.read("updated_at");
   }
 
   // setters
@@ -172,6 +226,26 @@ export class UserProfile implements ProfileData {
   }
 
   // methods
+  /** Get the value of a particular field within the data */
+  read<Key extends keyof ProfileData>(key: Key): ProfileData[Key] {
+    return this._data[key];
+  }
+
+  valueOf(): ProfileData {
+    return this._data;
+  }
+
+  toJSON(): ProfileData {
+    return this._data;
+  }
+  /** Uses JSON to parse the date into a formatted string; */
+  toString(): string {
+    return JSON.stringify(this.valueOf(), undefined, 2);
+  }
+  /** Create a new instance of the user profile by merging the given values into the previous state.  */
+  next<T extends ProfileData>(partial: Partial<T>): UserProfile {
+    return new UserProfile({ ...this._data, ...partial });
+  }
 
   /**
    * Create a new record in the database using the current profile data and the current user session.
@@ -181,7 +255,7 @@ export class UserProfile implements ProfileData {
    * @returns {Promise<ProfileData>} A promise that resolves to the profile data.
    * @throws {Error} If there is an error inserting the profile into the database or if the user is not authenticated.
    */
-  async insertRecord(): Promise<ProfileData> {
+  async insertRecord(): Promise<UserProfile> {
     // fetch the current user from the auth client
     const { data: { user } } = await this.supabase.auth.getUser();
     // ensure the user is authenticated
@@ -191,11 +265,12 @@ export class UserProfile implements ProfileData {
     }
     // ensure the user profile id is also the same as the user id
     this._data.id = user.id;
+    this._data.username ??= user.user_metadata?.username;
     // query the database to insert the profile data and return the record
     const { data, error } = await this.supabase
       .from("profiles")
-      .insert(this._data)
-      .select("*")
+      .upsert(this._data, { onConflict: "id" })
+      .select()
       .single();
     // handle any errors that occur during the insert
     if (error) {
@@ -209,10 +284,8 @@ export class UserProfile implements ProfileData {
     }
     // log the success of the event
     logger.info("Profile inserted successfully:");
-    // ensure the local data is updated to match the external record
-    this._data = data;
     // return the profile data
-    return this._data;
+    return this.next(data);
   }
 
   /**

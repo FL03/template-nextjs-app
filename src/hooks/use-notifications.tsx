@@ -5,323 +5,252 @@
  */
 "use client";
 // imports
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // project
 import {
-  fetchNotifications,
-  Notification,
+  deleteNotification,
+  getNotifications,
   NotificationData,
+  updateNotification,
 } from "@/features/notifications";
 import { logger } from "@/lib/logger";
 import {
   createBrowserClient,
-  handleRealtimeSubscription,
-  RealtimeSupabaseHandler,
+  realtimeSubscriptionHandler,
+  SupabaseOnSubscribeHandler,
 } from "@/lib/supabase";
-import type { PublicDatabase } from "@/types/database.types";
-// hooks
-import { useUsername } from "./use-username";
+import type { Database } from "@/types/database.types";
 
-type HookStateT = {
-  isFetching: boolean;
-  isLoading: boolean;
-  isLoaded: boolean;
-  isDeleting: boolean;
-  isRefreshing: boolean;
-  error?: string | null;
-};
+namespace UseNotifications {
+  export interface Props {
+    username?: string | null;
+    onError?(error: unknown): void;
+    onSubscription?: SupabaseOnSubscribeHandler;
+    onDataChange?(data: NotificationData[]): void;
+  }
 
-type HookParams = {
-  username?: string | null;
-  onSubscription?: RealtimeSupabaseHandler;
-  onNotificationChange?: (
-    payload: RealtimePostgresChangesPayload<NotificationData>,
-  ) => void;
-};
+  export interface State {
+    isFetching: boolean;
+    isLoading: boolean;
+    isDeleting: boolean;
+    isReloading: boolean;
+  }
 
-type UseNotificationsReturnT = {
-  data: Notification[];
-  state: HookStateT;
-  deleteNotification: (id: string) => Promise<NotificationData | null>;
-  refresh: () => Promise<void>;
-  markAsRead: (id: string) => Promise<NotificationData | null>;
-  updateStatus: (
-    id: string,
-    status: string,
-  ) => Promise<NotificationData | null>;
-};
+  export interface Context {
+    data: NotificationData[];
+    state: State;
+    error?: Error | null;
+    deleteNotification(id: string): Promise<void>;
+    reload(): Promise<void>;
+    markAsRead(id: string): Promise<NotificationData | null>;
+    updateStatus: (
+      id: string,
+      status: string,
+    ) => Promise<NotificationData | null>;
+  }
+  export type Callback = (
+    options?: Props,
+  ) => Context;
+}
 
-type UseNotificationsHookT = (
-  options?: HookParams,
-) => UseNotificationsReturnT;
-
-/**
- * The `useNotifications` hook provides access to the user's notifications.
- * @param {HookParams} params - The parameters for the hook.
- * @returns
- */
-export const useUserNotifications: UseNotificationsHookT = (
+/** The `useNotifications` hook provides access to the user's notifications.*/
+export const useUserNotifications: UseNotifications.Callback = (
   {
-    username: usernameProp,
+    username,
+    onError,
     onSubscription,
-  }: HookParams = {},
-): UseNotificationsReturnT => {
-  // instantiate the client-side supabase client
-  const supabase = createBrowserClient<PublicDatabase, "public">();
-  // get the current username with the hook
-  const currentUser = useUsername({ client: supabase });
-  // resolve the username
-  const username = usernameProp || currentUser?.username;
-  // setup a reference to the realtime channel
-  const _channel = useRef<RealtimeChannel | null>(null);
-  // initialize the stateful stores
-  const [_data, _setData] = useState<Notification[]>([]);
-  // setup the error state
-  const [error, setError] = useState<string | null>(null);
-  // initialize the various event-based signals for tracking the hook state
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [isUpdating] = useState<boolean>(false);
-  // memoize the signals into a single state object
-  const _state = useMemo<HookStateT>(
-    () => ({
-      isDeleting,
-      isFetching,
-      isLoading,
-      isLoaded,
-      isRefreshing,
-      isUpdating,
-      error,
-    }),
-    [
-      error,
-      isDeleting,
-      isFetching,
-      isLoading,
-      isLoaded,
-      isRefreshing,
-      isUpdating,
-    ],
-  );
-  // double check the username
+    onDataChange,
+  } = {},
+) => {
+  const supabase = createBrowserClient<Database, "account">("account");
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const queryClient = useQueryClient();
+
   if (!username || username.trim() === "") {
     logger.warn("No valid username was passed to the useNotifications hook!");
   }
-  // fetch all of the notifications for the user
-  const _fetchAll = useCallback(
-    async (userName: string): Promise<Notification[]> => {
-      // ensure the fetching state is set
-      if (!isFetching) setIsFetching(true);
-      // trace the event
-      logger.trace("Fetching notifications for user:");
-      // try to fetch the notifications
-      try {
-        // fetch the notifications for the user using the api
-        const data = await fetchNotifications({ username: userName });
-        // update the local state
-        _setData(data);
-        // return the data
-        return data;
-      } catch (error) {
-        const err = error ? (error as Error).message : "Unknown error";
-        // set the error state
-        setError("Failed to fetch notifications: " + err);
-        // return an empty array
-        return [];
-      } finally {
-        // set the fetching state to false
-        setIsFetching(false);
-      }
-    },
-    [isFetching],
-  );
-  // a callback for refreshing the notifications
-  const _refresh = useCallback(async () => {
-    // ensure a username is provided
-    if (!username || username.trim() === "") {
-      return setError("No username provided for refreshing notifications.");
-    }
-    // ensure that the loading signal is toggled
-    if (!isRefreshing) setIsRefreshing(true);
-    logger.trace("Refreshing notifications...");
-    // fetch the notifications for the user
-    const data = await _fetchAll(username).finally(() =>
-      setIsRefreshing(false)
-    );
-    logger.info(`Refreshed notifications for user: ${username}`);
-    return;
-  }, [isRefreshing, username, _fetchAll]);
 
-  // delete a notification by its id
-  const _deleteNotificationById = useCallback(
-    async (id: string): Promise<NotificationData | null> => {
-      // ensure the deleting state is set
-      if (!isDeleting) setIsDeleting(true);
-      // trace the event
-      logger.trace("Deleting notification with id: " + id);
-      // use the client to delete the notification
-      const { data, error } = await supabase
-        .from("notifications")
-        .delete()
-        .eq("id", id)
-        .select()
-        .single();
-      // handle any errors with the query
-      if (error) {
-        // set the error state
-        setError(error.message);
-        // return null if there was an error
-        return null;
-      }
-      // remove the notification from the local state
-      _setData((prev) => prev.filter((i) => id === i.id));
-      // set the deleting state to false
-      setIsDeleting(false);
-      // return the deleted notification
-      return data;
-    },
-    [supabase],
-  );
-  // update the status of a notification
-  const _updateStatus = useCallback(
-    async (id: string, status: string): Promise<NotificationData | null> => {
-      const { data, error } = await supabase
-        .from("notifications")
-        .update({ status })
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) {
-        // set the error state
-        setError(error.message);
-        // return null
-        return null;
-      }
-      _setData((prev) =>
-        prev.map((item) => (item.id === data.id ? { ...item, ...data } : item))
-      );
-      return data;
-    },
-    [supabase],
-  );
-  // mark a notification as read
-  const _markNotificationAsRead = useCallback(
-    async (id: string) => _updateStatus(id, "read"),
-    [_updateStatus],
-  );
-  // create a realtime channel for detecting changes to the notifications table
-  const _createChannel = useCallback(
-    (u: string) => {
-      return supabase
-        .channel(`notifications:${u}`, { config: { private: true } })
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "notifications",
-            filter: `username=eq.${u}`,
-          },
-          (payload) => {
-            const data = payload.new as Notification;
-
-            if (payload.eventType === "INSERT") {
-              logger.info("Creating the store...");
-              _setData((prev) => [...prev, data]);
-            }
-            if (payload.eventType === "UPDATE") {
-              logger.info("Updating the store...");
-              _setData((prev) =>
-                prev.map((item) => {
-                  if (item.id === data.id) {
-                    return { ...item, ...data };
-                  }
-                  return item;
-                })
-              );
-            }
-            if (payload.eventType === "DELETE") {
-              logger.info("Deleting the exercise...");
-              _setData((prev) => prev.filter((item) => item.id !== data.id));
-            }
-          },
-        )
-        .subscribe((status, err) => {
-          handleRealtimeSubscription(status, err);
-          if (onSubscription) onSubscription(status, err);
-        });
-    },
-    [supabase],
-  );
-  // loading effects
-  useEffect(() => {
-    // perform an initial load
-    if (isLoading && username) {
-      _fetchAll(username).finally(() => setIsLoaded(true));
-    }
-    return () => {
-      // cleanup the loading state(s)
-      setIsLoading(false);
-      setIsLoaded(false);
-    };
-  }, [
-    _fetchAll,
+  // React Query: fetch notifications for the user
+  const {
+    data = [],
+    error,
     isLoading,
-    username,
-  ]);
-  // error effects
-  useEffect(() => {
-    if (error) {
-      logger.error(error);
-      // reset the error state
-      setError(null);
+    isFetching,
+    isRefetching,
+    refetch,
+  } = useQuery<NotificationData[], Error>({
+    queryKey: ["notifications", username ?? "unknown"],
+    queryFn: async () => {
+      if (!username) return [];
+      return await getNotifications({ username });
+    },
+    enabled: Boolean(username),
+    staleTime: 1000 * 10, // 10s
+  });
+
+  // Delete mutation
+  const { mutateAsync: deleteMutateAsync, isPending: isDeleting } = useMutation<
+    void,
+    unknown,
+    string
+  >({
+    mutationFn: async (id: string) => {
+      await deleteNotification(id);
+    },
+    onSuccess: (_data, id) => {
+      // remove from cache
+      queryClient.setQueryData<NotificationData[]>(
+        ["notifications", username ?? "unknown"],
+        (prev = []) => prev.filter((n) => n.id !== id),
+      );
+    },
+    onError: (err) => {
+      logger.error(err, "Failed to delete notification");
+      onError?.(err);
+    },
+  });
+
+  // Update mutation (used for markAsRead and general status changes)
+  const { mutateAsync: updateMutateAsync } = useMutation<
+    NotificationData,
+    unknown,
+    { id: string; updates: Partial<NotificationData> }
+  >({
+    mutationFn: async ({ id, updates }) => {
+      const updated = await updateNotification({ id, ...updates });
+      return updated as NotificationData;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData<NotificationData[]>(
+        ["notifications", username ?? "unknown"],
+        (prev = []) =>
+          prev.map((n) => (n.id === updated.id ? { ...n, ...updated } : n)),
+      );
+    },
+    onError: (err) => {
+      logger.error(err, "Failed to update notification");
+      onError?.(err);
+    },
+  });
+
+  const updateStatus = useCallback(async (id: string, status: string) => {
+    const res = await updateMutateAsync({ id, updates: { status } });
+    return res;
+  }, [updateMutateAsync]);
+
+  const markAsRead = useCallback(async (id: string) => {
+    return updateStatus(id, "read");
+  }, [updateStatus]);
+
+  const reload = useCallback(async () => {
+    if (!username) {
+      onError?.("No username provided for refreshing notifications.");
+      return;
     }
-  }, [error]);
-  // realtime effects
+    await refetch().catch((err) => {
+      logger.error(err, "Error reloading notifications");
+      onError?.(err);
+    });
+  }, [username, refetch, onError]);
+
+  // Realtime channel: update cache on postgres changes
   useEffect(() => {
-    if (username) {
-      // if the channel is not created, create it
-      _channel.current ??= _createChannel(username);
-    }
+    if (!username || channelRef.current) return;
+
+    const channel = supabase
+      .channel(`notifications:${username}`, { config: { private: true } })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "account",
+          table: "notifications",
+          filter: `username=eq.${username}`,
+        },
+        (
+          { eventType, ...payload }: RealtimePostgresChangesPayload<
+            NotificationData
+          >,
+        ) => {
+          logger.trace({ eventType }, "Received a notification change event");
+          const newRow = payload.new as NotificationData;
+
+          if (eventType === "INSERT") {
+            queryClient.setQueryData<NotificationData[]>(
+              ["notifications", username],
+              (prev = []) => {
+                // avoid duplicates
+                if (prev.some((p) => p.id === newRow.id)) return prev;
+                return [...prev, newRow];
+              },
+            );
+          } else if (eventType === "UPDATE") {
+            queryClient.setQueryData<NotificationData[]>(
+              ["notifications", username],
+              (prev = []) =>
+                prev.map((
+                  item,
+                ) => (item.id === newRow.id ? { ...item, ...newRow } : item)),
+            );
+          } else if (eventType === "DELETE") {
+            queryClient.setQueryData<NotificationData[]>(
+              ["notifications", username],
+              (prev = []) => prev.filter((item) => item.id !== newRow.id),
+            );
+          }
+
+          // notify consumer
+          const latest = queryClient.getQueryData<NotificationData[]>([
+            "notifications",
+            username,
+          ]) ?? [];
+          onDataChange?.(latest);
+        },
+      )
+      .subscribe(realtimeSubscriptionHandler(onSubscription));
+
+    channelRef.current = channel;
+
     return () => {
-      // handle the channel cleanup
-      if (_channel.current) {
-        // unsubscribe from the channel
-        _channel.current?.unsubscribe();
-        // remove the channel
-        supabase.realtime.removeChannel(_channel.current);
-        // nullify the channel
-        _channel.current = null;
+      if (channelRef.current) {
+        supabase.realtime.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
     };
-  }, [username, _channel, _createChannel]);
-  // redeclare external variables
-  const data = _data;
-  const state = _state;
-  // redeclare public methods
-  const deleteNotification = _deleteNotificationById;
-  const refresh = _refresh;
-  const markAsRead = _markNotificationAsRead;
-  const updateStatus = _updateStatus;
+  }, [username, supabase, queryClient, onSubscription, onDataChange]);
 
-  // return the memoized values
-  return useMemo(
-    () => ({
-      data,
-      state,
-      deleteNotification,
-      refresh,
-      markAsRead,
-      updateStatus,
-    }),
-    [data, state, deleteNotification, refresh, markAsRead, updateStatus],
-  );
+  // sync on initial query result change to call onDataChange
+  useEffect(() => {
+    onDataChange?.(data);
+  }, [data, onDataChange]);
+
+  const state = useMemo<UseNotifications.State>(() => ({
+    isFetching: Boolean(isFetching),
+    isLoading: Boolean(isLoading),
+    isDeleting: Boolean(isDeleting),
+    isReloading: isRefetching,
+  }), [isFetching, isLoading, isDeleting, isRefetching]);
+
+  return useMemo(() => ({
+    data,
+    error: error ?? null,
+    state,
+    deleteNotification: deleteMutateAsync,
+    reload,
+    markAsRead,
+    updateStatus,
+  }), [
+    data,
+    error,
+    state,
+    deleteMutateAsync,
+    reload,
+    markAsRead,
+    updateStatus,
+  ]);
 };

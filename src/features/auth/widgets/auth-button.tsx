@@ -6,6 +6,7 @@
 "use client";
 // imports
 import * as React from "react";
+import { VariantProps } from "class-variance-authority";
 import { LogInIcon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -15,72 +16,45 @@ import { useAuth } from "@/hooks/use-auth";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 // components
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 // local
-import { ENDPOINT_AUTH_LOGIN } from "../constants";
+import { IconButton } from "@/components/common/button";
 
-type BaseButtonProps<TProps extends { [key: string]: any } = {}> = TProps & {
-  onError?: (error?: any) => void;
-  onSignIn?: () => void;
-  onSignOut?: () => void;
-  onSuccess?: () => void;
+type WithButtonVariants<T = {}> = T & VariantProps<typeof buttonVariants>;
+
+type ClassNames = {
+  labelClassName?: string;
+  iconClassName?: string;
 };
-
-type AuthButtonProps = BaseButtonProps<{
-  signInIcon?: React.ReactNode;
-  signOutIcon?: React.ReactNode;
-}>;
 
 /** A simple authentication button for managing the user state. */
 export const AuthButton: React.FC<
-  & Omit<
-    React.ComponentPropsWithRef<typeof Button>,
-    "children" | "onClick" | "variant"
-  >
-  & AuthButtonProps
+  WithButtonVariants<{
+    className?: string;
+    classNames?: ClassNames;
+    // callbacks
+    onError?(error: unknown): void;
+    onSignIn?(): void;
+    onSignOut?(): void;
+  }>
 > = ({
-  ref,
-  className,
-  signInIcon,
-  signOutIcon,
-  size = "default",
-  onError,
   onSignIn,
   onSignOut,
-  onSuccess,
   ...props
 }) => {
-  // initialize the client-side supabase client
-  const { state } = useAuth();
-  // handle the case where the user is authenticated
-  if (state.isAuthenticated) {
-    // render the logout button
+  const { state: { isAuthenticated } } = useAuth();
+  if (isAuthenticated) {
     return (
       <LogoutButton
         {...props}
-        ref={ref}
-        className={cn("transition-colors", className)}
-        icon={signOutIcon}
-        size={size}
-        variant="destructive"
-        onError={onError}
         onSignOut={onSignOut}
-        onSuccess={onSuccess}
       />
     );
   }
-  // if the user is not authenticated, render the login button
   return (
     <LoginButton
       {...props}
-      ref={ref}
-      className={cn("transition-colors", className)}
-      icon={signInIcon}
-      size={size}
-      variant="outline"
-      onError={onError}
       onSignIn={onSignIn}
-      onSuccess={onSuccess}
     />
   );
 };
@@ -88,130 +62,114 @@ AuthButton.displayName = "AuthButton";
 
 // LoginButton
 export const LoginButton: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Button>, "asChild" | "onClick">
-  & BaseButtonProps<{ icon?: React.ReactNode }>
+  & Omit<
+    React.ComponentPropsWithRef<typeof IconButton>,
+    "asChild" | "onClick" | "labelClassName" | "children"
+  >
+  & {
+    classNames?: ClassNames;
+    onError?(error: unknown): void;
+    onSignIn?(): void;
+  }
 > = ({
   ref,
-  icon = <LogInIcon className="h-4 w-4" />,
   className,
+  classNames,
   size = "default",
   variant = "outline",
   onError,
   onSignIn,
-  onSuccess,
   ...props
 }) => {
-  // define a signal to mark if the button is rendered as an icon
-  const isIcon = React.useMemo(() => size === "icon", [size]);
-  // use the router hook to navigate
   const router = useRouter();
-  // a callback for handling the click event on the button
-  const handleOnClick = (event: React.BaseSyntheticEvent) => {
-    // prevent default action
-    event.preventDefault();
-    // prevent the event from propagating upward
-    event.stopPropagation();
-    // trace the event
-    logger.trace("Handling the auth button click event...");
-    try {
-      // resolve the callback to use w.r.t. the current authentication state
-      if (onSignIn) onSignIn();
-      else router.push(ENDPOINT_AUTH_LOGIN);
-      // use the onSuccess callback if provided
-      if (onSuccess) onSuccess();
-    } catch (error) {
-      logger.error({ error }, "Error signing in...");
-      toast.error("Error", {
-        description: "An error occurred during the login",
-      });
-      if (onError) onError(error);
-      throw error;
-    }
-  };
-
-  // render the component
   return (
-    <Button
+    <IconButton
       {...props}
       ref={ref}
-      id="auth-button"
       className={cn("transition-colors", className)}
+      classNames={{ labelClassName: classNames?.labelClassName }}
       size={size}
       variant={variant}
-      onClick={handleOnClick}
+      onClick={(event) => {
+        // cleanup the event
+        event.preventDefault();
+        event.stopPropagation();
+        // trace the event
+        logger.trace("Handling the auth button click event...");
+        try {
+          // use the onSignIn callback before redirecting
+          onSignIn?.();
+          router.push("/auth/login");
+        } catch (error) {
+          logger.error({ error }, "Error signing in...");
+          toast.error("Error", {
+            description: "An error occurred during the login",
+          });
+          if (onError) onError(error);
+          throw error;
+        }
+      }}
     >
-      {icon}
-      <span className={isIcon ? "sr-only" : "not-sr-only"}>Login</span>
-    </Button>
+      <LogInIcon className={cn("size-4", classNames?.iconClassName)} />
+    </IconButton>
   );
 };
 LoginButton.displayName = "LoginButton";
 
 export const LogoutButton: React.FC<
   Omit<
-    React.ComponentPropsWithRef<typeof Button>,
-    "asChild" | "children" | "onClick"
-  > & BaseButtonProps<{ icon?: React.ReactNode }>
+    React.ComponentPropsWithRef<typeof IconButton>,
+    "asChild" | "children" | "onClick" | "labelClassName"
+  > & {
+    classNames?: ClassNames;
+    onError?(error: unknown): void;
+    onSignOut?(): void;
+  }
 > = ({
   ref,
   className,
-  icon = <LogOutIcon className="h-4 w-4" />,
+  classNames,
   size = "default",
   variant = "destructive",
   onError,
   onSignOut,
-  onSuccess,
   ...props
 }) => {
-  // define a signal to mark if the button is rendered as an icon
-  const isIcon = React.useMemo(() => size === "icon", [size]);
-  // call the useAuth hook
-  const auth = useAuth();
-  // use the router hook to navigate
+  // hooks
+  const { signOut } = useAuth();
   const router = useRouter();
-  // a callback for handling the click event on the button
-  const handleOnClick = async (event: React.BaseSyntheticEvent) => {
-    // prevent default action
-    event.preventDefault();
-    // prevent the event from propagating upward
-    event.stopPropagation();
-    // trace the event
-    logger.trace("Handling the auth button click event...");
-    try {
-      // resolve the callback to use w.r.t. the current authentication state
-      if (onSignOut) onSignOut();
-      else {
-        await auth.signOut();
-      }
-      // log the event
-      logger.info("User signed out successfully");
-      // if provide, use the onSuccess callback; otherwise, redirect to the home page
-      if (onSuccess) onSuccess();
-      else router.push("/");
-    } catch (error) {
-      logger.error({ error }, "Error signing in...");
-      toast.error("Error", {
-        description: "An error occurred during the login",
-      });
-      if (onError) onError(error);
-      throw error;
-    }
-  };
-
-  // render the component
   return (
-    <Button
+    <IconButton
       {...props}
       ref={ref}
-      id="auth-button"
       className={cn("transition-colors", className)}
+      classNames={{ labelClassName: classNames?.labelClassName }}
       size={size}
       variant={variant}
-      onClick={handleOnClick}
+      onClick={async (event: React.BaseSyntheticEvent) => {
+        // cleanup the event
+        event.preventDefault();
+        event.stopPropagation();
+        // trace the event
+        logger.trace("Handling the auth button click event...");
+        try {
+          await signOut();
+          logger.info("User signed out successfully");
+          if (onSignOut) onSignOut?.();
+          else router.push("/");
+        } catch (error) {
+          logger.error({ error }, "Error signing in...");
+          toast.error("Error", {
+            description: "An error occurred during the login",
+          });
+          if (onError) onError(error);
+          throw error;
+        }
+      }}
+      label="Logout"
     >
-      {icon}
-      <span className={isIcon ? "sr-only" : "not-sr-only"}>Logout</span>
-    </Button>
+      <LogOutIcon className={cn("size-4", classNames?.iconClassName)} />
+    </IconButton>
   );
 };
 LogoutButton.displayName = "LogoutButton";

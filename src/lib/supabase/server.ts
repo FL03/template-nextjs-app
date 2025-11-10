@@ -9,8 +9,10 @@
 import { cookies } from "next/headers";
 import * as ssr from "@supabase/ssr";
 // project
-import { PublicDatabase } from "@/types/database.types";
+import type { Database } from "@/types/database.types";
+// local
 import { supabaseCreds } from "./helpers";
+import { type SupabaseSchemaName } from "./types";
 
 const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
   const jar = await cookies();
@@ -35,18 +37,18 @@ const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
 /**
  * Initialize a server-side supabase client.
  *
- * @param {SchemaName} schema - The schema to use for the database; defaults to `public`.
+ * @param {Schema} schema - The schema to use for the database; defaults to `public`.
  */
 export const createServerClient = async <
-  Database = PublicDatabase,
-  SchemaName extends string & keyof Database = "public" extends keyof Database
-    ? "public"
-    : string & keyof Database,
+  Db = Database,
+  Schema extends SupabaseSchemaName<Db> = "public" extends
+    keyof Omit<Db, "__InternalSupabase"> ? "public"
+    : string & keyof Omit<Db, "__InternalSupabase">,
 >(
-  schema?: SchemaName,
+  schema?: Schema,
 ) => {
   const { url, anonKey } = supabaseCreds();
-  return ssr.createServerClient<Database, SchemaName>(url, anonKey, {
+  return ssr.createServerClient<Db, Schema>(url, anonKey, {
     cookies: await serverClientCookies(),
     db: { schema: schema },
   });

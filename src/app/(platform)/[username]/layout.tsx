@@ -4,30 +4,27 @@
  * @file - [username]/layout.tsx
  */
 "use server";
-// imports
-import { PropsWithChildren } from "react";
 // components
-import { ProfileProvider } from "@/features/profiles";
-
-type RouteParams = {
-  params: Promise<{ username: string }>;
-};
+import { UserProfileProvider } from "@/features/profiles";
 
 /**
- * The base layout for authenticated routes
+ * The layout for user-specific pages
  *
  * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#layouts
- * @param {Readonly<PropsWithChildren>} props - the props for the template; note that children
+ * @param {Readonly<React.PropsWithChildren>} props - the props for the template; note that children
  * are readonly and required.
  */
 export default async function Layout(
-  { children, params }: Readonly<PropsWithChildren> & RouteParams,
+  { children, params }: {
+    children: React.ReactNode;
+    params: Promise<{ username: string }>;
+  },
 ) {
   const { username } = await params;
   return (
-    <ProfileProvider username={username}>
+    <UserProfileProvider username={username}>
       {children}
-    </ProfileProvider>
+    </UserProfileProvider>
   );
 }
 Layout.displayName = "UserLayout";

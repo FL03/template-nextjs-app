@@ -3,6 +3,5 @@
  * @author - @FL03
  * @file - lib/index.ts
  */
-export * from './constants';
-export * from './datetime';
-export * as utils from './utils';
+export * as datetime from "./datetime";
+export * as utils from "./utils";

@@ -4,7 +4,9 @@
  * @file - auth/index.ts
  */
 export * from "./constants";
+export * from "./forms";
 export * from "./provider";
 export * from "./types";
+export * from "./utils";
 export * from "./views";
 export * from "./widgets";

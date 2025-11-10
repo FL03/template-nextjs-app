@@ -8,9 +8,9 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 // project
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 // local
-import { useDashboard } from "./dashboard-provider";
 import { DashboardDrawer, DashboardSheet } from "./modal";
 
 /** The `DashboardPanel` describes the optional, dynamic secondary display often used when constructing dashboards. */
@@ -27,10 +27,11 @@ const DashboardPanel: React.FC<
     <Comp
       {...props}
       ref={ref}
+      data-slot="dashboard-panel"
       className={cn(
-        "flex flex-col flex-shrink-0 h-full w-full lg:max-w-sm",
+        "relative z-auto flex flex-1 flex-col h-full w-full max-w-sm",
         "gap-2 lg:gap-4 overflow-y-auto",
-        isTrailing ? "order-last bottom-0 right-0" : "order-first left-0 top-0",
+        isTrailing ? "order-last right-0" : "order-first left-0",
         className,
       )}
     />
@@ -47,28 +48,31 @@ export const DashboardLeading: React.FC<
     React.ComponentPropsWithRef<typeof DashboardPanel>,
     "asChild" | "isTrailing"
   > & {
-    asModal?: boolean;
+    pinned?: boolean;
   }
-> = ({ ref, className, asModal, ...props }) => {
-  // get a reference to the dashboard context
-  const { isMobile } = useDashboard();
+> = ({ ref, pinned, className, ...props }) => {
+  const isMobile = useIsMobile();
   // handle
-  if (isMobile || asModal) {
+  if (isMobile && !pinned) {
     return (
       <DashboardSheet
-        className="mt-2"
         triggerClassName={cn(
           "fixed left-2 bottom-6 z-[99]",
           "bg-primary text-primary-foreground transition-all",
           "hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         )}
       >
-        <DashboardPanel asChild ref={ref} className={className} {...props} />
+        <DashboardPanel
+          asChild
+          ref={ref}
+          className={cn("pt-5", className)}
+          {...props}
+        />
       </DashboardSheet>
     );
   }
   // render the Sidebar component
-  return <DashboardPanel ref={ref} className={className} {...props} />;
+  return <DashboardPanel ref={ref} {...props} />;
 };
 DashboardLeading.displayName = "DashboardLeading";
 
@@ -77,22 +81,27 @@ export const DashboardTrailing: React.FC<
     React.ComponentPropsWithRef<typeof DashboardPanel>,
     "asChild" | "isTrailing"
   > & {
-    asModal?: boolean;
+    pinned?: boolean;
   }
-> = ({ ref, className, asModal, ...props }) => {
-  const { isMobile } = useDashboard();
+> = ({ ref, pinned, ...props }) => {
+  const isMobile = useIsMobile();
   // if the dashboard is mobile, render the drawer
-  if (isMobile || asModal) {
+  if (isMobile && !pinned) {
     return (
       <DashboardDrawer
         className="flex flex-col flex-1 w-full px-4 py-2"
-        triggerClassName="static fixed bottom-6 right-2 z-[99] ml-auto"
+        triggerClassName="fixed bottom-6 right-2 z-[99]"
       >
-        <DashboardPanel asChild isTrailing ref={ref} className={className} {...props} />
+        <DashboardPanel
+          asChild
+          isTrailing
+          ref={ref}
+          {...props}
+        />
       </DashboardDrawer>
     );
   }
   // otherwise, render the panel directly
-  return <DashboardPanel isTrailing ref={ref} className={className} {...props} />;
+  return <DashboardPanel isTrailing ref={ref} {...props} />;
 };
 DashboardTrailing.displayName = "DashboardTrailing";

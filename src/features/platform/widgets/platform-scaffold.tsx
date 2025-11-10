@@ -6,82 +6,63 @@
 "use client";
 // imports
 import * as React from "react";
-// feature-specific
-// hooks
-import { useAuth } from "@/hooks/use-auth";
+// project
+import { useCurrentUser } from "@/features/auth";
+import { cn } from "@/lib/utils";
 // components
-import { AppBarProvider } from "@/components/common/appbar";
 import {
   Scaffold,
   ScaffoldContent,
   ScaffoldNav,
-  ScaffoldProvider,
 } from "@/components/common/scaffold";
-import { ToolbarProvider } from "@/components/common/toolbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 // local
 import { PlatformAppBar } from "./platform-appbar";
-import { PlatformSidebar } from "./sidebar";
-import { PlatformToolbar } from "./platform-toolbar";
-
-type ScaffoldWithSidebarProps = {
-  fullWidth?: boolean;
-  openSidebarByDefault?: boolean;
-  collapsible?: "offcanvas" | "icon" | "none";
-  sidebarPosition?: "left" | "right";
-  sidebarVariant?: "sidebar" | "floating" | "inset";
-};
+import { PlatformSidebar } from "./platform-sidebar";
 
 /**
  * This component extends the base scaffold with a sidebar that is only available to authenticated users.
  */
 export const PlatformScaffold: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Scaffold>, "asChild">
-  & ScaffoldWithSidebarProps
+  & Omit<React.ComponentPropsWithoutRef<typeof Scaffold>, "asChild">
+  & {
+    compact?: boolean;
+    openSidebarByDefault?: boolean;
+    sidebarMode?: "offcanvas" | "icon" | "none";
+    sidebarPosition?: "left" | "right";
+    sidebarVariant?: "sidebar" | "floating" | "inset";
+  }
 > = ({
-  ref,
   children,
-  fullWidth,
+  className,
+  compact,
   openSidebarByDefault = false,
-  collapsible = "offcanvas",
+  sidebarMode = "offcanvas",
   sidebarPosition = "right",
   sidebarVariant = "inset",
   ...props
 }) => {
-  // use the auth hook to determine if the user is authenticated
-  const { state: { isAuthenticated } } = useAuth();
-  // render the scaffold with the app bar and sidebar
+  // context
+  const { authState: { isAuthenticated } } = useCurrentUser();
+  // render
   return (
-    <ScaffoldProvider>
-      <AppBarProvider>
-        <ToolbarProvider>
-          <SidebarProvider
-            defaultOpen={openSidebarByDefault}
-            className="flex-1 min-h-full w-full"
-          >
-            {/* screen */}
-            <Scaffold {...props} ref={ref}>
-              {/* appbar */}
-              <ScaffoldNav asChild className="relative sticky top-0 z-10">
-                <PlatformAppBar />
-              </ScaffoldNav>
-              {/* display */}
-              <ScaffoldContent fullWidth={fullWidth}>
-                {children}
-              </ScaffoldContent>
-              <PlatformToolbar flavor="accent" />
-            </Scaffold>
-            {isAuthenticated && (
-              <PlatformSidebar
-                collapsible={collapsible}
-                side={sidebarPosition}
-                variant={sidebarVariant}
-              />
-            )}
-          </SidebarProvider>
-        </ToolbarProvider>
-      </AppBarProvider>
-    </ScaffoldProvider>
+    <SidebarProvider defaultOpen={openSidebarByDefault}>
+      <Scaffold className={cn("min-h-full", className)} {...props}>
+        <ScaffoldNav asChild>
+          <PlatformAppBar />
+        </ScaffoldNav>
+        <ScaffoldContent compact={compact}>
+          {children}
+        </ScaffoldContent>
+      </Scaffold>
+      {isAuthenticated && (
+        <PlatformSidebar
+          collapsible={sidebarMode}
+          side={sidebarPosition}
+          variant={sidebarVariant}
+        />
+      )}
+    </SidebarProvider>
   );
 };
 PlatformScaffold.displayName = "PlatformScaffold";

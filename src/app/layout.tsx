@@ -4,22 +4,20 @@
  * @file - layout.tsx
  */
 // imports
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
-import { PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 // vercel
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 // project
-import { UserAuthProvider } from "@/features/auth";
-import PlatformProvider from "@/features/platform/provider";
+import { PlatformProvider } from "@/features/platform";
 import { cn } from "@/lib/utils";
-import { Web3Provider } from "@/lib/web3";
 
 // stylesheet(s)
-import "@/public/styles/globals.css"; // './globals.css';
+import "@/styles/globals.css";
+import { publicSiteUrl } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,54 +32,58 @@ const geistMono = Geist_Mono({
 /**
  * The root layout for the application;
  *
- * @param {Readonly<PropsWithChildren>} children - The children to render.
+ * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#layouts
+ * @param {Readonly<React.PropsWithChildren>} props - the props for the layout; **note** that children are readonly and required.
  */
 export default async function RootLayout({
   children,
-}: Readonly<PropsWithChildren>) {
-  // get a reference to the cookies
-  const cookieStore = await cookies();
-  // resolve the default theme
-  const defaultTheme = cookieStore.get("theme")?.value;
+}: Readonly<React.PropsWithChildren>) {
+  // get the cookies
+  const {
+    defaultTheme,
+  } = await cookies().then(
+    (store) => ({
+      defaultTheme: store.get("theme")?.value,
+    }),
+  );
   // render the layout
   return (
     <html lang="en" suppressContentEditableWarning suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Puzzled" />
+      </head>
       <body
         className={cn(
-          "flex flex-1 flex-col min-h-dvh w-full relative z-0 m-0 p-0",
-          "text-foreground bg-radial-[at_25%_25%] from-background to-background/75",
+          "antialiased relative z-0",
+          "flex flex-col flex-1 min-h-screen w-full",
           geistMono.variable,
           geistSans.variable,
         )}
       >
-        <PlatformProvider
-          defaultTheme={defaultTheme}
-        >
-          <UserAuthProvider>
-            <Web3Provider>
-              {children}
-              {/* Sonner Toasts */}
-              <Toaster />
-              {/* Vercel */}
-              <Analytics />
-              <SpeedInsights />
-            </Web3Provider>
-          </UserAuthProvider>
-        </PlatformProvider>
+        <main className="flex-1 h-full w-full">
+          <PlatformProvider defaultTheme={defaultTheme}>
+            {children}
+          </PlatformProvider>
+        </main>
+        {/* Sonner Toasts */}
+        <Toaster />
+        {/* Vercel */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
 }
 
 export const metadata: Metadata = {
-  applicationName: "Puzzled",
+  title: { absolute: "Puzzled", template: "%s | pzzld" },
+  applicationName: "Tip Tracker",
   category: "Technology",
   classification: "application",
-  creator: "FL03",
-  description: "",
-  metadataBase: new URL("https://app.pzzld.org"),
+  creator: "Scattered-Systems, LLC",
+  description: "Track, manage, and analyze your tips with ease.",
   publisher: "Scattered-Systems, LLC",
-  title: { absolute: "Puzzled", template: "%s | pzzld" },
+  metadataBase: publicSiteUrl,
   authors: [
     {
       name: "Joe McCain III",
@@ -93,71 +95,48 @@ export const metadata: Metadata = {
     },
   ],
   keywords: [
-    "application",
-    "nextjs",
-    "react",
-    "personal",
-    "portfolio",
-    "projects",
+    "shifts",
+    "tips",
+    "finance",
+    "manage",
+    "analytics",
+    "dashboard",
+  ],
+  icons: [
+    {
+      rel: "icon",
+      url: "/favicon.ico",
+    },
+    {
+      rel: "icon",
+      url: "/icon0.svg",
+      type: "image/svg+xml",
+    },
+    {
+      rel: "icon",
+      url: "/icon1.png",
+      type: "image/png",
+    },
   ],
   openGraph: {
-    description:
-      "The puzzled application is home to a portfolio platform containing various projects and experiments.",
-    siteName: "pzzld",
+    emails: ["support@pzzld.org", "support@scsys.io"],
+    siteName: "pzzld_org_tips",
     locale: "en_US",
-    title: "Puzzled",
     type: "website",
-    url: "https://app.pzzld.org",
+    url: publicSiteUrl,
     images: [
       {
-        url: "/favico.svg",
-        width: 1200,
-        height: 630,
+        alt: "Puzzled Icon",
+        url: "/assets/icon.png",
+        width: 512,
+        height: 512,
+        type: "image/png",
+      },
+      {
         alt: "Puzzled Logo",
+        url: "/assets/pzzld.svg",
+        type: "image/svg+xml",
       },
     ],
   },
-  twitter: {
-    card: "summary",
-    creator: "@jo3mccain",
-    site: "@app.pzzld.org",
-    title: "Puzzled",
-  },
-  icons: [
-    {
-      url: "/favico.svg",
-      sizes: "16x16",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "32x32",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "48x48",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "64x64",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "128x128",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "256x256",
-      type: "image/x-svg",
-    },
-    {
-      url: "/favico.svg",
-      sizes: "512x512",
-      type: "image/x-svg",
-    },
-  ],
 };

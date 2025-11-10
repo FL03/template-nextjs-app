@@ -1,0 +1,76 @@
+/**
+ * Created At: 2025.10.22:23:23:27
+ * @author - @FL03
+ * @directory - tests
+ * @file - auth.passwordless.test.tsx
+ */
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+
+// Mock the browser supabase client so no network/server code runs
+const mockSignInWithOtp = jest.fn();
+
+jest.mock("@/lib/supabase", () => ({
+  createBrowserClient: () => ({ auth: { signInWithOtp: mockSignInWithOtp } }),
+}));
+
+// Stub logger
+jest.mock(
+  "@/lib/logger",
+  () => ({ logger: { trace: jest.fn(), info: jest.fn(), error: jest.fn() } }),
+);
+
+
+// Import after mocks
+import { PasswordlessLoginForm } from "../src/features/auth";
+
+describe("PasswordlessLoginForm", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("renders the fields and actions for the passwordless login form", () => {
+    render(<PasswordlessLoginForm defaultValues={{ email: "" }} />);
+
+    const email = screen.getByPlaceholderText(
+      "Email address",
+    ) as HTMLInputElement;
+    expect(email).toBeInTheDocument();
+
+    const submit = screen.getByTestId("passwordless-form-submit");
+    expect(submit).toBeInTheDocument();
+    expect(submit).not.toBeDisabled();
+  });
+
+  it("calls signInWithOtp and onSuccess when sign-in succeeds", async () => {
+    mockSignInWithOtp.mockResolvedValueOnce({
+      data: { user: { id: "u1" } },
+      error: null,
+    });
+
+    const onSuccess = jest.fn();
+    render(
+      <PasswordlessLoginForm
+        defaultValues={{ email: "" }}
+        onSuccess={onSuccess}
+      />,
+    );
+
+    const email = screen.getByPlaceholderText(
+      "Email address",
+    ) as HTMLInputElement;
+    fireEvent.change(email, { target: { value: "test@example.com" } });
+
+    const form = email.closest("form") as HTMLFormElement;
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(mockSignInWithOtp).toHaveBeenCalledTimes(1);
+      // ensure email was passed
+      expect(mockSignInWithOtp.mock.calls[0][0]).toMatchObject({
+        email: "test@example.com",
+        options: expect.any(Object),
+      });
+    });
+  });
+});

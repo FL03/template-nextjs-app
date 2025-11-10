@@ -7,34 +7,39 @@
 // imports
 import { useCallback, useMemo, useState } from "react";
 
-type HookOptions = { onValueChange?: (value?: string) => void };
+namespace UseTurnstile {
+  export type Props = { onValueChange?(value?: string): void };
 
-type HookOutput = { captchaToken?: string, reset: () => void, onChange: (token?: string) => void };
+  export type Output = {
+    captchaToken?: string;
+    onTokenChange(token?: string): void;
+    reset(): void;
+  };
 
-export const useTurnstile = (options?: HookOptions) => {
-  // deconstruct the options
-  const { onValueChange } = options || {};
-  // setup the core state
+  export type Hook = (options?: Props) => Output;
+}
+
+export const useTurnstile: UseTurnstile.Hook = (
+  { onValueChange } = {},
+) => {
+  // define the token state
   const [token, setToken] = useState<string | undefined>();
   // handle changes to the captcha token
-  const updateToken = useCallback((token?: string) => {
-    return setToken((prev) => {
+  const onTokenChange = useCallback((token?: string) => (
+    setToken((prev) => {
       if (prev === token) return prev;
-      // if provided, invoke the onValueChange prop
       onValueChange?.();
-      // finally return the new state
       return prev;
-    });
-  }, [onValueChange]);
+    })
+  ), [onValueChange]);
   // reset the captchaToken
   const reset = useCallback(() => {
-    // clear the token
     setToken(undefined);
   }, []);
   // memoize the output
-  return useMemo<HookOutput>(() => ({
+  return useMemo(() => ({
     captchaToken: token ?? undefined,
+    onTokenChange,
     reset,
-    onChange: updateToken,
-  }), [token, updateToken, reset]);
+  }), [token, onTokenChange, reset]);
 };

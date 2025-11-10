@@ -4,7 +4,6 @@
  * @file - time-provider.tsx
  */
 "use client";
-import { useTime } from "@/hooks/use-time";
 // imports
 import * as React from "react";
 
@@ -29,15 +28,37 @@ export const useClock = (): ClockContext => {
   return ctx;
 };
 
-type ClockProviderProps = {
-  defaultTimeZone?: string;
-  refreshRate?: number;
-  onTimeChange?: (time: number | string | Date) => void;
-  onTimeZoneChange?: (timezone?: string) => void;
+type RefreshRate = "seconds" | "minutes" | number;
+
+const resolveRefreshRate = (rate: RefreshRate): number => {
+  const unit = 1000; // 1 second in milliseconds
+  // check if the rate is a number
+  if (typeof rate === "number") {
+    if (rate <= 0) {
+      throw new Error("Refresh rate must be a positive number greater than 0");
+    }
+    return rate;
+  }
+  switch (rate) {
+    case "seconds":
+      return unit;
+    case "minutes":
+      return 60 * unit;
+    default:
+      throw new Error(
+        `Invalid refresh rate: ${rate}. Must be 'seconds', 'minutes', or a positive number.`,
+      );
+  }
 };
+
 // TimeProvider
 export const ClockProvider: React.FC<
-  React.PropsWithChildren<ClockProviderProps>
+  React.PropsWithChildren<{
+    defaultTimeZone?: string;
+    refreshRate?: number;
+    onTimeChange?: (time: number | string | Date) => void;
+    onTimeZoneChange?: (timezone?: string) => void;
+  }>
 > = (
   {
     children,
@@ -47,8 +68,39 @@ export const ClockProvider: React.FC<
     onTimeZoneChange,
   },
 ) => {
-  // get a reference to the current time with the useTime hook
-  const { date } = useTime({ refreshRate, onTimeChange });
+  // initialize a reference to the interval
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  // setup the time state
+  const [_dateTime, _setDateTime] = React.useState<Date>(() => new Date());
+  // handle any changes to the time
+  const handleTimeChange = React.useCallback((time: number | string | Date) => {
+    _setDateTime((prev) => {
+      const v = new Date(time);
+      if (prev === v) return prev;
+      onTimeChange?.(v);
+      return v;
+    });
+  }, [onTimeChange]);
+  // update the time every `refreshInterval` milliseconds
+  React.useLayoutEffect(() => {
+    // if an interval is already running, do nothing
+    if (intervalRef.current) return;
+    // otherwise, set up a new interval
+    else {
+      const epoch = resolveRefreshRate(refreshRate);
+      intervalRef.current = setInterval(
+        () => handleTimeChange(Date.now()),
+        epoch,
+      );
+    }
+    // handle cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [_dateTime, intervalRef, refreshRate, handleTimeChange]);
   // define a state to control the format
   const [_format, _setFormat] = React.useState<string>("HH:mm:ss");
   // define a state to control the timezone
@@ -63,17 +115,15 @@ export const ClockProvider: React.FC<
     },
     [],
   );
-
-  // redefine any public variables
-  const timezone = _timezone;
-  // redeclare public-facing methods
-  const setTimezone = handleTimeZoneChange;
   // declare the memoized values for the scaffold provider
-  const ctx = React.useMemo(() => ({ date, timezone, setTimezone }), [
-    date,
-    timezone,
-    setTimezone,
-  ]);
+  const ctx = React.useMemo(
+    () => ({ date: _dateTime, timezone: _timezone, setTimezone: _setTimezone }),
+    [
+      _dateTime,
+      _timezone,
+      _setTimezone,
+    ],
+  );
   // render the TimeProvider component
   return (
     <ClockContext.Provider value={ctx}>

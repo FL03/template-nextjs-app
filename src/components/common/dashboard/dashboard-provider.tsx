@@ -8,15 +8,17 @@
 import * as React from "react";
 // hooks
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useModal } from "@/hooks/use-modal";
+// import { useModal } from "@/hooks/use-modal";
 
-type DashboardContext = {
+interface DashboardState {
   isCompact: boolean;
   isMobile: boolean;
   fullWidth: boolean;
-  leading: ReturnType<typeof useModal>;
-  trailing: ReturnType<typeof useModal>;
-  setFullWidth: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+type DashboardContext = {
+  state: DashboardState;
+  error: Error | null;
 };
 
 const DashboardContext = React.createContext<DashboardContext | null>(null);
@@ -42,37 +44,33 @@ export const useDashboard = (): DashboardContext => {
 // DashboardProvider
 export const DashboardProvider: React.FC<
   React.PropsWithChildren<{
-    compact?: boolean;
+    isCompact?: boolean;
+    fullWidth?: boolean;
   }>
-> = ({ children, compact }) => {
+> = ({ children, isCompact: isCompactProp, fullWidth: fullWidthProp }) => {
+  const [_error, _setError] = React.useState<Error | null>(null);
   // setup the fullWidth state
-  const [fullWidth, setFullWidth] = React.useState<boolean>(!compact);
-  // define states for tracking the presence of various components
-  const [isCompact, setIsCompact] = React.useState<boolean>(false);
-  // setup controllers for the panels
-  const leading = useModal<HTMLDivElement>();
-  const trailing = useModal<HTMLDivElement>();
+  const [compact] = React.useState<boolean>(Boolean(isCompactProp));
+  const [fullWidth] = React.useState<boolean>(
+    Boolean(fullWidthProp),
+  );
   // check if the current device is mobile
   const isMobile = useIsMobile();
-  // declare the memoized values for the scaffold provider
-  const ctx = React.useMemo(
+
+  const _state = React.useMemo<DashboardState>(() => ({
+    isCompact: compact,
+    isMobile,
+    fullWidth,
+  }), [compact, isMobile, fullWidth]);
+
+  const ctx = React.useMemo<DashboardContext>(
     () => ({
-      fullWidth,
-      isMobile,
-      isCompact,
-      leading,
-      trailing,
-      setFullWidth,
-      setIsCompact,
+      error: _error,
+      state: _state,
     }),
     [
-      fullWidth,
-      isCompact,
-      isMobile,
-      leading,
-      trailing,
-      setFullWidth,
-      setIsCompact,
+      _error,
+      _state,
     ],
   );
   // render provider

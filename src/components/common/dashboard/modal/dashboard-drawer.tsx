@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 // components
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 // local
-import { TriggeredModalProps } from "./types";
+import { ModalPropsWithTrigger } from "./types";
 import { useModal } from "@/hooks/use-modal";
 
 export const DashboardDrawer: React.FC<
-  React.PropsWithChildren<TriggeredModalProps> & {
+  React.PropsWithChildren<ModalPropsWithTrigger> & {
     className?: string;
   }
 > = ({
@@ -30,8 +30,7 @@ export const DashboardDrawer: React.FC<
   triggerCloseIcon = <ArrowBigDownDashIcon className="h-8 w-8" />,
   showTriggerLabel,
 }) => {
-  
-  const { isOpen, setIsOpen, } = useModal({
+  const { isOpen, setIsOpen } = useModal({
     defaultOpen,
     open: openProp,
     onOpenChange,

@@ -7,73 +7,91 @@
 "use client";
 // imports
 import { useEffect, useMemo, useRef } from "react";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // project
 import {
-  fetchUserProfile,
+  getUserProfile,
   ProfileData,
-  upsertProfile,
+  upsertUserProfile,
 } from "@/features/profiles";
-import {
-  createBrowserClient,
-  handleRealtimeSubscription,
-} from "@/lib/supabase";
+import { createBrowserClient } from "@/lib/supabase";
 import { logger } from "@/lib/logger";
-import { Database } from "@/types/database.types";
+import { PublicDatabase } from "@/types/database.types";
 // hooks
 import { useUsername } from "./use-username";
 
-type HookProps = {
-  client?: ReturnType<typeof createBrowserClient<any, "public">>;
-  userId?: string;
-  onValueChange?: (profile?: ProfileData | null) => void;
-  onError?: (error?: unknown) => void;
-  onRefresh?: (profile?: ProfileData | null) => void;
-  onSave?: (profile?: ProfileData | null) => void;
-};
+namespace UseUserProfile {
+  export type Callback = (options?: Props) => Context;
 
-type HookState = {
-  isLoading: boolean;
-  isReloading: boolean;
-  isUpdating: boolean;
-};
+  export interface Props {
+    supabase?: ReturnType<typeof createBrowserClient<any, "public">>;
+    username?: string;
+    userId?: string;
+    onValueChange?(profile: ProfileData | null): void;
+    onError?(error?: unknown): void;
+    onRefresh?(profile: ProfileData | null): void;
+    onSave?(profile: ProfileData | null): void;
+  }
 
-type UseUserProfileReturnT = {
-  isOwner: boolean;
-  state: HookState;
-  profile?: ProfileData;
-  username?: string;
-  userId?: string;
-  reload: () => void;
-  update: (value: Partial<ProfileData>) => Promise<ProfileData | null>;
-};
+  export interface State {
+    isError: boolean;
+    isLoading: boolean;
+    isReloading: boolean;
+    isUpdating: boolean;
+  }
 
-export const useUserProfile = (
-  alias?: string,
-  options?: HookProps,
-): UseUserProfileReturnT => {
-  const { client, onError, onValueChange } = options || {};
-  const supabase = client ?? createBrowserClient<Database, "public">();
-  // access the current user
+  export interface Context {
+    error: Error | null;
+    isOwner: boolean;
+    state: State;
+    profile: ProfileData | null;
+    username?: string;
+    userId?: string;
+    reload: () => void;
+    update: (value: Partial<ProfileData>) => Promise<ProfileData | null>;
+  }
+}
+
+/** The `useUserProfile` hook effectively materializes the current user-profile object from the database within the application. */
+export const useUserProfile: UseUserProfile.Callback = (
+  {
+    supabase = createBrowserClient<PublicDatabase, "public">("public"),
+    onValueChange,
+    onError,
+    onSave,
+    username: usernameProp,
+    userId,
+  } = {},
+) => {
   const currentUser = useUsername();
+
+  // React Query: fetch and cache the profile
+  const queryClient = useQueryClient();
 
   // Compute the effective username
   const username = useMemo(() => {
-    if (alias && alias.trim() !== "") return alias;
+    if (usernameProp && usernameProp.trim() !== "") return usernameProp;
     if (currentUser.username && currentUser.username.trim() !== "") {
       return currentUser.username;
     }
     return undefined;
-  }, [alias, currentUser.username]);
+  }, [usernameProp, currentUser.username]);
 
   const isOwner = useMemo(() => currentUser.username === username, [
     currentUser.username,
     username,
   ]);
 
-  // React Query: fetch and cache the profile
-  const queryClient = useQueryClient();
+  const queryKey = useMemo(() => {
+    if (username) return ["profile", username];
+    else if (userId) return ["profile", "id", userId];
+    else return ["profile", "unknown"];
+  }, [username, userId]);
+
   const {
     data: profile,
     isError: isQueryError,
@@ -82,10 +100,12 @@ export const useUserProfile = (
     refetch: reload,
     error: queryError,
   } = useQuery<ProfileData | null>({
-    queryKey: ["profile", username],
-    queryFn:
-      () => (username ? fetchUserProfile({ username }) : Promise.resolve(null)),
-    enabled: !!username,
+    queryKey,
+    queryFn: () => {
+      if (!username && !userId) return Promise.resolve(null);
+      return getUserProfile({ username, userId });
+    },
+    enabled: Boolean(username) || Boolean(userId),
     staleTime: 1000 * 60, // 1 minute
   });
 
@@ -95,9 +115,9 @@ export const useUserProfile = (
       if (!username) {
         throw new Error("No username provided; cannot update profile");
       }
-      const updated = await upsertProfile({ username, ...updates });
+      const updated = await upsertUserProfile({ username, ...updates });
       if (onValueChange) onValueChange(updated ?? null);
-      if (options?.onSave) options.onSave(updated ?? null);
+      if (onSave) onSave(updated ?? null);
       return updated;
     },
     onSuccess: (data) => {
@@ -127,39 +147,64 @@ export const useUserProfile = (
           table: "profiles",
           filter: `username=eq.${username}`,
         },
-        ({ eventType, new: newData }) => {
-          logger.trace(`[${eventType}] Real-time profile update received`);
+        (
+          { eventType, new: payload }: RealtimePostgresChangesPayload<
+            ProfileData
+          >,
+        ) => {
+          logger.trace({ event: eventType }, "Received a profile change event");
           if (["INSERT", "UPDATE"].includes(eventType)) {
             // Update the cache with the new profile data
             queryClient.setQueryData(
               ["profile", username],
-              newData as ProfileData,
+              payload as ProfileData,
             );
-            if (onValueChange) onValueChange(newData as ProfileData);
+            onValueChange?.(payload as ProfileData);
           } else if (eventType === "DELETE") {
             queryClient.setQueryData(["profile", username], null);
-            if (onValueChange) onValueChange(null);
+            onValueChange?.(null);
           }
         },
       )
-      .subscribe(handleRealtimeSubscription);
+      .subscribe(async (status, err) => {
+        if (err) {
+          logger.error(err, "Error with real-time profile subscription");
+          return Promise.reject(err);
+        }
+        logger.info(
+          { status },
+          "Real-time profile subscription status changed",
+        );
+        if (status === "SUBSCRIBED") {
+          // Initial fetch to sync the profile data
+          const freshProfile = await getUserProfile({ username });
+          queryClient.setQueryData(
+            ["profile", username],
+            freshProfile as ProfileData,
+          );
+          onValueChange?.(freshProfile);
+        }
+        if (status === "CLOSED") {
+          channelRef.current = null;
+        }
+        return Promise.resolve();
+      });
 
     channelRef.current = channel;
 
     return () => {
       if (channelRef.current) {
-        channelRef.current.unsubscribe();
         supabase.realtime.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
-  }, [supabase, username, queryClient, onValueChange]);
+  }, [supabase, channelRef, username, queryClient, onValueChange]);
 
   // Compose state
-  const state = useMemo(
+  const state = useMemo<UseUserProfile.State>(
     () => ({
       isLoading,
-      isQueryError,
+      isError: isQueryError,
       isReloading,
       isUpdating,
     }),
@@ -169,7 +214,7 @@ export const useUserProfile = (
   return useMemo(
     () => ({
       error: queryError,
-      profile: profile ?? undefined,
+      profile: profile ?? null,
       state,
       username: profile?.username ?? username,
       userId: profile?.id,

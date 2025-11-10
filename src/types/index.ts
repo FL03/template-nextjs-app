@@ -3,6 +3,12 @@
  * @author - @FL03
  * @file - types/index.ts
  */
+
+export * from "./api";
+export * from "./author";
+export * from "./cmp";
 export * from "./core";
+export * from "./events";
+export * from "./filter";
 export * from "./hooks";
-export * from "./props";
+export * from "./routes";

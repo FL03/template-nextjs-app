@@ -1,58 +1,59 @@
 /**
- * Created At: 2025-04-12:17:41:53
+ * Created At: 2025.09.28:08:58:35
  * @author - @FL03
- * @file - section.tsx
+ * @directory - src/components/common
+ * @file - container.tsx
  */
 "use client";
 // imports
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
-// project
+import { Slot } from "@radix-ui/react-slot";
+// lib
 import { cn } from "@/lib/utils";
-// components
-import { Skeleton } from "@/components/ui/skeleton";
 import { TextSize } from "@/types";
 
-const sectionVariants = cva("flex px-4 py-2 gap-2 lg:gap-4 rounded-xl", {
-  defaultVariants: {
-    flavor: "default",
-    size: "default",
-    variant: "default",
+const sectionVariants = cva(
+  "flex flex-1 w-full gap-2 lg:gap-4 rounded-xl",
+  {
+    defaultVariants: {
+      flavor: "default",
+      size: "default",
+      orientation: "vertical",
+      variant: "default",
+    },
+    variants: {
+      flavor: {
+        default: "bg-transparent text-foreground border-none",
+        accent: "bg-accent text-accent-foreground border-accent/10",
+        primary: "bg-primary text-primary-foreground border-primary/10",
+        secondary: "bg-secondary text-secondary-foreground border-secondary/10",
+        destructive:
+          "bg-destructive text-destructive-foreground border-destructive/10",
+        ghost: "bg-transparent text-foreground border-none",
+      },
+      orientation: {
+        vertical: "flex-col",
+        horizontal: "flex-row",
+      },
+      size: {
+        default: "px-4 py-2",
+        sm: "shrink px-3 py-1.5",
+        lg: "grow px-6 py-3",
+      },
+      variant: {
+        default: "flex-col h-full",
+        inline: "flex-row flex-nowrap items-center",
+        container: "container mx-auto",
+      },
+    },
   },
-  variants: {
-    flavor: {
-      default: "bg-background text-foreground border-muted",
-      accent: "bg-accent text-accent-foreground border-accent/10",
-      primary: "bg-primary text-primary-foreground border-primary/10",
-      secondary: "bg-secondary text-secondary-foreground border-secondary/10",
-      destructive:
-        "bg-destructive text-destructive-foreground border-destructive/10",
-      ghost: "bg-transparent text-foreground border-none",
-    },
-    size: {
-      default: "flex-1 w-full",
-      compact: "flex-shrink-0 h-fit w-fit",
-      full: "flex-1 h-full w-full",
-      wide: "w-full",
-    },
-    variant: {
-      default: "flex-col",
-      inline: "flex-row flex-nowrap items-center",
-      container: "flex-col container mx-auto",
-    },
-  },
-});
+);
 
-type SectionVariants = VariantProps<typeof sectionVariants>;
-
-/**
- * The `Section` component is a flexible container that can be used to group related content together. While the overall effect is similar to a `Card` component,
- * sections are typically used to group other content together needing a more flexible layout empowered with
- */
+// Section
 export const Section: React.FC<
   & Omit<React.ComponentPropsWithRef<"section">, "size" | "title">
-  & SectionVariants
+  & VariantProps<typeof sectionVariants>
   & { asChild?: boolean }
 > = ({
   ref,
@@ -60,6 +61,7 @@ export const Section: React.FC<
   asChild,
   flavor = "default",
   size = "default",
+  orientation = "vertical",
   variant = "default",
   ...props
 }) => {
@@ -70,9 +72,7 @@ export const Section: React.FC<
     <Comp
       ref={ref}
       className={cn(
-        sectionVariants({ flavor, size, variant }),
-        "transition-all duration-200 ease-in-out",
-        "",
+        sectionVariants({ flavor, variant }),
         className,
       )}
       {...props}
@@ -179,29 +179,3 @@ export const SectionDescription: React.FC<
   );
 };
 SectionDescription.displayName = "SectionDescription";
-
-export const SectionSkeleton: React.FC<
-  React.PropsWithChildren<React.ComponentPropsWithRef<typeof Section>>
-> = ({ ref, children, className, ...props }) => {
-  // render the component
-  return (
-    <Section
-      {...props}
-      ref={ref}
-      className={cn("relative flex flex-1 flex-col w-full", className)}
-    >
-      <SectionHeader className="flex flex-col gap-2">
-        <SectionTitle>
-          <Skeleton className="h-4 bg-gray-200 rounded w-1/2" />
-        </SectionTitle>
-        <Skeleton className="h-3 bg-gray-200 rounded w-1/3" />
-      </SectionHeader>
-      <SectionContent>{children}</SectionContent>
-      <SectionFooter>
-        <Skeleton className="h-4 bg-gray-200 rounded w-1/2" />
-        <Skeleton className="h-3 bg-gray-200 rounded w-1/3" />
-      </SectionFooter>
-    </Section>
-  );
-};
-SectionSkeleton.displayName = "SectionSkeleton";

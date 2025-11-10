@@ -6,52 +6,130 @@
 "use client";
 // imports
 import * as React from "react";
+import Link from "next/link";
+import { SettingsIcon } from "lucide-react";
 // project
+import { AuthProviderButtons } from "@/features/auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-// components
-import { Separator } from "@/components/ui/separator";
-import { AuthProviderButtons } from "@/features/auth/widgets";
 // local
-import { AvatarPicker } from "./avatar-picker";
+import { useProfile } from "../provider";
+import { AvatarPicker } from "./profile-avatar";
 import { ProfileForm } from "./profile-form";
-import { ProfileData } from "../types";
+// components
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 export const ProfileSettings: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "children" | "title"> & {
-    profile?: ProfileData;
+  Omit<React.ComponentPropsWithoutRef<typeof Card>, "children" | "title"> & {
+    username?: string;
+    userId?: string;
   }
-> = ({ ref, className, profile, ...props }) => {
-  //
+> = ({ className, username, userId, ...props }) => {
   const isMobile = useIsMobile();
-  // if no profile is passed, return null
+  const { profile } = useProfile();
   if (!profile) return null;
-  // render the component
+  // render
   return (
-    <div
+    <Card
+      className={cn(
+        "flex flex-1 flex-col h-full w-full relative z-auto",
+        className,
+      )}
       {...props}
-      ref={ref}
-      className={cn("flex flex-1 flex-col gap-2 h-full w-full", className)}
     >
-      <AvatarPicker defaultImage={profile.avatar_url} />
-      <div className="flex flex-col w-full gap-2">
-        <span className="text-lg font-semibold tracking-tight">Providers</span>
-        <AuthProviderButtons
-          inline={!isMobile}
-          mode="link"
-          className="w-full"
-        />
-      </div>
-      <Separator className="text-muted" />
-      <>
-        <span className="text-lg font-semibold tracking-tight">
-          Personal Information
-        </span>
-        <ProfileForm values={profile} />
-      </>
-    </div>
+      <CardContent className="flex-1 h-full w-full">
+        <CardHeader>
+          <CardTitle className="text-xl">User Settings</CardTitle>
+        </CardHeader>
+        <CardFooter className="flex flex-1 flex-col gap-2">
+          <AvatarPicker defaultImage={profile?.avatar_url} />
+          <div className="flex flex-col w-full gap-2">
+            <Label className="font-semibold text-base">Providers</Label>
+            <AuthProviderButtons
+              mode="link"
+              className="w-full"
+              orientation={isMobile ? "vertical" : "horizontal"}
+            />
+          </div>
+          <Separator />
+          <ProfileForm showLegend defaultValues={profile} />
+        </CardFooter>
+      </CardContent>
+    </Card>
   );
 };
 ProfileSettings.displayName = "ProfileSettings";
 
-export default ProfileSettings;
+export const ProfileSettingsButton: React.FC<
+  Omit<React.ComponentProps<typeof Button>, "asChild" | "children"> & {
+    about?: string;
+    label?: string;
+    classNames?: { iconClassName?: string; labelClassName?: string };
+    username?: string;
+  }
+> = ({
+  classNames,
+  username,
+  about = "Profile Settings",
+  size = "default",
+  variant = "ghost",
+  label = "Settings",
+  ...props
+}) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          {...props}
+          asChild
+          size={size}
+          variant={variant}
+        >
+          <Link
+            about={about}
+            className="inline-flex flex-nowrap gap-2 items-center"
+            href={{
+              pathname: `/${username}/settings`,
+            }}
+            rel="noopener noreferrer"
+            target="_self"
+          >
+            <SettingsIcon
+              className={cn("h-5 w-5", classNames?.iconClassName)}
+            />
+            {label && (
+              <span
+                className={cn(
+                  size === "icon" ? "sr-only" : "not-sr-only",
+                  "text-nowrap truncate leading-tight tracking-tight",
+                  classNames?.labelClassName,
+                )}
+              >
+                {label}
+              </span>
+            )}
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        Edit your profile
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+ProfileSettingsButton.displayName = "ProfileSettingsButton";

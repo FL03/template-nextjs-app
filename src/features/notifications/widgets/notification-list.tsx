@@ -1,146 +1,123 @@
 /**
- * Notification List Component
- * Created At: 2025-04-09:07:42:06
+ * Created At: 2025.11.01:15:01:01
  * @author - @FL03
- * @description - This component displays a list of notifications for the user.
+ * @directory - src/features/notifications/widgets
  * @file - notification-list.tsx
  */
 "use client";
 // imports
 import * as React from "react";
+import { CheckedState } from "@radix-ui/react-checkbox";
 // project
-import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 // feature-specific
-import type { Notification } from "../types";
+import type { NotificationData } from "../types";
+import { NotificationItemDropdownMenu } from "./actions";
 // components
-import { ListItem, UList } from "@/components/common/list";
-import {
-  Tile,
-  TileContent,
-  TileLeading,
-  TileTrailing,
-} from "@/components/common/tile";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { NotificationStatusBadge } from "./notification-status";
 
-// the notification list item component
-const NotificationListItem: React.FC<
+// NotificationItem
+export const NotificationItem: React.FC<
   Omit<
-    React.ComponentPropsWithRef<typeof ListItem>,
+    React.ComponentPropsWithRef<typeof Item>,
     "asChild" | "onClick" | "children"
   > & {
-    item?: Notification | null;
-    onClick?: (item: Notification) => void;
-    onSelected?: (item: Notification) => void;
+    value: NotificationData;
+    onClick?(item: NotificationData): void;
   }
-> = ({ ref, item: itemProp, onClick, onSelected, ...props }) => {
-  // memoize the item to prevent unnecessary re-renders
-  const item = React.useMemo(() => itemProp || null, [itemProp]);
-  // local state
-  const [selected, setSelected] = React.useState(false);
+> = ({ ref, className, value, onClick, ...props }) => {
+  const [checked, setChecked] = React.useState<CheckedState>(false);
 
-  // ensure the selected signal is in sync with the item
-  React.useEffect(() => {
-    // handle the case where the item is present
-    if (item && item.status) {
-      // check if the item is read or selected
-      setSelected(["read", "selected"].includes(item.status));
-    }
-  }, [item]);
-  // if the item is not present, return null
-  if (!item) return null;
-  // deconstruct the item
-  const { message, status } = item;
+  const toggleSelected = () => setChecked((prev) => !prev);
 
-  function handleOnItemClick(item: Notification) {
-    // handle click event here
-    logger.trace("Handling the click event for a notification...");
-    // handle select event here
-    setSelected((prev) => !prev);
-    // finish out by calling the onClick prop if it exists
-    if (onClick) onClick(item);
-    // return
-    return;
+  function handleOnClick(
+    data: NotificationData,
+  ): React.MouseEventHandler<HTMLDivElement> {
+    return (event) => {
+      // cleanup the event
+      event.preventDefault();
+      event.stopPropagation();
+      // toggle the selected state
+      toggleSelected();
+      // invoke the onClick callback
+      onClick?.(data);
+    };
   }
-
-  function handleSelect(
-    item: Notification,
-  ) {
-    // handle select event here
-    logger.trace("Handling the select event for a notification...");
-    // toggle the selected state
-    setSelected((prev) => !prev);
-    // call the onSelected callback if possible
-    if (onSelected) onSelected(item);
-  }
-  // render the notification list item
   return (
-    <ListItem
-      {...props}
-      asChild
+    <Item
       ref={ref}
-      onClick={(event) => {
-        // prevent the default action of the checkbox
-        event.preventDefault();
-        // prevent the event from bubbling up to the list item
-        event.stopPropagation();
-        // handle the click event
-        handleOnItemClick(item);
-      }}
+      key={value?.id}
+      onClick={handleOnClick(value)}
+      className={cn("flex-nowrap justify-stretch", className)}
+      {...props}
     >
-      <Tile>
-        <TileLeading>
-          <Checkbox
-            checked={selected}
-            onClick={(event) => {
-              // prevent the default action of the checkbox
-              event.preventDefault();
-              // prevent the event from bubbling up to the list item
-              event.stopPropagation();
-              // handle the select event
-              handleSelect(item);
-            }}
-          />
-        </TileLeading>
-        <TileContent>{message}</TileContent>
-        <TileTrailing>
-          <Badge>{status}</Badge>
-        </TileTrailing>
-      </Tile>
-    </ListItem>
+      <ItemMedia variant="icon">
+        <Checkbox
+          className="m-auto"
+          checked={checked}
+          onCheckedChange={setChecked}
+          onClick={toggleSelected}
+        />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{value?.message}</ItemTitle>
+        <ItemDescription>{value?.sender}</ItemDescription>
+      </ItemContent>
+      <ItemContent className="items-center">
+        <NotificationStatusBadge hideLabel status={value?.status} variant="outline"/>
+      </ItemContent>
+      <ItemActions>
+        <NotificationItemDropdownMenu value={value} />
+      </ItemActions>
+    </Item>
   );
 };
-NotificationListItem.displayName = "NotificationListItem";
 
 export const NotificationList: React.FC<
-  React.ComponentPropsWithRef<typeof UList> & {
-    items?: Notification[];
-    onItemClick?: (item: Notification) => void;
-    onItemSelected?: (item: Notification) => void;
+  React.ComponentPropsWithRef<typeof ItemGroup> & {
+    items?: NotificationData[];
+    itemSize?: React.ComponentProps<typeof NotificationItem>["size"];
+    itemVariant?: React.ComponentProps<typeof NotificationItem>["variant"];
+    onItemClick?(item: NotificationData): void;
   }
-> = ({ ref, className, onItemClick, onItemSelected, items = [], ...props }) => {
-  return (
-    <UList
-      {...props}
-      ref={ref}
-      className={cn(
-        "flex flex-col flex-1 w-full h-full gap-1 px-4 py-2",
-        "bg-accent text-accent-foreground border border-accent/10 rounded-xl shadow-md inset-0.5",
-        className,
-      )}
-    >
-      {items.map((item, index) => (
-        <NotificationListItem
-          key={index}
-          item={item}
-          onClick={onItemClick}
-          onSelected={onItemSelected}
-        />
-      ))}
-    </UList>
-  );
-};
-NotificationList.displayName = "NotificationList";
-
-export default NotificationList;
+> = (
+  {
+    ref,
+    className,
+    items,
+    itemSize = "sm",
+    itemVariant = "outline",
+    onItemClick,
+    ...props
+  },
+) => (
+  <ItemGroup
+    {...props}
+    ref={ref}
+    className={cn(
+      "flex-1 w-full h-full gap-1",
+      className,
+    )}
+  >
+    {items?.map((item) => (
+      <NotificationItem
+        key={item.id}
+        value={item}
+        onClick={onItemClick}
+        size={itemSize}
+        variant={itemVariant}
+      />
+    ))}
+  </ItemGroup>
+);

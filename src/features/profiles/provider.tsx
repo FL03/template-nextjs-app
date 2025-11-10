@@ -12,7 +12,7 @@ import { useUserProfile } from "@/hooks/use-profile";
 
 type ProfileContext = ReturnType<typeof useUserProfile>;
 
-export const ProfileContext = React.createContext<ProfileContext | null>(null);
+const ProfileContext = React.createContext<ProfileContext | null>(null);
 
 /** create a profile context using values from the provider. */
 export const useProfile = (): ProfileContext => {
@@ -24,11 +24,13 @@ export const useProfile = (): ProfileContext => {
 };
 
 /** The Profile Provider component uses the given username to manage the corresponding user profile */
-export const ProfileProvider: React.FC<
-  React.PropsWithChildren<{ username?: string }>
-> = ({ children, username: usernameProp }) => {
+export const UserProfileProvider: React.FC<
+  React.PropsWithChildren<{ username: string }>
+> = ({ children, username }) => {
   // use the hook for the context
-  const { profile, state, ...userProfile } = useUserProfile(usernameProp);
+  const { profile, state, ...userProfile } = useUserProfile({
+    username,
+  });
 
   // create the context object
   const ctx = React.useMemo(
@@ -47,6 +49,6 @@ export const ProfileProvider: React.FC<
     </ProfileContext.Provider>
   );
 };
-ProfileProvider.displayName = "ProfileProvider";
+UserProfileProvider.displayName = "ProfileProvider";
 
-export default ProfileProvider;
+export default UserProfileProvider;

@@ -7,83 +7,94 @@
 //imports
 import * as React from "react";
 import { toast } from "sonner";
+import { ClassNames } from "@pzzld/core";
 // project
-import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-// components
-import { RefreshButton } from "@/components/common/button";
-import { Description, Title } from "@/components/common/typography";
 // local
 import { NotificationList } from "./notification-list";
 import { useNotifications } from "../provider";
+// components
+import { RefreshButton } from "@/components/common/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const NotificationCenter: React.FC<
   Omit<React.ComponentPropsWithRef<"div">, "children"> & {
     description?: React.ReactNode;
     title?: React.ReactNode;
     username?: string;
+    classNames?: ClassNames<
+      "action" | "content" | "header" | "footer" | "title" | "description"
+    >;
   }
 > = ({
   ref,
   className,
+  classNames,
   description = "Manage all your notifications in one place",
   title = "Notifications",
   ...props
 }) => {
   // use the hook to get notifications
   const { data, state, ...notifications } = useNotifications();
-  // create a callback for refreshing the notifications
-  const handleRefresh = async () => {
-    // wrap the callback with a toast
-    toast.promise(
-      // refresh the notifications
-      notifications.refresh,
-      {
-        loading: "Refreshing notifications...",
-        success: "Notifications refreshed successfully",
-        error: (error) => `Failed to refresh notifications: ${error.message}`,
-      },
-    );
-  };
   // render the component
   return (
-    <div
+    <Card
       {...props}
       ref={ref}
-      className={cn("container mx-auto flex-1 h-full w-full", className)}
+      className={cn(
+        "flex flex-1 flex-col h-full w-full relative z-auto",
+        className,
+      )}
     >
-      <div className="flex flex-nowrap items-center mb-3">
-        <div className="inline-flex flex-col mr-auto">
-          {title && <Title>{title}</Title>}
-          {description && <Description>{description}</Description>}
-        </div>
-        <div className="inline-flex flex-nowrap items-center gap-2 ml-auto">
-          <RefreshButton
-            onRefresh={handleRefresh}
-            isRefreshing={state.isRefreshing}
-          />
-        </div>
-      </div>
-      <div className="flex flex-1 flex-col gap-2 lg:gap-4 h-full w-full">
-        <NotificationList
-          variant="card"
-          items={data}
-          onItemClick={async (item) => {
-            if (!item.id) {
-              logger.warn("Notification item does not have an ID");
-              return;
-            }
-            if (item.status === "unread") {
-              // mark the notification as read
-              await notifications.markAsRead(item.id);
-            } else {
-              // unmark the notification as read
-              await notifications.updateStatus(item.id, "unread");
-            }
-          }}
-        />
-      </div>
-    </div>
+      <CardHeader
+        className={cn("order-first w-full", classNames?.headerClassName)}
+      >
+        {title && (
+          <CardTitle className={cn("text-lg", classNames?.titleClassName)}>
+            {title}
+          </CardTitle>
+        )}
+        {description && (
+          <CardDescription className={cn(classNames?.descriptionClassName)}>
+            {description}
+          </CardDescription>
+        )}
+        <CardAction className={classNames?.actionClassName}>
+          <ButtonGroup>
+            <RefreshButton
+              isRefreshing={state.isReloading}
+              onRefresh={() => {
+                toast.promise(
+                  notifications.reload,
+                  {
+                    loading: "Refreshing notifications...",
+                    success: "Notifications refreshed successfully",
+                    error: (error) =>
+                      `Failed to refresh notifications: ${error.message}`,
+                  },
+                );
+              }}
+            />
+          </ButtonGroup>
+        </CardAction>
+      </CardHeader>
+      <CardContent
+        className={cn("flex-1 h-full w-full", classNames?.contentClassName)}
+      >
+        <NotificationList items={data} />
+      </CardContent>
+      <CardFooter hidden className={cn("w-full", classNames?.footerClassName)}>
+      </CardFooter>
+    </Card>
   );
 };
 NotificationCenter.displayName = "NotificationCenter";

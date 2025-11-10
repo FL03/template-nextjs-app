@@ -4,4 +4,3 @@
  * @file - views/index.ts
  */
 export { ProfileDetailsView } from "./profile-details-view";
-export * from "./profile-screen";

@@ -8,26 +8,29 @@
 import * as React from "react";
 // project
 import About from "../content/about.mdx";
-import { ContentCard } from "../widgets";
+// components
+import { ContentCard } from "@/components/common/cards";
 
-export const AboutScreen: React.FC<
+export const AboutPage: React.FC<
   Omit<
-    React.ComponentPropsWithRef<typeof ContentCard>,
-    "author" | "description" | "title" | "children"
+    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    "author" | "children"
   >
-> = ({ ref, ...props }) => {
-  return (
-    <ContentCard
-      {...props}
-      ref={ref}
-      author="Joe McCain III"
-      description="A little bit about me!"
-      title="About"
-    >
-      <About />
-    </ContentCard>
-  );
-};
-AboutScreen.displayName = "AboutScreen";
+> = (
+  {
+    description = "A little bit about the software and its capabilities.",
+    title = "About",
+    ...props
+  },
+) => (
+  <ContentCard
+    {...props}
+    description={description}
+    title={title}
+  >
+    <About />
+  </ContentCard>
+);
+AboutPage.displayName = "AboutPage";
 
-export default AboutScreen;
+export default AboutPage;

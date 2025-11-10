@@ -1,7 +1,8 @@
 /**
- * Created At: 2025-04-13:13:49:40
+ * Created At: 2025.10.22:17:34:59
  * @author - @FL03
- * @file - auth/provider.tsx
+ * @directory - src/features/auth
+ * @file - provider.tsx
  */
 "use client";
 // imports
@@ -11,53 +12,78 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-profile";
 // features
 import { ProfileData } from "@/features/profiles";
-import { User } from "@supabase/supabase-js";
+import { cn } from "@/lib/utils";
 
-type AuthContext = {
+interface CurrentUserContext extends Omit<ReturnType<typeof useAuth>, "state"> {
   authState: ReturnType<typeof useAuth>["state"];
-  profile?: ProfileData;
-  user?: User;
-  userId?: string;
+  profileState: ReturnType<typeof useUserProfile>["state"];
+  profile: ProfileData | null;
+  customerId?: string;
+  subscriptionStatus?: string;
+  email?: string;
   username?: string;
-};
+  user?: ReturnType<typeof useAuth>["user"];
+  userId?: string;
+}
 // declare the current user context
-const AuthContext = React.createContext<AuthContext | null>(null);
+const CurrentUserContext = React.createContext<CurrentUserContext | null>(null);
 
-/** A hook dedicated to the supabase auth features */
+/** A hook for getting the context of the `CurrentUserProvider`.*/
 export const useCurrentUser = () => {
   // try and get the context
-  const context = React.useContext(AuthContext);
+  const context = React.useContext(CurrentUserContext);
   // handle the case where the context is not available
   if (!context) {
     throw new Error(
-      "`useCurrentUser` must be used within the bounds of an `UserAuthProvider`.",
+      "`useCurrentUser` must be used within the bounds of an `CurrentUserProvider`.",
     );
   }
   // return the context
   return context;
 };
 
-export const UserAuthProvider: React.FC<
-  React.PropsWithChildren
-> = ({ children }) => {
-  // call the use auth hook to get the context of the provider
-  const { state: authState, user, ...auth } = useAuth();
-  const { profile } = useUserProfile(user?.user_metadata?.username);
+/**
+ * The `CurrentUserProvider` works to provide a single synchronized context providing access to both the user object and the user profile.
+ */
+export const CurrentUserProvider: React.FC<
+  React.ComponentPropsWithRef<"div">
+> = ({ ref, className, ...props }) => {
+  const { state: authState, customerId, subscriptionStatus, user, ...auth } =
+    useAuth();
+  const { profile, username, state: profileState } = useUserProfile({
+    userId: user?.id,
+  });
 
   // memoize the context
   const context = React.useMemo(() => ({
     ...auth,
     authState,
     profile,
+    profileState,
+    customerId: profile?.customer_id ?? customerId,
+    subscriptionStatus: profile?.subscription_status ?? subscriptionStatus,
     user,
-    username: profile?.username
-  }), [auth, authState, profile, user]);
+    username,
+  }), [
+    auth,
+    authState,
+    profile,
+    profileState,
+    user,
+    username,
+    customerId,
+    subscriptionStatus,
+  ]);
   return (
-    <AuthContext.Provider value={context}>
-      {children}
-    </AuthContext.Provider>
+    <CurrentUserContext.Provider value={context}>
+      <div
+        ref={ref}
+        className={cn("flex-1 h-full w-full", className)}
+        {...props}
+      />
+    </CurrentUserContext.Provider>
   );
 };
-UserAuthProvider.displayName = "UserAuthProvider";
+CurrentUserProvider.displayName = "UserAuthProvider";
 
-export default UserAuthProvider;
+export default CurrentUserProvider;

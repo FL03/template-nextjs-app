@@ -4,15 +4,15 @@
  * @file - auth/constants.ts
  */
 // imports
-import { RouteBuilderOptions } from "@/lib/endpoint";
+import type { RouteBuilderOptions } from "@/types";
 // local
-import { AuthView } from "./types";
+import type { AuthGateMode } from "./types";
 
 export const ENDPOINT_AUTH = "/auth";
 export const ENDPOINT_AUTH_LOGIN = "/auth/login"; // "/auth?view=login";
 
 type RouteParamsT = {
-  view?: AuthView;
+  view?: AuthGateMode;
 };
 
 /** A simple method for creating dynamic endpoints for the `/auth` prefix */

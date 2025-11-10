@@ -5,18 +5,25 @@
  */
 "use client";
 // project
-import { CACHE_KEY_USER_ID, CACHE_KEY_USERNAME } from "@/lib/constants";
+import { CACHE_KEY_USER_ID } from "@/lib/config";
 import { logger } from "@/lib/logger";
 
-const removeCached = (key: string) => {
+const removeCached = (key: string): boolean => {
   // ensure the window object is available
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    logger.warn(
+      "No window object available, cannot clear cached item: " + key,
+    );
+    return false;
+  }
   // handle the clearing of the cached item
   try {
     window.localStorage.removeItem(key);
-    logger.info(`Successfully cleared the cached item: ${key}`);
+    logger.info("Successfully cleared the cached item: " + key);
+    return true;
   } catch (error) {
-    logger.error(error, `Failed to clear cached item: ${key}`);
+    logger.error(error, "Failed to clear cached item: " + key);
+    return false;
   }
 };
 
@@ -49,31 +56,26 @@ export const cacheUserId = (
   }
 };
 
+type CacherProps = {
+  key?: string;
+  value?: string;
+  onDataChange?(data: string): void;
+  onError?(error: unknown): void;
+};
 /**
  * A simple callback for handling the cached username; if a window object is available and no username is passed, the cached value will be automatically cleared,
  * however, when one is provided the method tries to cache it in the local storage.
  */
-export const cacheUsername = (
-  username?: string | null,
-  options?: { clear?: boolean },
+export const cacheKeyValue = (
+  { key, value, onDataChange, onError }: CacherProps = {},
 ) => {
-  // deconstruct the options
-  const { clear } = options || {};
   // ensure the window object is available
-  if (typeof window === "undefined") return;
-  // handle the case where no username was provided
-  if (clear || !username) {
-    // clear the cache
-    removeCached(CACHE_KEY_USERNAME);
-    // finish
-    return;
-  }
-  // cache the username
+  if (!key || !value || typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(CACHE_KEY_USERNAME, username);
+    window.localStorage.setItem(key, value);
+    onDataChange?.(value);
   } catch (e) {
-    // log the error
     logger.error(e, "Failed to cache username");
+    onError?.(e);
   }
-  return username;
 };

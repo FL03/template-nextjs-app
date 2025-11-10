@@ -6,91 +6,87 @@
 "use client";
 // imports
 import * as React from "react";
+import Image from "next/image";
+import { type ClassNames } from "@pzzld/core";
 // project
 import { cn } from "@/lib/utils";
 // local
-import { ProfileAvatar } from "./profile-avatar";
-import { ProfileContextMenu } from "./profile-context-menu";
-import { ProfileStatusBadge } from "./profile-status";
-import { Profile } from "../types";
+import { type ProfileData } from "../types";
+import { UserProfileStatus } from "./profile-status";
+// components
 import {
-  Header,
-  HeaderContent,
-  HeaderDescription,
-  HeaderLeading,
-  HeaderTitle,
-  HeaderTrailing,
-} from "@/components/common/header";
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 
-/** The profile card component */
-export const ProfileCard: React.FC<
-  React.ComponentPropsWithRef<"div"> & {
+/** A component used to render the given user profile */
+export const UserProfileCard: React.FC<
+  React.ComponentPropsWithRef<typeof Item> & {
     actions?: React.ReactNode;
-    profile?: Profile | null;
+    profile?: ProfileData | null;
     compact?: boolean;
     showBio?: boolean;
+    showStatusLabel?: boolean;
+    avatarHeight?: number | `${number}`;
+    avatarWidth?: number | `${number}`;
+    classnames?: ClassNames<
+      "avatar" | "badge" | "content" | "title" | "description"
+    >;
   }
 > = (
-  { ref, actions, children, className, profile, compact, showBio, ...props },
+  {
+    ref,
+    actions,
+    children,
+    className,
+    profile,
+    showStatusLabel,
+    avatarHeight = 32,
+    avatarWidth = 32,
+    size = "default",
+    variant = "default",
+    ...props
+  },
 ) => {
-  //  if there is no profile, return null
-  if (!profile) return null;
-  // destructure the profile object
-  const {
-    avatar_url,
-    bio,
-    display_name,
-    status,
-    username,
-  } = profile;
-  // determines whether to show the bio
-  const withBio = showBio && bio;
-  // render the component
+  const isCompact = React.useMemo<boolean>(() => size === "sm", [size]);
   return (
-    <ProfileContextMenu>
-      <div
-        ref={ref}
-        className={cn(
-          "flex flex-col w-full px-4 py-2 gap-2",
-          "bg-accent text-accent-foreground border border-accent/10 rounded-lg",
-          "drop-shadow-sm shadow-inner inset-0.5",
-          "transition-all duration-300 ease-in-out",
-          className,
-        )}
-        {...props}
-      >
-        <Header>
-          <HeaderLeading>
-            <ProfileAvatar src={avatar_url} className="left-0 mr-auto" />
-          </HeaderLeading>
-          <HeaderContent>
-            <HeaderTitle textSize="base">@{username}</HeaderTitle>
-            <HeaderDescription className="text-nowrap truncate" textSize="sm">
-              {display_name}
-            </HeaderDescription>
-          </HeaderContent>
-          <HeaderTrailing>
-            <ProfileStatusBadge
-              status={status ?? undefined}
-              showLabel={!compact}
-            />
-            {actions}
-          </HeaderTrailing>
-        </Header>
-        {!compact && (
-          <>
-            {withBio && (
-              <span className="line-clamp-2 leading-snug tracking-tight text-wrap text-sm text-muted-foreground">
-                {bio}
-              </span>
-            )}
-            {children}
-          </>
-        )}
-      </div>
-    </ProfileContextMenu>
+    <Item
+      ref={ref}
+      className={cn(
+        "w-full flex-nowrap",
+        className,
+      )}
+      size={size}
+      variant={variant}
+      {...props}
+    >
+      <ItemMedia variant="image">
+        <Image
+          src={profile?.avatar_url || "profile.png"}
+          alt="Profile Avatar"
+          height={avatarHeight}
+          width={avatarWidth}
+          className="rounded-full object-cover"
+        />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>@{profile?.username}</ItemTitle>
+        <ItemDescription className="text-nowrap truncate line-clamp-1">
+          {profile?.display_name}
+        </ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <UserProfileStatus
+          className="order-last"
+          status={profile?.status ?? undefined}
+          showLabel={showStatusLabel && !isCompact}
+        />
+        {actions}
+      </ItemActions>
+    </Item>
   );
 };
-ProfileCard.displayName = "ProfileCard";
-
-export default ProfileCard;

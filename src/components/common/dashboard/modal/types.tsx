@@ -3,24 +3,21 @@
  * @author - @FL03
  * @file - types.tsx
  */
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
-/**
- * This type defines the properties for components that have a pre-designed trigger mechanism.
- */
-export type TriggeredProps = {
+// The `ComponentPropsWithTrigger` type defines properties for components that include a trigger element.
+type ComponentPropsWithTrigger<T = {}> = T & {
   triggerClassName?: string;
   triggerIcon?: ReactNode;
   triggerCloseIcon?: ReactNode;
   showTriggerLabel?: boolean;
 };
 
-/**
- * The `ModalProps` type defines the base properties common to all _modal_ like components.
- */
-export type ModalProps = {
+// The `ModalProps` type defines properties for modal components, including open state management.
+type ModalProps = {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-}
-export type TriggeredModalProps = ModalProps & TriggeredProps;
+};
+
+export type ModalPropsWithTrigger = ComponentPropsWithTrigger<ModalProps>;

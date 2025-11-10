@@ -1,58 +1,102 @@
 /**
- * Created At: 2025-04-04:18:05:28
+ * Created At: 2025.09.28:09:33:20
  * @author - @FL03
+ * @endpoint - /api/auth/login
  * @file - route.ts
  */
 "use server";
 // imports
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 // project
-import { verifyTurnstileToken } from "@/lib/cloudflare";
 import { logger } from "@/lib/logger";
 import { createServerClient } from "@/lib/supabase";
 
-export async function POST(request: NextRequest) {
-  // initialize a server-side supabase client
-  const supabase = await createServerClient();
-  try {
-    const body = await request.json();
-    const { data: { email, password }, options: { captchaToken } } = body;
+type LoginFormData = {
+  email?: string;
+  phone?: string;
+  password?: string;
+  captchaToken?: string;
+};
 
-    // Get client IP from Next.js request
-    const remoteIp = request.headers.get("x-forwarded-for") || "127.0.0.1";
-    // use the method
-    const isValid = await verifyTurnstileToken({
-      remoteIp,
-      captchaToken,
-    });
-    // check if the response is valid
-    if (!isValid) {
-      logger.error("Turnstile token validation failed");
-      throw new Error("Turnstile token validation failed");
-    }
-    logger.info(
-      "Turnstile token validated successfully; authenticating user...",
+export async function POST(
+  req: NextRequest,
+): Promise<NextResponse> {
+  // handle the request URL
+  const { searchParams } = new URL(req.url);
+  // parse the search params
+  const captcha = searchParams.get("captchaToken")?.toString();
+  // initialize the supabase client
+  const supabase = await createServerClient();
+  const cookieStore = await cookies();
+  // load the form data
+  // const payload = await req.json();
+  const formData = await req.formData();
+  const payload = Object.fromEntries(
+    formData.entries(),
+  ) as LoginFormData;
+  // deconstruct the payload
+  const {
+    email,
+    phone,
+    password,
+    captchaToken = captcha,
+  } = payload;
+
+  const creds = email ? { email } : phone ? { phone } : undefined;
+
+  if (!creds) {
+    logger.error(
+      "A valid email address or phone number is required to login with a password.",
     );
-    const data = await supabase.auth.signInWithPassword({
-      email,
-      password,
-      options: { captchaToken },
-    }).then(({ data, error }) => {
-      // handle any errors
-      if (error) {
-        throw new Error(error.message);
-      }
-      // log the success
-      logger.info("Successfully authenticated the user!");
-      // return the data
-      return data;
-    });
-    logger.info({ data }, "User authenticated successfully");
-    return NextResponse.json(data, {
-      status: 200,
-    });
-  } catch (error) {
-    logger.error(error, "Authentication failed; please try again...");
-    return NextResponse.error();
+    return NextResponse.json(
+      {
+        data: null,
+        error:
+          "A valid email address or phone number is required to login with a password.",
+      },
+      { status: 400 },
+    );
   }
+
+  if (!password) {
+    return NextResponse.json(
+      { data: null, error: "Password is required." },
+      { status: 400 },
+    );
+  }
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({
+    ...creds,
+    password,
+    options: { captchaToken },
+  });
+  // handle any errors
+  if (error) {
+    logger.error(error, "Unable to authenticate user: " + error.message);
+    return NextResponse.json({ data: null, error: error.message }, {
+      status: 500,
+    });
+  }
+  // manage some cookies
+  const customerId = user?.user_metadata?.customer_id ?? null;
+  const username = user?.user_metadata?.username ?? null;
+  logger.info(
+    `User logged in: ${username} (${user?.id})`,
+  );
+  if (customerId) cookieStore.set("x-pzzld-customer-id", customerId);
+  if (username) cookieStore.set("x-pzzld-username", username);
+  // set the preferred sign-in view cookie
+  if (user) {
+    cookieStore.set("preferredSignInView", "login");
+    cookieStore.set("x-pzzld-user-id", user.id);
+    if (user.email) cookieStore.set("x-pzzld-user-email", user.email);
+    if (user.phone) cookieStore.set("x-pzzld-user-phone", user.phone);
+  }
+  const redirectTo = username ? `/${username}` : "/";
+  logger.info("Successfully authenticated user:", username);
+  // revalidate & redirect on success
+  revalidatePath(redirectTo);
+  return redirect(redirectTo);
 }

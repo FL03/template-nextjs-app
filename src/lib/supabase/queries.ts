@@ -5,38 +5,9 @@
  */
 "use server";
 // imports
-import { SupabaseClient, User } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 // local
 import { createServerClient } from "./server";
-
-/**
- * An asynchronous, server-side function for
- * @returns {User} The current authenticated user.
- */
-export const getCurrentUser = async (
-  options?: { client: SupabaseClient },
-): Promise<User> => {
-  // use or initialize a server-side supabase client
-  const supabase = options?.client || (await createServerClient());
-
-  const currentUser = await supabase.auth.getUser().then(({ data, error }) => {
-    // destructure the user from the data
-    const { user } = data;
-    // handle the error
-    if (error) {
-      throw new Error(error.message);
-    }
-    // check if the user is authenticated
-    if (!user) {
-      throw new Error(
-        "Unable to get the current user; verify the user is authenticated and try again.",
-      );
-    }
-    return user;
-  });
-  // return the current user
-  return currentUser;
-};
 
 /**
  * A server-side function to get the username of the current user by invoking the `public.username` function on the database using

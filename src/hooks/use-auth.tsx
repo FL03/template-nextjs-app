@@ -6,308 +6,289 @@
  */
 "use client";
 // imports
-import * as React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AuthChangeEvent,
   Session,
   Subscription,
   User,
+  UserAttributes,
 } from "@supabase/supabase-js";
 // project
+import { CACHE_KEY_USER_ID } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { createBrowserClient } from "@/lib/supabase";
-import { CACHE_KEY_USER_ID } from "@/lib/constants";
 
-type SupabaseAuthStateHandler = (
-  event: AuthChangeEvent,
-  session: Session | null,
-) => void;
+namespace UseAuth {
+  export type Callback = (options?: Props) => AuthContext;
 
-type HookStateT = {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-};
+  export type Status = "unauthenticated" | "authenticated" | "guest";
 
-type OptsT = {
-  supabase?: ReturnType<typeof createBrowserClient<any, "public">>;
-  onAuthStateChange?: SupabaseAuthStateHandler;
-  onError?: (error?: string) => void;
-  onUserChange?: (user?: User | null) => void;
-};
+  export type LoadingState = "session" | "user" | null;
 
-type AuthStatus = "unauthenticated" | "authenticated" | "guest";
+  export interface Props {
+    supabase?: ReturnType<typeof createBrowserClient<any, "public">>;
+    onAuthStateChange?(event: AuthChangeEvent, session: Session | null): void;
+    onError?(error?: unknown): void;
+    onUserChange?(user?: User | null): void;
+  }
 
-type ReturnT = {
-  getUser: () => Promise<User | null>;
-  signOut: () => Promise<void>;
-  session: Session | null;
-  state: HookStateT;
-  status: AuthStatus;
-  user?: User;
-  userId?: string;
-  username?: string;
-};
+  export interface State {
+    isAuthenticated: boolean;
+    isError: boolean;
+    isLoading: LoadingState;
+  }
 
-type HookT = (opts?: OptsT) => ReturnT;
+  export interface AuthMetadata {
+    customerEmail?: string;
+    customerId?: string;
+    subscriptionStatus?: string;
+    username?: string;
+  }
 
+  export interface AuthContext extends AuthMetadata {
+    getUser(): Promise<User | null>;
+    signOut(): Promise<void>;
+    updateUser(values: UserAttributes): Promise<void>;
+    // properties
+    error: Error | null;
+    session: Session | null;
+    state: State;
+    status: Status;
+    user?: User;
+    email?: string;
+    userId?: string;
+  }
+}
 /**
  * The `useAuth` hook is a custom wrapper around the Supabase authentication client, providing a way to manage user authentication state and actions.
  * It handles user session management, state changes, and provides methods for signing out and retrieving user information.
- * @param opts - Options for the useAuth hook
- * @returns - An object containing user authentication state and methods
  */
-export const useAuth: HookT = (options) => {
-  // destructure the options
-  const { supabase = createBrowserClient(), onAuthStateChange } = options || {};
-  // store the subscription to the auth state changes as a reference
-  const authSubRef = React.useRef<Subscription | null>(null);
-  // local state
-  const [_session, _setSession] = React.useState<Session | null>(null);
-  const [_user, _setUser] = React.useState<User | undefined>();
-  // loading states
-  const [loadingSession, setLoadingSession] = React.useState(true);
-  const [loadingUser, setLoadingUser] = React.useState(false);
-  // memoize the status of the auth session
-  const authStatus = React.useMemo<AuthStatus>(
-    () => {
-      if (_session && _session?.user) return "authenticated";
-      if (_session && !_session?.user) return "guest";
-      return "unauthenticated";
-    },
-    [_session],
-  );
-  // declare the loading state
-  const isLoading = React.useMemo(
-    () => loadingSession || loadingUser,
-    [loadingSession, loadingUser],
-  );
-  // memoize the various states for the hook to reduce re-renders
-  const authState = React.useMemo(
+export const useAuth: UseAuth.Callback = (
+  {
+    supabase = createBrowserClient(),
+    onAuthStateChange,
+    onError,
+    onUserChange,
+  } = {},
+) => {
+  const authSubRef = useRef<Subscription | null>(null);
+  const [_session, _setSession] = useState<Session | null>(null);
+  const [_user, _setUser] = useState<User | null>(null);
+  const [_error, _setError] = useState<Error | null>(null);
+
+  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(true);
+  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
+
+  const isLoading = useMemo<UseAuth.LoadingState>(() => {
+    if (isLoadingSession) return "session";
+    if (isLoadingUser) return "user";
+    return null;
+  }, [isLoadingSession, isLoadingUser]);
+
+  // Auth status
+  const _status = useMemo<UseAuth.Status>(() => {
+    if (_session?.user) return "authenticated";
+    if (_session) return "guest";
+    return "unauthenticated";
+  }, [_session]);
+
+  const _state = useMemo(
     () => ({
-      isAuthenticated: authStatus === "authenticated",
+      isAuthenticated: _status === "authenticated",
+      isError: Boolean(_error),
       isLoading,
     }),
-    [authStatus, isLoading],
+    [_error, _status, isLoading],
   );
-  // clear the cached userId
-  const clearCache = React.useCallback((): void => {
-    // exit early if the window is not defined
-    if (typeof window === "undefined") return;
-    // try to clear the cache
-    try {
-      window.localStorage.removeItem(CACHE_KEY_USER_ID);
-      logger.info("Successfully cleared the cached userId.");
-    } catch (e) {
-      logger.error(e, "Failed to clear the cached userId.");
-    }
-  }, []);
 
-  /** cache the userId */
-  const cache = React.useCallback(
-    (userId?: string | null, options?: { clearByDefault?: boolean }): void => {
-      // deconstruct the options and set their defaults
-      const { clearByDefault = false } = options || {};
-      // ensure the userId is defined
-      if (typeof window === "undefined") return;
-      // cache the userId if it is defined
-      if (userId) {
-        try {
+  // Error handler
+  const handleError = useCallback(
+    (err: unknown) => {
+      const error = err instanceof Error
+        ? err
+        : new Error(String(err ?? "An unknown error occurred."));
+      _setError((prev) => {
+        if (prev?.message === error.message) return prev;
+        onError?.(error);
+        return error;
+      });
+    },
+    [onError],
+  );
+
+  // Cache helpers
+  const clearCache = useCallback(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const cached = window.localStorage.getItem(CACHE_KEY_USER_ID);
+      if (cached !== null) {
+        window.localStorage.removeItem(CACHE_KEY_USER_ID);
+        logger.info("Cleared cached userId.");
+      }
+    } catch (e) {
+      handleError(e);
+    }
+  }, [handleError]);
+
+  const cache = useCallback(
+    (userId?: string | null) => {
+      if (!userId || typeof window === "undefined") return;
+      try {
+        const cached = window.localStorage.getItem(CACHE_KEY_USER_ID);
+        if (cached !== userId) {
           window.localStorage.setItem(CACHE_KEY_USER_ID, userId);
-          logger.info("successfully cached the userId:");
-        } catch (e) {
-          logger.warn(e, "Failed to cache the userId");
+          logger.info({ userId }, "Cached userId updated.");
         }
-      } else if (clearByDefault) {
-        // clear the cached userId
-        return clearCache();
-      } else {
-        return logger.warn(
-          "No userId provided to cache, skipping cache operation.",
-        );
+      } catch (e) {
+        handleError(e);
       }
     },
-    [clearCache],
+    [handleError],
   );
 
-  const _onUserChange = React.useCallback(
-    (newUser?: User) => (
-      // update the local user state
+  // User change handler
+  const _onUserChange = useCallback(
+    (next?: User | null) => (
       _setUser((prev) => {
-        // ensure the data has changed
-        if (newUser === _user) return prev;
-        // cache the userId
-        cache(newUser?.id, { clearByDefault: true });
-        // return the new state
-        return newUser || undefined;
+        if (prev?.id === next?.id) return prev;
+        if (onUserChange) onUserChange(next);
+        if (next) {
+          cache(next.id);
+          return next;
+        } else {
+          clearCache();
+          return null;
+        }
       })
     ),
-    [cache],
+    [cache, clearCache, onUserChange],
   );
-  // this callback handles auth state changes
-  const setupAuthSubscription = React.useCallback(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // log the event
-      logger.trace(
-        { event, id: session?.user?.id },
-        "Detected a change of auth state...",
-      );
-      // if a method is passed, call it with the event and session
-      // data **before** executing the default behaviors
-      if (onAuthStateChange) onAuthStateChange(event, session);
 
-      // update the local session
-      _setSession(session);
+  // Auth subscription
+  const setupAuthSubscription = useCallback(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        logger.trace(
+          { event, id: session?.user?.id },
+          "Detected a change of auth state...",
+        );
+        onAuthStateChange?.(event, session);
+        _setSession(session);
 
-      if (event === "SIGNED_OUT") {
-        logger.info("Signing out the current user...");
-        // nullify the local user instance
-        _onUserChange(undefined);
-      }
-      if (session) {
-        const { user } = session;
-        if (
-          [
-            "PASSWORD_RECOVERY",
-            "SIGNED_IN",
-            "TOKEN_REFRESH",
-            "USER_UPDATED",
-          ].includes(event)
-        ) {
-          logger.info(
-            {
-              event,
-            },
-            "Reflecting the updated user instance in the local state...",
-          );
-          // update the local user instance
-          _onUserChange(user);
+        if (event === "SIGNED_OUT") {
+          logger.info("Signing out the current user...");
+          clearCache();
+          _setUser(null);
+        } else if (session?.user) {
+          logger.info("Setting the current user...");
+          _setUser(session.user);
+          cache(session.user.id);
         }
-      }
-    });
+      },
+    );
     return subscription;
-  }, [supabase.auth, onAuthStateChange, _onUserChange]);
-  // use the supabase client to get the session
-  const _loadSession = React.useCallback(async (): Promise<Session | null> => {
-    if (!loadingSession) setLoadingSession(true);
-    try {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-      if (error) {
-        logger.error(error, "Error getting supabase auth session");
-        throw error;
-      }
-      if (!session) {
-        return null;
-      }
-      // set the session state
-      _setSession(session);
-      // update the user
-      _onUserChange(session.user);
-      return session;
-    } catch (error) {
-      logger.error(error, "Error getting supabase auth session");
-      throw error;
-    } finally {
-      setLoadingSession(false);
-    }
-  }, [
-    supabase,
-    loadingSession,
-  ]);
-  // use the supabase client to get the user
-  const loadUser = React.useCallback(async (): Promise<User> => {
-    if (!loadingUser) setLoadingUser(true);
-    try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        logger.error(error, "Error getting user");
-        throw error;
-      }
-      _setUser(data.user);
-      return data.user;
-    } catch (error) {
-      logger.error(error, "Error getting user");
-      throw error;
-    } finally {
-      setLoadingUser(false);
-    }
-  }, [supabase, loadingUser, _setUser]);
-  // a callback handling the logout process for a user
-  const _signOut = React.useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
+  }, [supabase.auth, cache, onAuthStateChange, clearCache]);
+
+  // Load session
+  const _getSession = useCallback(async (): Promise<void> => {
+    const { data, error } = await supabase.auth.getSession();
     if (error) {
-      logger.error(error, "Unable to sign out the user");
-      return Promise.reject(error);
+      handleError(error);
+      return;
     }
-    logger.info("Successfully signed out the user...");
-    // clear the cached userId
-    clearCache();
-    // reset the user state
-    _setUser(undefined);
-    // reset the session state
-    _setSession(null);
-    // resolve
-    return Promise.resolve();
-  }, [supabase.auth]);
-  // session-specific loading effects
-  React.useEffect(() => {
-    if (loadingSession) _loadSession();
-    // handle unmounting
-    return () => {
-      // cleanup loading states
-      setLoadingSession(false);
-    };
-  }, [loadingSession, _loadSession]);
-  // user-specific loading effects
-  React.useEffect(() => {
-    // trigger the user loading process if the session is loaded and the user is not
-    if (loadingUser) loadUser();
-    // handle unmounting
-    return () => {
-      // cleanup loading states
-      setLoadingUser(false);
-    };
-  }, [loadingUser, loadUser]);
-  // realtime-specific effects
-  React.useEffect(() => {
-    // if there isn't a reference to the subscription, create one
+    _setSession(data.session);
+    _onUserChange(data.session?.user);
+  }, [supabase.auth, _onUserChange, handleError]);
+
+  // Load user
+  const _loadUser = useCallback(async (): Promise<User | null> => {
+    if (isLoadingSession) {
+      logger.warn(
+        "Session is still loading, cannot fetch user at this time.",
+      );
+      return null;
+    }
+    if (!isLoadingUser) setIsLoadingUser(true);
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        throw new Error(error.message);
+      }
+      if (!user) {
+        logger.warn({ scope: "useAuth" }, "No user found...");
+      }
+      _onUserChange(user);
+      return user;
+    } catch (error) {
+      handleError(error);
+      return null;
+    } finally {
+      setIsLoadingUser(false);
+    }
+  }, [supabase.auth, isLoadingUser, _onUserChange, handleError]);
+
+  const updateUser = useCallback(
+    async (values: UserAttributes) => {
+      await supabase.auth.updateUser(values).then(({ data, error }) => {
+        if (error) {
+          throw new Error(error.message);
+        }
+        _onUserChange(data.user);
+      }).catch(handleError);
+    },
+    [supabase.auth, _onUserChange, handleError],
+  );
+
+  // Logout
+  const logout = useCallback(async (): Promise<void> => {
+    await supabase.auth.signOut().then(({ error }) => {
+      if (error) {
+        throw new Error(error.message);
+      }
+      logger.info("Successfully signed out the user...");
+      _setSession(null);
+      _onUserChange(null);
+    }).catch(handleError);
+  }, [supabase.auth, _onUserChange, handleError]);
+
+  // Effects
+  useEffect(() => {
+    if (isLoadingSession) {
+      _getSession().finally(() => setIsLoadingSession(false));
+    }
+    return () => setIsLoadingSession(false);
+  }, [isLoadingSession, _getSession]);
+
+  useEffect(() => {
     if (!authSubRef.current) {
       authSubRef.current = setupAuthSubscription();
     }
-    // handle unmounting
     return () => {
-      // cleanup realtime effects
-      if (authSubRef.current) {
-        // unsubscribe from the auth state changes
-        authSubRef.current.unsubscribe();
-        // nullify the reference
-        authSubRef.current = null;
-      }
+      authSubRef.current?.unsubscribe();
+      authSubRef.current = null;
     };
   }, [setupAuthSubscription]);
 
-  // redefine the output variables
-  const session = _session;
-  const user = _user;
-  // redeclare any public methods
-  const getUser = loadUser;
-  const signOut = _signOut;
-  // memoize and return the hook's output
-  return React.useMemo(
+  // Output
+  return useMemo<UseAuth.AuthContext>(
     () => ({
-      session,
-      state: authState,
-      status: authStatus,
-      user,
-      userId: user?.id,
-      username: user?.user_metadata.username,
-      getUser,
-      signOut,
+      error: _error,
+      session: _session,
+      state: _state,
+      status: _status,
+      user: _user ?? undefined,
+      email: _user?.email,
+      userId: _user?.id,
+      customerEmail: _user?.user_metadata.customer_email?.toString(),
+      customerId: _user?.user_metadata.customer_id?.toString(),
+      subscriptionStatus: _user?.user_metadata.subscription_status?.toString(),
+      username: _user?.user_metadata.username?.toString(),
+      avatarUrl: _user?.user_metadata.avatar_url?.toString(),
+      getUser: _loadUser,
+      signOut: logout,
+      updateUser,
     }),
-    [authState, authStatus, session, user, getUser, signOut],
+    [_error, _state, _status, _session, _user, logout, updateUser, _loadUser],
   );
 };

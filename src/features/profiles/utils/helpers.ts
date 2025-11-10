@@ -9,19 +9,19 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
 import {
   createBrowserClient,
-  handleRealtimeSubscription,
-  RealtimeSupabaseHandler,
+  realtimeSubscriptionHandler,
+  SupabaseOnSubscribeHandler,
 } from "@/lib/supabase";
 // local
 import { ProfileData } from "../types";
-import { CACHE_KEY_USERNAME } from "@/lib/constants";
+import { CACHE_KEY_USERNAME } from "@/lib/config";
 
 type OnProfileChangeOptions = {
   userId?: string;
   username?: string;
   supabaseClient?: ReturnType<typeof createBrowserClient>;
   onChange?: (data?: Partial<ProfileData> | null) => void;
-  onSubscribe?: RealtimeSupabaseHandler;
+  onSubscribe?: SupabaseOnSubscribeHandler;
 };
 
 type OnProfileChangeT = (opts?: OnProfileChangeOptions) => RealtimeChannel;
@@ -35,7 +35,7 @@ export const createProfileChannel: OnProfileChangeT = (
     username,
     supabaseClient,
     onChange,
-    onSubscribe = handleRealtimeSubscription,
+    onSubscribe,
   } = {},
 ) => {
   if (!username && !userId) {
@@ -68,7 +68,7 @@ export const createProfileChannel: OnProfileChangeT = (
         if (payload.new) onChange?.(payload.new);
       },
     )
-    .subscribe(onSubscribe);
+    .subscribe(realtimeSubscriptionHandler(onSubscribe));
 };
 
 export const subscribeToProfileChanges = (
@@ -104,7 +104,7 @@ export const cacheUsername = (
     logger.warn("No username provided; clearing the previous cache...");
     // clear the cache if toggled
     if (clearCache) clearCachedUsername();
-  
+
     return;
   }
 };

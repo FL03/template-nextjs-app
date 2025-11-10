@@ -1,69 +1,70 @@
 /**
- * Created At: 2025.07.06:17:12:19
+ * Created At: 2025.10.12:20:52:46
  * @author - @FL03
- * @file - header.tsx
+ * @directory - src/components/common
+ * @file - tile.tsx
  */
 "use client";
 // imports
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
+import { Slot } from "@radix-ui/react-slot";
 // project
 import { cn } from "@/lib/utils";
-import { TextSize } from "@/types";
 
-const tileVariants = cva("items-center p-2 gap-1 h-fit", {
-  defaultVariants: {
-    flavor: "default",
-    style: "default",
-    variant: "default",
+const tileVariants = cva(
+  "relative z-auto flex flex-nowrap items-center justify-stretch w-full rounded-lg",
+  {
+    defaultVariants: {
+      flavor: "default",
+      size: "default",
+      variant: "default",
+    },
+    variants: {
+      flavor: {
+        default: "bg-transparent text-foreground border-border",
+        accent: "bg-accent text-accent-foreground border-accent/15",
+        card: "bg-card text-card-foreground border-card/15",
+        primary: "bg-primary text-primary-foreground border-primary/15",
+        secondary: "bg-secondary text-secondary-foreground border-secondary/15",
+        destructive:
+          "bg-destructive text-destructive-foreground border-destructive/15",
+      },
+      size: {
+        default: "p-3 gap-2",
+        compact: "shrink h-fit p-1.5 gap-1",
+        extended: "flex-1 h-full p-6 gap-4",
+      },
+      variant: {
+        default: "border-none",
+        outline: "border",
+      },
+    },
   },
-  variants: {
-    flavor: {
-      default: "border-none",
-      accent: "bg-accent text-accent-foreground border-accent/10",
-      primary: "bg-primary text-primary-foreground border-primary/10",
-      secondary: "bg-secondary text-secondary-foreground border-secondary/10",
-    },
-    style: {
-      default: "rounded-none border border-muted",
-      outline: "border rounded-xl shadow-inner drop-shadow-lg",
-    },
-    variant: {
-      default: "flex flex-nowrap w-full",
-      inline: "inline-flex flex-nowrap",
-      extended: "flex flex-1 flex-wrap w-full",
-    },
-  },
-});
+);
 
-type TileVariants = VariantProps<typeof tileVariants>;
-
-/**
- * The `Tile` flexible container component used to create dynamic, customizable widgets
- */
+/** The `Tile` is a generic, flexible container for rendering content _inline_. */
 export const Tile: React.FC<
-  & Omit<React.ComponentPropsWithRef<"div">, "style" | "title">
-  & React.PropsWithChildren<{ asChild?: boolean; }>
-  & TileVariants
+  & Omit<React.ComponentPropsWithRef<"div">, "data-slot" | "hidden" | "title">
+  & VariantProps<typeof tileVariants>
+  & React.PropsWithChildren<{ asChild?: boolean }>
 > = ({
   ref,
   className,
   asChild,
   flavor = "default",
-  style = "default",
+  size = "default",
   variant = "default",
   ...props
 }) => {
-  // if asChild, fallback to the Slot component from Radix UI
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       {...props}
       ref={ref}
+      data-slot="tile"
       className={cn(
-        tileVariants({ flavor, style, variant }),
+        tileVariants({ flavor, size, variant }),
         className,
       )}
     />
@@ -73,21 +74,21 @@ Tile.displayName = "Tile";
 
 // TileDescription
 export const TileDescription: React.FC<
-  React.ComponentPropsWithRef<"span"> & {
+  & Omit<React.ComponentPropsWithRef<"span">, "data-slot">
+  & React.PropsWithChildren<{
     asChild?: boolean;
-    textSize?: TextSize;
-  }
-> = ({ ref, className, asChild, textSize = "sm", ...props }) => {
-  // render as a Slot component as a fallback whenever asChild is true
+  }>
+> = ({ ref, className, asChild, hidden, ...props }) => {
   const Comp = asChild ? Slot : "span";
-  // render the Sidebar component
+  // render
   return (
     <Comp
       {...props}
       ref={ref}
+      data-slot="tile-description"
       className={cn(
-        "text-muted-foreground",
-        textSize && `text-${textSize}`,
+        "text-muted-foreground text-sm leading-snug tracking-tight text-wrap",
+        hidden ? "sr-only" : "not-sr-only",
         className,
       )}
     />
@@ -97,21 +98,20 @@ TileDescription.displayName = "TileDescription";
 
 // TileTitle
 export const TileTitle: React.FC<
-  React.ComponentPropsWithRef<"div"> & {
+  & React.ComponentPropsWithRef<"div">
+  & React.PropsWithChildren<{
     asChild?: boolean;
-    textSize?: TextSize;
-  }
-> = ({ ref, className, asChild, textSize = "lg", ...props }) => {
-  // render as a Slot component as a fallback whenever asChild is true
+  }>
+> = ({ ref, className, asChild, ...props }) => {
   const Comp = asChild ? Slot : "div";
-  // render the Sidebar component
+  // render
   return (
     <Comp
       {...props}
       ref={ref}
+      data-slot="tile-title"
       className={cn(
-        "font-semibold leading-none tracking-tight",
-        textSize && `text-${textSize}`,
+        "font-semibold leading-none tracking-tight text-nowrap",
         className,
       )}
     />
@@ -119,56 +119,98 @@ export const TileTitle: React.FC<
 };
 TileTitle.displayName = "TileTitle";
 
-/**
- * The `TileContent` component is used to wrap the content of the header; i.e. the title and description. This is primarily used to ensure
- * that the title and description are displayed appropriately within the header layout and enables the header to use a leading and trailing slot.
- */
+// TileContent
 export const TileContent: React.FC<
-  & React.PropsWithChildren<Omit<React.ComponentPropsWithRef<"div">, "title">>
-  & {
+  & Omit<React.ComponentPropsWithRef<"div">, "title">
+  & React.PropsWithChildren<{
     asChild?: boolean;
-  }
+  }>
 > = ({
   ref,
   className,
   asChild,
   ...props
 }) => {
-  // if asChild, fallback to the Slot component from Radix UI
   const Comp = asChild ? Slot : "div";
   // render the component
   return (
     <Comp
       {...props}
       ref={ref}
-      className={cn("flex flex-1 flex-col w-full", className)}
+      data-slot="tile-content"
+      className={cn("flex flex-1 flex-col h-full w-full gap-2", className)}
     />
   );
 };
 TileContent.displayName = "TileContent";
 
-// TileLeading
-export const TileLeading: React.FC<
-  & React.PropsWithChildren<Omit<React.ComponentPropsWithRef<"div">, "title">>
-  & {
+export const TileHeader: React.FC<
+  & Omit<React.ComponentPropsWithRef<"div">, "title">
+  & React.PropsWithChildren<{
     asChild?: boolean;
-  }
+  }>
 > = ({
   ref,
   className,
   asChild,
   ...props
 }) => {
-  // if asChild, fallback to the Slot component from Radix UI
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       {...props}
       ref={ref}
+      data-slot="tile-header"
+      className={cn("order-first w-full", className)}
+    />
+  );
+};
+TileHeader.displayName = "TileHeader";
+
+export const TileFooter: React.FC<
+  & Omit<React.ComponentPropsWithRef<"div">, "title">
+  & React.PropsWithChildren<{
+    asChild?: boolean;
+  }>
+> = ({
+  ref,
+  className,
+  asChild,
+  ...props
+}) => {
+  const Comp = asChild ? Slot : "div";
+  return (
+    <Comp
+      {...props}
+      ref={ref}
+      data-slot="tile-footer"
+      className={cn("order-last flex flex-nowrap items-center w-full gap-2", className)}
+    />
+  );
+};
+TileFooter.displayName = "TileFooter";
+
+// TileLeading
+export const TileLeading: React.FC<
+  & Omit<React.ComponentPropsWithRef<"div">, "title">
+  & React.PropsWithChildren<{
+    asChild?: boolean;
+  }>
+> = ({
+  ref,
+  className,
+  asChild,
+  ...props
+}) => {
+  const Comp = asChild ? Slot : "div";
+  return (
+    <Comp
+      {...props}
+      ref={ref}
+      data-slot="tile-leading"
       className={cn(
-        "inline-flex flex-shrink-0 items-center w-fit",
-        "left-0",
+        "inline-flex items-center justify-center shrink h-full w-fit gap-2",
+        "oreder-first left-0",
         className,
       )}
     />
@@ -178,31 +220,28 @@ TileLeading.displayName = "TileLeading";
 
 // TileTrailing
 export const TileTrailing: React.FC<
-  & React.PropsWithChildren<Omit<React.ComponentPropsWithRef<"div">, "title">>
-  & {
+  & Omit<React.ComponentPropsWithRef<"div">, "title">
+  & React.PropsWithChildren<{
     asChild?: boolean;
-  }
+  }>
 > = ({
   ref,
   className,
   asChild,
   ...props
 }) => {
-  // if asChild, fallback to the Slot component from Radix UI
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       {...props}
       ref={ref}
+      data-slot="tile-trailing"
       className={cn(
-        "inline-flex flex-shrink-0 item-center justify-end w-fit",
-        "right-0 ml-auto",
+        "inline-flex shrink item-center justify-end h-full w-fit gap-2",
+        "order-last right-0 ml-auto",
         className,
       )}
     />
   );
 };
 TileTrailing.displayName = "TileTrailing";
-
-export default Tile;

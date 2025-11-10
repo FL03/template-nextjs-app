@@ -3,4 +3,4 @@
  * @author - @FL03
  * @file - captcha/index.ts
  */
-export * from './turnstile';
+export * from "./turnstile";

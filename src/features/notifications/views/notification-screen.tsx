@@ -9,6 +9,7 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 // local
 import { NotificationProvider } from "../provider";
+import { useCurrentUser } from "@/features/auth";
 
 type ScreenViewProps = {
   className?: string;
@@ -18,16 +19,20 @@ type ScreenViewProps = {
 export const NotificationScreen: React.FC<ScreenViewProps> = (
   { className, username },
 ) => {
-  // dynamically import the component to avoid server-side rendering issues
+  const currentUser = useCurrentUser();
+
+  const resolvedUsername = React.useMemo(
+    () => username ?? currentUser.username ?? undefined,
+    [username, currentUser.username],
+  );
+  // dynamically import the view
   const Comp = dynamic(() => import("../widgets/notification-center"), {
     ssr: false,
   });
   // render the component
   return (
-    <NotificationProvider username={username}>
-      <Comp
-        className={className}
-      />
+    <NotificationProvider username={resolvedUsername}>      
+      <Comp className={className} />
     </NotificationProvider>
   );
 };

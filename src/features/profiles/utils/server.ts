@@ -7,7 +7,6 @@
 // project
 import { logger } from "@/lib/logger";
 import { createServerClient, getUsername } from "@/lib/supabase";
-import { Database } from "@/types/database.types";
 
 type NewUserBucketOptions = {
   allowedMimeTypes?: string[];
@@ -16,20 +15,26 @@ type NewUserBucketOptions = {
   fileSizeLimit?: number;
 };
 
+const bucketUrl = (...paths: string[]) => (
+  paths.filter(Boolean).join("/")
+);
+
 /**
  * A callback for creating a new bucket for a user
  */
-export const createUserBucket = async (
+export async function createUserBucket(
   username: string,
-  { basePath, ...options }: NewUserBucketOptions = {
+  {
+    basePath = "avatars",
+    ...options
+  }: NewUserBucketOptions = {
     allowedMimeTypes: ["image/png", "image/jpeg", "image/gif"],
-    basePath: "users",
-    public: false,
     fileSizeLimit: 1024 * 1024 * 10,
+    public: false,
   },
-) => {
+) {
   // create the path to the user's bucket
-  const path = [basePath, username].filter(Boolean).join("/");
+  const path = bucketUrl(basePath, username);
   // initialize the supabase client
   const supabase = await createServerClient();
   // construct the base path for the bucket
@@ -44,15 +49,15 @@ export const createUserBucket = async (
   }
   // return the data
   return data;
-};
+}
 /**
  * Load the user's profile avatar from the database and storage bucket
  * @param {string} username - The username of the user whose avatar is being fetched
  * @returns {File} - The user's avatar as a File object, or null if no avatar is found
  */
-export const loadProfileAvatar = async (
+export async function loadProfileAvatar(
   username: string,
-): Promise<File> => {
+): Promise<File> {
   const supabase = await createServerClient();
   // fetch the user
   const { data: profileData, error: dbError } = await supabase
@@ -89,16 +94,15 @@ export const loadProfileAvatar = async (
   );
   // return the file
   return file;
-};
+}
 
 /**
  * Upload the file to the corresponding bucket and update the user's profile
  *
  * @param {File} file - The file to upload
  */
-export const uploadAvatar = async (file?: File | null) => {
-  const root = "avatars";
-  if (!file) return null;
+export async function uploadAvatar(file?: File | null): Promise<string> {
+  if (!file) throw new Error("No file provided for upload...");
 
   const supabase = await createServerClient();
   // fetch the user
@@ -108,15 +112,26 @@ export const uploadAvatar = async (file?: File | null) => {
     throw new Error("Error uploading avatar: user not found");
   }
   // name the bucket after the using the username
-  const bucket = `${root}/${username}`;
+  const bucket = bucketUrl("avatars", username);
   /// rename the file to username.extension
   const fname = `${username}.${file.name.split(".").pop()}`;
   // if the user doesn't have a bucket, create one
-  if (!supabase.storage.from(root).exists(username)) {
+  if (!supabase.storage.from("avatars").exists(username)) {
     // create the object if one does not exist
-    await createUserBucket(username, {
-      public: true,
-    });
+    const { error: createBucketError } = await supabase.storage.createBucket(
+      bucket,
+      {
+        public: true,
+        allowedMimeTypes: ["image/png", "image/jpeg", "image/gif"],
+      },
+    );
+    if (createBucketError) {
+      logger.error(
+        createBucketError,
+        "Error creating a new bucket for the user avatar upload...",
+      );
+      throw new Error(createBucketError.message);
+    }
   }
   // upload the file to the bucket
   const { error } = await supabase.storage
@@ -149,26 +164,4 @@ export const uploadAvatar = async (file?: File | null) => {
   }
   // return the URL
   return publicUrl;
-};
-
-export const updateUsername = async (
-  username: string,
-): Promise<string> => {
-  // initialize the supabase client
-  const supabase = await createServerClient<Database, "public">();
-  // update the username in the database
-  const { data, error } = await supabase
-    .from("profiles")
-    .update({ username })
-    .eq("username", username)
-    .select("username")
-    .single();
-  // handle any errors updating the username
-  if (error) {
-    logger.error(error, "Error updating the username in the database...");
-    return Promise.reject(error.message);
-  }
-  
-  // return the updated username
-  return data.username;
-};
+}

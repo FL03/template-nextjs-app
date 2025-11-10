@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 // components
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 // local
-import { TriggeredModalProps } from "./types";
+import { ModalPropsWithTrigger } from "./types";
 import { useModal } from "@/hooks/use-modal";
 
 /** The `DashboardSheet` component is designed to wrap the leading dashboard panel so that it may be dynamically _hidden_ using this widget. */
 export const DashboardSheet: React.FC<
-  React.PropsWithChildren<TriggeredModalProps> & {
+  React.PropsWithChildren<ModalPropsWithTrigger> & {
     className?: string;
     side?: "top" | "right" | "bottom" | "left";
   }
@@ -60,7 +60,7 @@ export const DashboardSheet: React.FC<
       <SheetContent
         side={side}
         className={cn(
-          "flex flex-col flex-1 h-full gap-2 px-4 pt-10 pb-2",
+          "flex flex-col flex-1 h-full gap-2 px-4 pt-10 pb-2 w-fit max-w-sm",
           className,
         )}
       >

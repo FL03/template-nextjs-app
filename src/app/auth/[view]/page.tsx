@@ -16,7 +16,7 @@ export default async function Page({ params }: PageRouteProps) {
   // extract the view from the params
   const { view } = await params;
   // render the auth gate with the view
-  return <AuthScreen centered view={view} />;
+  return <AuthScreen centered defaultView={view} />;
 }
 Page.displayName = "AuthPage";
 

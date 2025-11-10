@@ -4,23 +4,24 @@
  * @file - props.ts
  */
 
-export type WithUsername = { username: string };
+export type WithUsername<T = {}> = T & { username: string };
 
-export type WithUserId = { userId: string };
+export type WithUserId<T = {}> = T & { userId: string };
 
 /** this type defines the standard `params` and `searchParams` for a page or route */
 export type UserProfileLinkParams = {
   params: Promise<WithUsername>;
-  searchParams: Promise<{ view?: string } & Partial<WithUserId>>;
+  searchParams: Promise<Partial<WithUserId<{ view: string }>>>;
 };
 
 export type UserIdVariants = "userId" | "uid" | "user_id";
 
-export type ProfileIdentifiers =
+export type WithUserIds<T = {}> =
+  & T
   & {
-    email?: string | null;
-    username?: string | null;
-  }
-  & {
-    [key in UserIdVariants]?: string | null;
+    [key in UserIdVariants]?: string;
   };
+
+export type ProfileIdentifiers = WithUserIds<
+  { email?: string; username?: string }
+>;

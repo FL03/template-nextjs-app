@@ -5,12 +5,8 @@
  */
 // imports
 import type { NextConfig } from "next";
-// import { withMicrofrontends } from "@vercel/microfrontends/next/config";
 // markdown
 import createMDX from "@next/mdx";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkGfm from "remark-gfm";
-import remarkMdx from "remark-mdx";
 // types
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
@@ -21,11 +17,8 @@ const nextBuildOutput = (): "export" | "standalone" | undefined => {
 };
 
 const nextConfigImages = (
-  options?: { supabaseProjectUrl?: string },
+  { supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL } = {},
 ): NextConfig["images"] => {
-  // destructure the options and set their defaults
-  const { supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL } =
-    options || {};
   let remotePatterns: (URL | RemotePattern)[] = [
     {
       hostname: "images.unsplash.com",
@@ -68,15 +61,8 @@ const nextConfigImages = (
 const nextConfig: NextConfig = {
   compress: true,
   output: nextBuildOutput(),
-  images: nextConfigImages({
-    supabaseProjectUrl: process.env["NEXT_PUBLIC_SUPABASE_URL"],
-  }),
+  images: nextConfigImages(),
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  publicRuntimeConfig: {
-    SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-    SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  },
   experimental: {
     serverActions: {
       bodySizeLimit: "4mb",
@@ -88,9 +74,8 @@ const nextConfig: NextConfig = {
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
   options: {
-    remarkPlugins: [remarkFrontmatter, remarkGfm, remarkMdx],
+    remarkPlugins: [],
   },
 });
 
 export default withMDX(nextConfig);
-// export default withMicrofrontends(withMDX(nextConfig));

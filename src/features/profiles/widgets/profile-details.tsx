@@ -6,87 +6,172 @@
 "use client";
 // imports
 import * as React from "react";
+import { UserRoundPlusIcon, UserRoundXIcon } from "lucide-react";
+import Link from "next/link";
+// project
+import { cn } from "@/lib/utils";
 // local
-import { ProfileCard } from "./profile-card";
+import { UserProfileCard } from "./profile-card";
+import { ProfileSettingsButton } from "./profile-settings";
 import { useProfile } from "../provider";
 // components
-import {
-  Section,
-  SectionContent,
-  SectionHeader,
-} from "@/components/common/section";
 import { RefreshButton } from "@/components/common/button";
-import { ProfileSettingsButton } from "./profile-settings-button";
-import { ListItem, UList } from "@/components/common/list";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Item, ItemGroup } from "@/components/ui/item";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
 
 /** This component renders a view of the user's profile providing a detailed summary of their activities and contributions.*/
 export const ProfileDetails: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof Section>,
+    React.ComponentPropsWithRef<"div">,
     "asChild" | "children" | "title"
   >
-> = ({ className, size = "full", flavor="ghost", variant="container", ...props }) => {
+> = (
+  {
+    ref,
+    className,
+    ...props
+  },
+) => {
   // providers
   const {
+    state,
     isOwner,
-    state: { isReloading },
     profile,
     reload,
+    ...userProfile
   } = useProfile();
   // a callback for rendering the action(s) for the profile card
-  const renderActions = () => {
-    if (!isOwner) return null;
-    // if the user is the owner, we can render an action button
-    return (
-      <>
-        <RefreshButton
-          onClick={reload}
-          isRefreshing={isReloading}
-        />
-        <ProfileSettingsButton />
-      </>
-    );
-  };
+  const renderActions = () => (
+    <ButtonGroup>
+      <RefreshButton
+        onRefresh={reload}
+        isRefreshing={state.isReloading}
+      />
+      <ProfileSettingsButton size="icon" username={profile?.username} />
+    </ButtonGroup>
+  );
   // fallback to null if no profile is available
-  if (!profile) {
-    return null;
+  if (state.isLoading) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Spinner className="size-8" />
+          </EmptyMedia>
+          <EmptyTitle className="animate-pulse">
+            Loading profile...
+          </EmptyTitle>
+        </EmptyHeader>
+      </Empty>
+    );
   }
+  if (!profile && !state.isLoading) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <UserRoundXIcon className="size-10" />
+          </EmptyMedia>
+          <EmptyTitle>
+            No profile found
+          </EmptyTitle>
+          <EmptyDescription>
+            This user does not have a profile yet.
+          </EmptyDescription>
+          <EmptyContent>
+            <Button asChild variant="link">
+              <Link href="/auth/register">
+                <UserRoundPlusIcon className="size-4" />
+                <span>Register</span>
+              </Link>
+            </Button>
+          </EmptyContent>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+  if (userProfile.error) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <UserRoundXIcon className="size-10" />
+          </EmptyMedia>
+          <EmptyTitle>
+            Failed to load profile
+          </EmptyTitle>
+          <EmptyDescription>
+            An error occurred while fetching the profile data. Please try again
+            later.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          {userProfile.error.message}
+        </EmptyContent>
+      </Empty>
+    );
+  }
+
   // render the component
   return (
-    <Section
+    <div
       {...props}
-      size="full"
-      variant="container"
+      ref={ref}
+      className={cn(
+        "relative z-auto flex flex-1 flex-col h-full w-full",
+        className,
+      )}
     >
-      <SectionHeader>
+      <div className="flex flex-col w-full pb-4 gap-2">
         {/* header */}
-        <ProfileCard
-          showBio
-          actions={renderActions()}
+        <UserProfileCard
+          variant="muted"
+          actions={isOwner && renderActions()}
           profile={profile}
         />
-      </SectionHeader>
-      <SectionContent>
-        {profile?.email && profile?.email.length > 0 && (
-          <div className="flex flex-col gap-1">
-            <span className="font-semibold tracking-tight leading-none">
-              Emails
-            </span>
-            <UList className="inline-flex flex-wrap gap-2">
-              {profile?.email.map((e, index) => (
-                <ListItem
-                  key={index}
-                  className="flex flex-1 flex-nowrap px-2 py-1 hover:cursor-pointer items-center"
+        <span className="tracking-tight leading-normal" hidden={!profile?.bio}>
+          {profile?.bio}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col w-full">
+        <section
+          id="contact-section"
+          className="flex flex-col gap-1"
+          hidden={!profile?.emails || profile?.emails.length === 0}
+        >
+          <span className="font-semibold tracking-tight leading-none">
+            Contact
+          </span>
+          <ItemGroup>
+            {profile?.emails.map((e, index) => (
+              <Item
+                key={index}
+                className="flex flex-1 flex-nowrap px-2 py-1 items-center cursor-pointer"
+              >
+                <span
+                  className={cn(
+                    "text-sm font-medium leading-none tracking-tight",
+                    "",
+                  )}
                 >
                   {e}
-                </ListItem>
-              ))}
-            </UList>
-          </div>
-        )}
-      </SectionContent>
-    </Section>
+                </span>
+              </Item>
+            ))}
+          </ItemGroup>
+        </section>
+      </div>
+    </div>
   );
 };
 ProfileDetails.displayName = "ProfileDetails";

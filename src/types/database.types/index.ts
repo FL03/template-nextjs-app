@@ -15,6 +15,14 @@ export type {
   Tables as NotebookTables,
 } from "./database.notebook.types";
 export type {
+  Database as OrgsDatabase,
+  Tables as OrgsTables,
+} from "./database.orgs.types";
+export type {
+  Database as RmsDatabase,
+  Tables as RmsTables,
+} from "./database.rms.types";
+export type {
   Database as StripeDatabase,
   Tables as StripeTables,
 } from "./database.stripe.types";

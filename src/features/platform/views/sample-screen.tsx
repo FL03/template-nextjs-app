@@ -6,28 +6,27 @@
 "use client";
 // imports
 import * as React from "react";
-// project
+// local
 import Test from "../content/test.mdx";
-import { ContentCard } from "../widgets";
+// components
+import { ContentCard } from "@/components/common/cards";
 
 export const SampleScreen: React.FC<
   Omit<
-    React.ComponentPropsWithRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ContentCard>,
     "author" | "description" | "title" | "children"
   >
-> = ({ ref, ...props }) => {
-  return (
-    <ContentCard
-      {...props}
-      ref={ref}
-      author="Joe McCain III"
-      title="Example"
-      description="This is an example content card to demonstrate the structure."
-    >
-      <Test />
-    </ContentCard>
-  );
-};
+> = ({ ...props }) => (
+  <ContentCard
+    {...props}
+    showDescription
+    author="Joe McCain III"
+    title="Example"
+    description="This is an example content card to demonstrate the structure."
+  >
+    <Test />
+  </ContentCard>
+);
 SampleScreen.displayName = "SampleScreen";
 
 export default SampleScreen;

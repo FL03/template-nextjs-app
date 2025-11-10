@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
 // project
 import { logger } from "@/lib/logger";
 // feature-specific
-import { verifyEmailFormat } from "@/lib/supabase/auth/helpers";
+import { verifyEmailFormat } from "@/lib/utils";
 import { createServerClient } from "@/lib/supabase/server";
 import { getErrorRedirect, getStatusRedirect, getURL } from "./database";
 

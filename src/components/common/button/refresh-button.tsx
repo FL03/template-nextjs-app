@@ -9,6 +9,7 @@
 import * as React from "react";
 import { RefreshCwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ClassNames } from "@pzzld/core";
 // project
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -22,63 +23,74 @@ import {
 } from "@/components/ui/tooltip";
 
 type ButtonProps = {
+  classNames?: ClassNames<"icon" | "label">;
   description?: React.ReactNode;
   disabled?: boolean;
   isRefreshing?: boolean;
-  showLabel?: boolean;
-  onRefresh?: () => void;
-  onRefreshChange?: (refreshing: boolean) => void;
+  onRefresh?(): void;
+  onRefreshChange?(refreshing: boolean): void;
 };
 
 export const RefreshButton: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof Button>, "children"> & ButtonProps
+  & Omit<React.ComponentPropsWithRef<typeof Button>, "children">
+  & ButtonProps
 > = ({
   ref,
+  classNames,
   description = "Refresh the content",
-  size = "default",
+  size = "icon",
   variant = "ghost",
   disabled,
   isRefreshing,
-  showLabel,
   onClick,
   onRefresh,
   onRefreshChange,
   ...props
 }) => {
-  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [reloading, setIsReloading] = React.useState<boolean>(
+    Boolean(isRefreshing),
+  );
   const router = useRouter();
+  if (onClick && onRefresh) {
+    logger.warn(
+      "RefreshButton: both onClick and onRefresh props are provided, onClick will be ignored",
+    );
+  }
 
   // handle the refresh change event
-  const handleOnRefreshChange = (refreshing: boolean) => {
-    if (onRefreshChange) onRefreshChange(refreshing);
-    setIsAnimating(refreshing);
+  const handleRefreshChange = (refreshing: boolean) => {
+    setIsReloading((prev) => {
+      if (prev === refreshing) return prev;
+      if (onRefreshChange) onRefreshChange(refreshing);
+      return refreshing;
+    });
   };
   // handle the refresh action
-  const handleOnClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    // prevent the default action
-    event.preventDefault();
-    // prevent the event from bubbling up
-    event.stopPropagation();
-    if (!isAnimating) handleOnRefreshChange(true);
-    // log the event
-    logger.trace("Refreshing...");
-    try {
-      // call the onClick handler if it exists
-      if (onClick) onClick(event);
-      // call the onRefresh handler if it exists
-      else if (onRefresh) onRefresh();
-      else router.refresh();
-    } finally {
-      // set the refreshing state to true
-      handleOnRefreshChange(false);
-    }
+  const handleOnClick = (): React.MouseEventHandler<HTMLButtonElement> => {
+    // return the click handler
+    return async (event) => {
+      if (!reloading) setIsReloading(true);
+      // cleanup the event
+      event.preventDefault();
+      event.stopPropagation();
+      // log the event
+      logger.trace(event, "Refreshing...");
+      try {
+        if (onRefresh) onRefresh();
+        else if (onClick) onClick(event);
+        else router.refresh();
+      } finally {
+        // set the refreshing state to true
+        handleRefreshChange(false);
+      }
+    };
   };
-  // handle the refresh change event
+  // synchronize the internal state with the external prop
   React.useEffect(() => {
-    if (isRefreshing !== undefined && isRefreshing !== isAnimating) {
-      handleOnRefreshChange(isRefreshing);
+    if (isRefreshing !== undefined && isRefreshing !== reloading) {
+      setIsReloading(isRefreshing);
     }
-  }, [isRefreshing, isAnimating, setIsAnimating]);
+  }, [isRefreshing, reloading]);
 
   // render the component
   return (
@@ -88,21 +100,27 @@ export const RefreshButton: React.FC<
           <Button
             {...props}
             ref={ref}
+            data-slot="refresh-button"
             disabled={disabled || isRefreshing}
-            onClick={handleOnClick}
-            size={showLabel ? size : "icon"}
+            onClick={handleOnClick()}
+            size={size}
             variant={variant}
           >
             <RefreshCwIcon
-              className={cn("h-4 w-4", isAnimating && "animate-spin")}
+              className={cn(
+                "size-4",
+                reloading && "animate-spin",
+                classNames?.iconClassName,
+              )}
             />
             <span
               className={cn(
-                showLabel ? "not-sr-only" : "sr-only",
-                isAnimating && "animate-pulse",
+                size?.startsWith("icon") ? "sr-only" : "not-sr-only",
+                classNames?.labelClassName,
+                reloading && "animate-pulse",
               )}
             >
-              {isAnimating ? "Refreshing" : "Refresh"}
+              {reloading ? "Refreshing" : "Refresh"}
             </span>
           </Button>
         </TooltipTrigger>
@@ -112,5 +130,3 @@ export const RefreshButton: React.FC<
   );
 };
 RefreshButton.displayName = "RefreshButton";
-
-export default RefreshButton;

@@ -9,30 +9,35 @@ import * as React from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 // components
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+// local
+import { IconButton } from "./icon-button";
 
 export const BackButton: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof Button>, "children" | "asChild"> & {
+  & Omit<React.ComponentPropsWithRef<typeof IconButton>, "children" | "asChild">
+  & {
     description?: React.ReactNode;
-    label?: React.ReactNode;
     orientation?: "left" | "right";
-    showLabel?: boolean;
+    classNames?: {
+      labelClassName?: string;
+      iconClassName?: string;
+    };
   }
 > = ({
   ref,
-  onClick,
+  classNames,
   description = "Return to the previous page",
   orientation = "left",
   label = "Back",
   size = "icon",
   variant = "ghost",
-  showLabel = false,
+  onClick,
   ...props
 }) => {
   // Use the router to navigate back
@@ -41,8 +46,6 @@ export const BackButton: React.FC<
     ...props
   }) => {
     switch (orientation) {
-      case "left":
-        return <ArrowLeftIcon {...props} />;
       case "right":
         return <ArrowRightIcon {...props} />;
       default:
@@ -54,25 +57,25 @@ export const BackButton: React.FC<
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
+          <IconButton
             {...props}
             ref={ref}
+            label={label}
+            size={size}
+            variant={variant}
+            classNames={{ labelClassName: classNames?.labelClassName }}
             onClick={(event) => {
-              // prevent the default action
+              // cleanup the event
               event.preventDefault();
+              event.stopPropagation();
               // if the onClick prop is provided, call it
               if (onClick) onClick(event);
               // otherwise use the router to go back
               else router.back();
             }}
-            size={size}
-            variant={variant}
           >
-            <Icon className="h-8 w-8" />
-            <span className={showLabel ? "not-sr-only" : "sr-only"}>
-              {label}
-            </span>
-          </Button>
+            <Icon className={cn("size-5", classNames?.iconClassName)} />
+          </IconButton>
         </TooltipTrigger>
         <TooltipContent>{description}</TooltipContent>
       </Tooltip>

@@ -1,0 +1,56 @@
+name: Node.js CI
+
+env:
+  NODE_VERSION: "24"
+  NPM_VERSION: "10"
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+    types: [opened, ready_for_review, reopened]
+  repository_dispatch:
+    types: [node]
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: "Node.js version"
+        required: false
+        default: "24"
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ github.event.inputs.node-version || env.NODE_VERSION }}
+          cache: "npm"
+      - name: Restore the build cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            .next/cache
+          restore-keys: |
+            nextjs-${{ runner.os }}-
+      - name: Install project dependencies
+        id: install
+        run: npm ci
+      - name: Run any tests
+        id: test
+        run: npm run test --if-present
+      - name: Build the project
+        id: build
+        run: npm run build
+      - name: Upload the build artifacts
+        id: artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: nextjs-build
+          path: .next
