@@ -11,14 +11,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 // import { useModal } from "@/hooks/use-modal";
 
 interface DashboardState {
-  isCompact: boolean;
-  isMobile: boolean;
-  fullWidth: boolean;
 }
 
 type DashboardContext = {
-  state: DashboardState;
   error: Error | null;
+  isMobile: boolean;
+  fullWidth: boolean;
+  state: DashboardState;
+  setFullWidth: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const DashboardContext = React.createContext<DashboardContext | null>(null);
@@ -28,49 +28,47 @@ const DashboardContext = React.createContext<DashboardContext | null>(null);
  * @returns {DashboardContext} The current dashboard context.
  * @throws {Error} If the hook is used outside of a `DashboardProvider`.
  */
-export const useDashboard = (): DashboardContext => {
-  // invoke the context
+export function useDashboard(): DashboardContext {
   const ctx = React.useContext(DashboardContext);
-  // if the context is not defined, throw an error
   if (!ctx) {
     throw new Error(
-      "useScaffold must be used within a `DashboardProvider`",
+      "The `useDashboard` hook must be used within the bounds of a `DashboardProvider`.",
     );
   }
-  // return the context
   return ctx;
-};
+}
 
 // DashboardProvider
 export const DashboardProvider: React.FC<
   React.PropsWithChildren<{
-    isCompact?: boolean;
     fullWidth?: boolean;
   }>
-> = ({ children, isCompact: isCompactProp, fullWidth: fullWidthProp }) => {
+> = ({ children, fullWidth: fullWidthProp }) => {
   const [_error, _setError] = React.useState<Error | null>(null);
   // setup the fullWidth state
-  const [compact] = React.useState<boolean>(Boolean(isCompactProp));
-  const [fullWidth] = React.useState<boolean>(
+  const [fullWidth, setFullWidth] = React.useState<boolean>(
     Boolean(fullWidthProp),
   );
   // check if the current device is mobile
   const isMobile = useIsMobile();
-
-  const _state = React.useMemo<DashboardState>(() => ({
-    isCompact: compact,
-    isMobile,
-    fullWidth,
-  }), [compact, isMobile, fullWidth]);
+  const _state = React.useMemo<DashboardState>(
+    () => ({}),
+    [],
+  );
 
   const ctx = React.useMemo<DashboardContext>(
     () => ({
       error: _error,
       state: _state,
+      isMobile,
+      fullWidth,
+      setFullWidth,
     }),
     [
       _error,
       _state,
+      isMobile,
+      fullWidth,
     ],
   );
   // render provider

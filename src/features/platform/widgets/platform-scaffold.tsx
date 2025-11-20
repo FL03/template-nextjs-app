@@ -20,9 +20,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { PlatformAppBar } from "./platform-appbar";
 import { PlatformSidebar } from "./platform-sidebar";
 
-/**
- * This component extends the base scaffold with a sidebar that is only available to authenticated users.
- */
+/** This component extends the base scaffold with a sidebar that is only available to authenticated users. */
 export const PlatformScaffold: React.FC<
   & Omit<React.ComponentPropsWithoutRef<typeof Scaffold>, "asChild">
   & {

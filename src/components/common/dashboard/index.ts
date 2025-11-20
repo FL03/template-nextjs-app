@@ -3,9 +3,9 @@
  * @author - @FL03
  * @file - dashboard/index.ts
  */
-export * from "./modal";
-
 export * from "./dashboard";
+export * from "./dashboard-leading";
 export * from "./dashboard-panel";
 export * from "./dashboard-provider";
 export * from "./dashboard-scaffold";
+export * from "./dashboard-trailing";

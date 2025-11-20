@@ -7,7 +7,7 @@
 "use client";
 // imports
 import * as React from "react";
-import { ClassNames, formatAsCurrency } from "@pzzld/core";
+import { ClassNames } from "@pzzld/core";
 import {
   aggregationFns,
   ColumnHelper,
@@ -17,6 +17,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
+  RowData,
   RowSelectionState,
   SortingState,
 } from "@tanstack/react-table";
@@ -28,17 +29,20 @@ import { type ShiftData } from "../types";
 import { ShiftFormModal } from "./modals";
 import {
   ShiftCommandDialog,
-  ShiftDropdownMenu,
-  ShiftsDropdownMenu,
+  ShiftCommandMenu,
+  ShiftItemDropdownMenu,
 } from "./actions";
 // components
 import {
   DataTable,
+  DataTableCell,
   DataTableColumnHeader,
   DataTablePageSize,
   DataTablePagination,
   DataTableProvider,
   DataTableSearch,
+  DataTableSelectSummaryCell,
+  useDataTable,
 } from "@/components/common/data-table";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -51,7 +55,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Item, ItemContent } from "@/components/ui/item";
+import { TableRow } from "@/components/ui/table";
+
+import "@tanstack/react-table"; //or vue, svelte, solid, qwik, etc.
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    formatOptions?: Intl.NumberFormatOptions | Intl.DateTimeFormatOptions;
+  }
+}
 
 type PropsWithTableConfig<T = {}> = T & {
   filter?: string;
@@ -76,16 +88,17 @@ export const shiftTableSchema = [
         className="mx-auto"
         checked={table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) =>
+          table.toggleAllPageRowsSelected(Boolean(value))}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         className="mx-auto"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
       />
     ),
   }),
@@ -94,10 +107,13 @@ export const shiftTableSchema = [
     enableGrouping: true,
     enableSorting: true,
     enableHiding: false,
+    meta: {
+      formatOptions: {
+        timeZone: "UTC",
+      },
+    },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column}>
-        Date
-      </DataTableColumnHeader>
+      <DataTableColumnHeader column={column}>Date</DataTableColumnHeader>
     ),
     cell: ({ row: { original: { date } } }) => (
       new Date(date).toLocaleDateString("en-US", {
@@ -107,61 +123,156 @@ export const shiftTableSchema = [
   }),
   shiftColHelper.accessor("tips_cash", {
     id: "tips_cash",
+    meta: {
+      formatOptions: {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      },
+    },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column}>
-        Cash
-      </DataTableColumnHeader>
+      <DataTableColumnHeader column={column}>Cash</DataTableColumnHeader>
     ),
     aggregationFn: aggregationFns.sum,
     cell: ({ row }) => (
-      formatAsCurrency(row.original.tips_cash)
+      new Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      }).format(row.original.tips_cash)
     ),
   }),
   shiftColHelper.accessor("tips_credit", {
     id: "tips_credit",
+    meta: {
+      formatOptions: {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      },
+    },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column}>
-        Credit
-      </DataTableColumnHeader>
+      <DataTableColumnHeader column={column}>Credit</DataTableColumnHeader>
     ),
     aggregationFn: aggregationFns.sum,
     cell: ({ row }) => (
-      formatAsCurrency(row.original.tips_credit)
+      new Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      }).format(row.original.tips_credit)
     ),
   }),
   shiftColHelper.display({
     id: "total_tips",
-    cell: ({ row }) => {
-      const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
-
-      return formatAsCurrency(cash + credit);
-    },
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column}>
-        Earned Tips
-      </DataTableColumnHeader>
-    ),
-    aggregationFn: (_columnId, leafRows, childRows) => {
-      const total = leafRows.reduce((acc, row) => {
-        const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
-        return acc + cash + credit;
-      }, 0);
-      return childRows.reduce((acc, row) => {
-        const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
-        return acc + cash + credit;
-      }, total);
+    meta: {
+      formatOptions: {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      },
     },
     aggregatedCell: ({ getValue }) => {
       const total = getValue<number>();
-      return formatAsCurrency(total);
+      return new Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      }).format(total);
+    },
+    cell: ({ row }) => {
+      const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
+
+      return new Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+        maximumFractionDigits: 2,
+      }).format(cash + credit);
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Earned Tips</DataTableColumnHeader>
+    ),
+    aggregationFn: (_columnId, leafRows, childRows) => {
+      const leafTotal = leafRows.reduce((acc, row) => {
+        const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
+        return acc + cash + credit;
+      }, 0);
+      const totalSum = childRows.reduce((acc, row) => {
+        const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
+        return acc + cash + credit;
+      }, leafTotal);
+      return totalSum;
     },
   }),
   shiftColHelper.display({
     id: "actions",
     aggregationFn: aggregationFns.count,
-    cell: (props) => <ShiftDropdownMenu item={props.row.original} />,
+    cell: (props) => <ShiftItemDropdownMenu item={props.row.original} />,
   }),
 ];
+
+const TotalRow: React.FC<React.ComponentProps<typeof TableRow>> = ({
+  className,
+  ...props
+}) => {
+  const { table } = useDataTable();
+
+  const columns = table.getAllColumns();
+  const dataCols = columns.filter((column) => column.id.startsWith("tips_c"));
+  const dateCol = columns.find((column) => column.id === "date");
+  const totalTipsCol = columns.find((column) => column.id === "total_tips");
+  const totalRows = table.getCoreRowModel().rows.length;
+
+  return (
+    <TableRow
+      className={cn("flex flex-1 flex-nowrap w-full font-semibold", className)}
+      {...props}
+    >
+      <DataTableCell colSpan={1}>
+        Total
+      </DataTableCell>
+      <DataTableCell colSpan={1}>
+        <span className="font-semibold">
+          {dateCol?.getAggregationFn?.()?.(
+            "date",
+            [],
+            table.getCoreRowModel().rows,
+          )}
+        </span>
+      </DataTableCell>
+      {dataCols.map((column, index) => (
+        <DataTableSelectSummaryCell
+          key={index}
+          colSpan={1}
+          column={column}
+          formatOptions={{
+            currency: "USD",
+            style: "currency",
+            maximumFractionDigits: 2,
+          }}
+        />
+      ))}
+      <DataTableCell id={totalTipsCol?.id} className="font-mono" colSpan={1}>
+        {new Intl.NumberFormat("en-us", {
+          currency: "USD",
+          maximumFractionDigits: 2,
+          style: "currency",
+        }).format(
+          totalTipsCol?.getAggregationFn?.()?.(
+            totalTipsCol?.id,
+            [],
+            table.getCoreRowModel().rows,
+          ),
+        )}
+      </DataTableCell>
+      <DataTableCell colSpan={1}>
+        <span className="font-mono">{totalRows}</span>
+        <span className="text-muted-foreground">rows</span>
+      </DataTableCell>
+    </TableRow>
+  );
+};
+TotalRow.displayName = "TotalRow";
 
 export const ShiftTable: React.FC<
   & Omit<
@@ -227,7 +338,7 @@ export const ShiftTable: React.FC<
       <DataTableSearch />
       <ButtonGroup>
         <ShiftFormModal />
-        <ShiftsDropdownMenu />
+        <ShiftCommandMenu />
       </ButtonGroup>
     </ButtonGroup>
   );
@@ -269,14 +380,12 @@ export const ShiftTable: React.FC<
           )}
         >
           <TableActions />
-          <DataTable />
+          <DataTable>
+            <TotalRow />
+          </DataTable>
         </CardContent>
         <CardFooter className="flex flex-nowrap items-center justify-center w-full">
-          <Item>
-            <ItemContent className="w-full justify-center">
-              <DataTablePagination />
-            </ItemContent>
-          </Item>
+          <DataTablePagination />
         </CardFooter>
         <ShiftCommandDialog />
       </Card>

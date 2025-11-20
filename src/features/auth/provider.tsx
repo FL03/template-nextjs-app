@@ -24,6 +24,7 @@ interface CurrentUserContext extends Omit<ReturnType<typeof useAuth>, "state"> {
   username?: string;
   user?: ReturnType<typeof useAuth>["user"];
   userId?: string;
+  reloadUserProfile: ReturnType<typeof useUserProfile>["reload"];
 }
 // declare the current user context
 const CurrentUserContext = React.createContext<CurrentUserContext | null>(null);
@@ -50,29 +51,30 @@ export const CurrentUserProvider: React.FC<
 > = ({ ref, className, ...props }) => {
   const { state: authState, customerId, subscriptionStatus, user, ...auth } =
     useAuth();
-  const { profile, username, state: profileState } = useUserProfile({
+  const { profile, ...userProfile } = useUserProfile({
     userId: user?.id,
   });
 
   // memoize the context
   const context = React.useMemo(() => ({
     ...auth,
+    isAuthenticated: Boolean(user),
     authState,
+    user,
     profile,
-    profileState,
+    profileState: userProfile.state,
+    username: profile?.username,
     customerId: profile?.customer_id ?? customerId,
     subscriptionStatus: profile?.subscription_status ?? subscriptionStatus,
-    user,
-    username,
+    reloadUserProfile: userProfile.reload,
   }), [
     auth,
     authState,
     profile,
-    profileState,
-    user,
-    username,
     customerId,
     subscriptionStatus,
+    user,
+    userProfile,
   ]);
   return (
     <CurrentUserContext.Provider value={context}>

@@ -6,9 +6,11 @@
  */
 "use client";
 // imports
-import * as React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 namespace UseFilter {
+  export type ObjectKey<T> = keyof T & (string | number | symbol);
+
   export interface Filter<TData> {
     key: keyof TData;
     value?: string | null;
@@ -35,31 +37,32 @@ namespace UseFilter {
  * updated whenever any changes occur to the original dataset or the filter criteria. Each filter is essentially defined as a key-value pair,
  * where they key represents the property to filter by, and the value is the specific value to match against.
  */
-export function useFilter<TData = unknown>(
+export function useFilter<TData>(
   { values = [] }: UseFilter.Props<TData>,
 ): UseFilter.Output<TData> {
   // setup the filter
-  const [filter, setFilter] = React.useState<UseFilter.Filter<TData> | null>(
+  const [filter, setFilter] = useState<UseFilter.Filter<TData> | null>(
     null,
   );
 
-  const filterBy = React.useCallback(
-    (key: keyof TData, value: string | null) => {
+  const filterBy = useCallback(
+    (key: keyof TData, value?: string | null) => {
       setFilter({ key, value });
     },
     [],
   );
 
-  // Filter data by orgId
-  const filtered = React.useMemo(
+  // filter & memoize the data
+  const data = useMemo(
     () => {
       if (!filter || !filter?.value) return values;
       return values?.filter((item) => item[filter.key] === filter.value);
     },
     [values, filter],
   );
+  // output the object
   return {
-    data: filtered,
+    data,
     filter,
     filterBy,
     setFilter,

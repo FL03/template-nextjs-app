@@ -7,22 +7,22 @@
 // imports
 import * as React from "react";
 // project
-import Privacy from "../content/privacy.mdx";
+import Privacy from "@/content/privacy.mdx";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 export const PrivacyScreen: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "title" | "children" | "showDescription"
   >
 > = ({ ...props }) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     showDescription
     title="Privacy Policy"
   >
     <Privacy />
-  </ContentCard>
+  </ArticleCard>
 );
 PrivacyScreen.displayName = "PrivacyScreen";
 

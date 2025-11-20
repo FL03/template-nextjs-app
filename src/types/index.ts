@@ -5,10 +5,7 @@
  */
 
 export * from "./api";
-export * from "./author";
 export * from "./cmp";
-export * from "./core";
-export * from "./events";
-export * from "./filter";
+export * from "./queries";
 export * from "./hooks";
 export * from "./routes";

@@ -4,7 +4,7 @@
  * @directory - src/types
  * @file - routes.ts
  */
-import type { Nullish } from "@/types";
+import { ReactNode } from "react";
 import type { UrlObject, URLSearchParams } from "url";
 
 /** A type able to be passed to the `href` property on the `Link` component provided by nextjs. */
@@ -15,26 +15,8 @@ export type QueryParams =
   | URLSearchParams
   | string[][];
 
-export type NavItem = { label: string; href: Href; icon?: React.ReactNode };
-
-type DynamicPathSegmentValue = string | number | boolean;
-
-export type RouteBuilderOptions<
-  TParams extends Record<string, Nullish<DynamicPathSegmentValue>> = {},
-  TSearch extends QueryParams = URLSearchParams,
-> = {
-  path?: string | string[];
-  params: TParams;
-  searchParams?: TSearch;
-};
-
-type RouteParams = Record<string, string> | { [key: string]: string };
-
-export type PropsWithRoute<
-  T = {},
-  TParams extends RouteParams = {},
-  TQuery extends QueryParams = {},
-> = T & {
-  params: Promise<TParams>;
-  searchParams: Promise<TQuery>;
+export type NavItemData<T = {}> = T & {
+  label: string;
+  href: Href;
+  icon?: ReactNode;
 };

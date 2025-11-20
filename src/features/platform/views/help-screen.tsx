@@ -7,16 +7,16 @@
 // imports
 import * as React from "react";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
 
 export const HelpPage: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "description" | "title" | "children"
   >
 > = ({ ...props }) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     showDescription
     title="Frequently Asked Questions (FAQ)"
@@ -32,7 +32,7 @@ export const HelpPage: React.FC<
         </ItemDescription>
       </ItemContent>
     </Item>
-  </ContentCard>
+  </ArticleCard>
 );
 HelpPage.displayName = "HelpPage";
 

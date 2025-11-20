@@ -6,16 +6,14 @@
 "use client";
 // imports
 import * as React from "react";
-import { Edit2Icon, FileOutputIcon, TrashIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { EditIcon, XIcon } from "lucide-react";
 // project
 import { useCurrentUser } from "@/features/auth";
-import { cn, downloadAsJSON } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 // local
-import { ShiftContextMenu } from "./actions";
+import { ShiftItemContextMenu, ShiftItemDropdownMenu } from "./actions";
 import { ShiftForm } from "./shift-form";
-import { TipTile } from "./shift-tips";
+import { ShiftTips } from "./shift-tips";
 // components
 import { IconButton } from "@/components/common/button";
 import { DetailScaffold } from "@/components/common/details";
@@ -30,12 +28,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ItemGroup, ItemSeparator } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Empty,
   EmptyContent,
+  EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useWorkShift } from "../providers";
@@ -66,19 +65,12 @@ export const ShiftDetails: React.FC<
 ) => {
   const [currentMode, setCurrentMode] = React.useState<string>(defaultMode);
   const isEditing = React.useMemo(
-    () =>
-      ["edit", "editing", "update", "updating"].includes(
-        currentMode.toLowerCase(),
-      ),
-    [
-      currentMode,
-    ],
+    () => currentMode.match(/^(edit|update|updating)/gmi),
+    [currentMode],
   );
   // use the hook to get a reference to the username
   const { username } = useCurrentUser();
-  const { data, error, state: { isLoading }, ...shift } = useWorkShift();
-  // create a reference to the router
-  const router = useRouter();
+  const { data, state: { isLoading } } = useWorkShift();
   // determine if the user is assigned to the shift
   const isAssigned = React.useMemo(() => data?.assignee === username, [
     data,
@@ -113,61 +105,37 @@ export const ShiftDetails: React.FC<
       >
         {isEditing
           ? <XIcon className="size-4" />
-          : <Edit2Icon className="size-4" />}
+          : <EditIcon className="size-4" />}
       </IconButton>
-      <IconButton
-        size="icon"
-        variant="outline"
-        label="Export"
-        onClick={() => {
-          downloadAsJSON(data, `shift-${shiftId}.json`);
-        }}
-      >
-        <FileOutputIcon className="size-4" />
-      </IconButton>
-      <IconButton
-        label="Delete"
-        size="icon"
-        variant="destructive"
-        onClick={async () => {
-          // notify the user
-          toast.promise(
-            shift.delete().then(() => {
-              router.back();
-            }),
-            {
-              loading: "Deleting shift...",
-              success: "Successfully deleted shift",
-              error: "Error deleting shift",
-            },
-          );
-        }}
-      >
-        <TrashIcon className="size-4" />
-      </IconButton>
+      <ShiftItemDropdownMenu item={data} triggerVariant="outline" />
     </ButtonGroup>
   );
 
   const Content = () => {
     if (isLoading) {
       return (
-        <div className="flex flex-1 h-full w-full items-center justify-center">
-          <div className="inline-flex flex-nowrap items-center m-auto gap-2">
-            <Spinner className="size-7" />
-            <span className="animate-pulse">Loading...</span>
-          </div>
-        </div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia>
+              <Spinner className="size-8" />
+            </EmptyMedia>
+            <EmptyTitle className="animate-pulse">Loading...</EmptyTitle>
+          </EmptyHeader>
+        </Empty>
       );
     }
     if (!data && !isLoading) {
       return (
         <Empty>
           <EmptyHeader>
+            <EmptyMedia>
+              <EditIcon className="size-8" />
+            </EmptyMedia>
             <EmptyTitle>No Data</EmptyTitle>
+            <EmptyDescription className="text-center">
+              No data available for this shift.
+            </EmptyDescription>
           </EmptyHeader>
-          <EmptyContent className="text-center">
-            No data available for this shift.
-          </EmptyContent>
         </Empty>
       );
     }
@@ -179,7 +147,6 @@ export const ShiftDetails: React.FC<
         />
       );
     }
-    const { tips_cash, tips_credit } = data;
     return (
       <>
         <CardHeader>
@@ -200,19 +167,14 @@ export const ShiftDetails: React.FC<
           </CardAction>
         </CardHeader>
         <CardFooter className="flex flex-col flex-1 h-full w-full">
-          <ItemGroup className="w-full">
-            <TipTile label="Cash" value={tips_cash} />
-            <TipTile label="Credit" value={tips_credit} />
-            <ItemSeparator />
-            <TipTile label="Total tips" value={tips_cash + tips_credit} />
-          </ItemGroup>
+          <ShiftTips value={data} />
         </CardFooter>
       </>
     );
   };
   // render the shift details
   return (
-    <ShiftContextMenu itemId={shiftId}>
+    <ShiftItemContextMenu itemId={shiftId}>
       <DetailScaffold
         showDescription
         withBack
@@ -230,9 +192,7 @@ export const ShiftDetails: React.FC<
           </CardContent>
         </Card>
       </DetailScaffold>
-    </ShiftContextMenu>
+    </ShiftItemContextMenu>
   );
 };
 ShiftDetails.displayName = "ShiftDetails";
-
-export default ShiftDetails;

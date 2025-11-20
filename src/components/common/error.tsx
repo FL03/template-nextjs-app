@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // components
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
+import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import {
   Card,
   CardAction,
@@ -29,7 +29,6 @@ export const ErrorCard: React.FC<
       description?: React.ReactNode;
       title?: React.ReactNode;
       status?: string | number;
-      showStatus?: boolean;
       reset?(): void;
     }
   >
@@ -40,7 +39,6 @@ export const ErrorCard: React.FC<
   status = 500,
   title = "Error",
   reset,
-  showStatus,
   ...props
 }) => (
   <Card
@@ -55,16 +53,12 @@ export const ErrorCard: React.FC<
         </CardTitle>
         <CardAction>
           <ButtonGroup>
-            <ButtonGroup>
-              <Button onClick={reset} disabled={!reset} variant="outline">
-                Reset
-              </Button>
-            </ButtonGroup>
-            {showStatus && (
-              <Badge className="text-sm" variant="outline">
-                {typeof status === "number" ? `HTTP ${status}` : status}
-              </Badge>
-            )}
+            <Button onClick={reset} disabled={!reset} variant="outline">
+              Reset
+            </Button>
+            <ButtonGroupText className="text-sm">
+              {typeof status === "number" ? `HTTP ${status}` : status}
+            </ButtonGroupText>
           </ButtonGroup>
         </CardAction>
       </CardHeader>

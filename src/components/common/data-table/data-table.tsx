@@ -8,109 +8,69 @@
 // imports
 import * as React from "react";
 import { ClassNames } from "@pzzld/core";
-import ReactTable, {
-  flexRender,
-  RowData,
-  TableOptions,
-  useReactTable,
-} from "@tanstack/react-table";
+import ReactTable, { flexRender, RowData } from "@tanstack/react-table";
 // project
 import { cn } from "@/lib/utils";
 // local
-import { EmptyTableRow, TotalRow } from "./data-table-rows";
+import { useDataTable } from "./data-table-provider";
+import { DataTableEmptyRow, DataTableRow } from "./data-table-rows";
 // components
 import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
-  TableCell,
   TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
-type DataTableContext<TData extends RowData> = {
-  options: TableOptions<TData>;
-  table: ReactTable.Table<TData>;
-};
-
-const DataTableContext = React.createContext<DataTableContext<any> | null>(
-  null,
-);
-
-/** The `useDataTable` hook provides access to the context injected by a `DataTableProvider`. */
-export function useDataTable<TData extends RowData = any>(): DataTableContext<
-  TData
-> {
-  const context = React.useContext(DataTableContext);
-  if (!context) {
-    throw new Error("useDataTable must be used within a DataTableProvider");
-  }
-  return context;
-}
-
-export function DataTableProvider<TData>({
-  children,
-  options: optionsProp,
-}: React.PropsWithChildren<{
-  options: TableOptions<TData>;
-}>) {
-  const table = useReactTable(optionsProp);
-
-  const contextValue = React.useMemo(
-    () => ({ options: table.options, table }),
-    [table],
-  );
-  return (
-    <DataTableContext.Provider value={contextValue}>
-      {children}
-    </DataTableContext.Provider>
-  );
-}
-DataTableProvider.displayName = "DataTableProvider";
-
 interface DataTableProps<TData extends RowData>
-  extends Omit<React.ComponentPropsWithRef<typeof Table>, "children"> {
-  classNames?: ClassNames<"body" | "header" | "footer">;
+  extends React.ComponentPropsWithRef<typeof Table> {
+  classNames?: ClassNames<"tableBody" | "tableHeader" | "tableFooter">;
   renderRow?: (row: ReactTable.Row<TData>, index?: number) => React.ReactNode;
 }
 
 export function DataTable<TData extends RowData = any>(
-  { ref, className, classNames, renderRow, ...props }: DataTableProps<TData>,
+  { ref, children, className, classNames, renderRow, ...props }: DataTableProps<
+    TData
+  >,
 ) {
   const { table } = useDataTable<TData>();
 
   function handleRow(row: ReactTable.Row<TData>, index?: number) {
-    if (renderRow) {
-      return renderRow(row, index);
-    }
+    if (renderRow) return renderRow(row, index);
     return <DataTableRow key={index} row={row} />;
   }
 
   return (
     <Table ref={ref} className={cn("w-full", className)} {...props}>
       {/* Table Header */}
-      <DataTableHeader className={classNames?.headerClassName} />
+      <DataTableHeader className={classNames?.tableHeaderClassName} />
       {/* Table Body */}
-      <DataTableBody className={classNames?.bodyClassName}>
+      <TableBody
+        className={cn("w-full overflow-y-auto", classNames?.tableBodyClassName)}
+      >
         {table.getRowCount() === 0
-          ? <EmptyTableRow colSpan={table.getAllColumns().length} />
+          ? <DataTableEmptyRow colSpan={table.getAllColumns().length} />
           : (
             table.getPaginationRowModel().rows.map(handleRow)
           )}
-      </DataTableBody>
+      </TableBody>
       {/* Table Footer */}
-      <DataTableFooter className={classNames?.footerClassName}>
-        <TotalRow />
-      </DataTableFooter>
+      <TableFooter
+        className={cn("w-full", classNames?.tableFooterClassName)}
+        hidden={!children}
+      >
+        {children}
+      </TableFooter>
     </Table>
   );
 }
-DataTable.displayName = "DataTable";
 
 export function DataTableHead<TData extends RowData, TValue>({
   ref,
+  className,
   header,
   ...props
 }: Omit<React.ComponentPropsWithRef<typeof TableHead>, "children"> & {
@@ -128,10 +88,10 @@ export function DataTableHead<TData extends RowData, TValue>({
       data-slot="data-table-head"
       className={cn(
         "flex flex-nowrap flex-1 items-center min-w-24 w-fit",
-        "cursor-pointer select-none",
-        "font-semibold text-sm text-inherit text-nowrap",
-        "bg-secondary text-secondary-foreground",
-        "hover:bg-primary/10",
+        "bg-secondary text-secondary-foreground font-semibold text-nowrap truncate",
+        "cursor-pointer select-none transition-opacity ease-in-out duration-75",
+        "hover:opacity-80 ring-none focus:ring-none",
+        className,
       )}
       {...props}
     >
@@ -192,88 +152,6 @@ export const DataTableHeader: React.FC<
   );
 };
 
-export function DataTableRow<TData extends RowData>({
-  ref,
-  className,
-  onChange,
-  row,
-  ...props
-}: Omit<React.ComponentPropsWithRef<typeof TableRow>, "children"> & {
-  onChange?: React.FormEventHandler;
-  row?: ReactTable.Row<TData>;
-}) {
-  if (!row) return null;
-
-  return (
-    <TableRow
-      ref={ref}
-      className={cn(
-        "flex items-center flex-nowrap w-full",
-        className,
-      )}
-      data-slot="data-table-row"
-      data-state={row?.getIsSelected() && "selected"}
-      onClick={() => row?.toggleSelected()}
-      {...props}
-    >
-      {row?.getVisibleCells().map((cell: any, index) => (
-        <DataTableCell key={index} onChange={onChange}>
-          {flexRender(
-            cell.column.columnDef.cell,
-            cell.getContext(),
-          )}
-        </DataTableCell>
-      ))}
-    </TableRow>
-  );
-}
-DataTableRow.displayName = "DataTableRow";
-
-export const DataTableCell: React.FC<
-  React.ComponentPropsWithRef<typeof TableCell>
-> = ({
-  ref,
-  className,
-  ...props
-}) => (
-  <TableCell
-    ref={ref}
-    data-slot="data-table-cell"
-    className={cn(
-      "flex flex-1 items-center justify-center min-w-24 w-full",
-      className,
-    )}
-    {...props}
-  />
-);
-DataTableCell.displayName = "DataTableCell";
-
-export const DataTableBody: React.FC<
-  React.ComponentPropsWithRef<typeof TableBody>
-> = ({ ref, className, ...props }) => (
-  <TableBody
-    ref={ref}
-    data-slot="data-table-body"
-    className={cn("w-full overflow-x-auto", className)}
-    {...props}
-  />
-);
-
-export const DataTableFooter: React.FC<
-  React.ComponentPropsWithRef<typeof TableFooter>
-> = ({ ref, className, ...props }) => (
-  <TableFooter
-    ref={ref}
-    data-slot="data-table-footer"
-    className={cn(
-      "w-full",
-      className,
-    )}
-    {...props}
-  />
-);
-DataTableFooter.displayName = "DataTableFooter";
-
 // DataTableActions
 export const DataTableActions: React.FC<React.ComponentPropsWithRef<"div">> = (
   { ref, className, ...props },
@@ -321,3 +199,19 @@ export const DataTableDescription: React.FC<
   />
 );
 DataTableDescription.displayName = "DataTableDescription";
+
+export const DataTableSelectedRows: React.FC<
+  Omit<React.ComponentPropsWithRef<typeof Label>, "children"> & {
+    compact?: boolean;
+  }
+> = ({ ref, compact, ...props }) => {
+  const { table } = useDataTable();
+  return (
+    <Label ref={ref} {...props}>
+      <span>
+        Selected {table.getFilteredRowModel().rows.length}
+      </span>
+      {!compact && <span>out of {} items</span>}
+    </Label>
+  );
+};

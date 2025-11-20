@@ -9,23 +9,19 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 // components
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import TipsOverTimeChart from "./tips-over-time";
-// import AverageDailyTipsChart from "./daily-averages";
+import { LoadingScaffold } from "@/components/common/loading";
 
-export const TipCharts: React.FC<
+const TipCharts: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs>,
+    React.ComponentPropsWithRef<typeof Tabs>,
     "children"
-  >
+  > & {
+    ssr?: boolean;
+  }
 > = ({
+  ref,
+  ssr = false,
   defaultValue = "daily",
   value,
   onValueChange,
@@ -47,63 +43,48 @@ export const TipCharts: React.FC<
     }
   }, [tab, value]);
 
-  const AverageDailyTipsChart = dynamic(
-    async () => (
-      (await import("./daily-averages")).AverageDailyTipsChart
-    ),
-    { ssr: false },
+  const TipsByDayOfWeek = dynamic(
+    async () => await import("./tips-by-day"),
+    { ssr, loading: () => <LoadingScaffold /> },
   );
-  const TipsOverTimeChart = dynamic(
-    async () => (
-      (await import("./tips-over-time")).TipsOverTimeChart
-    ),
-    { ssr: false },
+
+  const TipsOverTime = dynamic(
+    async () => await import("./tips-over-time"),
+    { ssr, loading: () => <LoadingScaffold /> },
   );
 
   return (
     <Tabs
       {...props}
+      ref={ref}
       onValueChange={handleTabChange}
       value={tab}
     >
-      <Card className="relative z-auto flex flex-col w-full">
-        <TabsList defaultValue="daily" className="mt-2 mx-auto max-w-fit">
-          <div className="flex flex-row flex-nowrap gap-2">
+      <div className="relative z-auto flex flex-col w-full gap-4 lg:gap-6">
+        <TabsList defaultValue="daily" className="mx-auto justify-self-center">
+          <div className="flex flex-nowrap gap-2 w-full">
             <TabsTrigger value="daily" asChild>
-              <Button size="sm" variant="ghost">
+              <Button variant="ghost">
                 By Day
               </Button>
             </TabsTrigger>
             <TabsTrigger asChild value="historical">
-              <Button size="sm" variant="ghost">
+              <Button variant="ghost">
                 Over Time
               </Button>
             </TabsTrigger>
           </div>
         </TabsList>
         <TabsContent value="daily">
-          <CardHeader>
-            <CardTitle>Daily Averages</CardTitle>
-            <CardDescription>
-              Visualize the average tips recieved per day
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-1 h-full w-full items-center">
-            <AverageDailyTipsChart />
-          </CardContent>
+          <TipsByDayOfWeek showDescription />
         </TabsContent>
         <TabsContent value="historical">
-          <CardHeader>
-            <CardTitle>Tips Over Time</CardTitle>
-            <CardDescription>
-              Visualize the tips recieved over time
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-1 h-full w-full items-center">
-            <TipsOverTimeChart />
-          </CardContent>
+          <TipsOverTime showDescription />
         </TabsContent>
-      </Card>
+      </div>
     </Tabs>
   );
 };
+TipCharts.displayName = "TipCharts";
+
+export { TipCharts };

@@ -4,5 +4,5 @@
  * @directory - src/features/shifts/widgets/modals
  * @file - index.ts
  */
-export * from "./shift-calendar-modal";
+export * from "./shift-info-modal";
 export * from "./shift-form-modal";

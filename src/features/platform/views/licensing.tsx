@@ -8,14 +8,14 @@
 // imports
 import React from "react";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 // content
-import Content from "../content/licensing.mdx";
+import Content from "@/content/licensing.mdx";
 
 /** The component used as a fallback for any routes that are not found.  */
 export const LicensingScreen: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "children"
   >
 > = (
@@ -25,13 +25,13 @@ export const LicensingScreen: React.FC<
     ...props
   },
 ) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     author="Joe McCain III"
     description={description}
     title={title}
   >
     <Content />
-  </ContentCard>
+  </ArticleCard>
 );
 LicensingScreen.displayName = "NotFoundCard";

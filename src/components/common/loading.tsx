@@ -12,8 +12,16 @@ import { cn } from "@/lib/utils";
 import { ClassNames } from "@/types";
 // components
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
-export const LoadingIndicator: React.FC<
+const LoadingIndicator: React.FC<
   Omit<React.ComponentPropsWithRef<"div">, "children"> & {
     showLabel?: boolean;
     classNames?: ClassNames<"icon" | "label">;
@@ -37,3 +45,60 @@ export const LoadingIndicator: React.FC<
     </span>
   </div>
 );
+LoadingIndicator.displayName = "LoadingIndicator";
+
+const LoadingScaffold: React.FC<
+  Omit<React.ComponentPropsWithRef<typeof Empty>, "title"> & {
+    classNames?: ClassNames<
+      "indicator" | "title" | "description" | "content" | "header"
+    >;
+    description?: React.ReactNode;
+    title?: React.ReactNode;
+    showDescription?: boolean;
+    hideTitle?: boolean;
+  }
+> = (
+  {
+    ref,
+    children,
+    className,
+    classNames,
+    description,
+    showDescription,
+    title = "Loading...",
+    ...props
+  },
+) => (
+  <Empty
+    ref={ref}
+    className={cn("w-full", className)}
+    {...props}
+  >
+    <EmptyHeader className={cn(classNames?.headerClassName)}>
+      <EmptyMedia variant="icon">
+        <Spinner className={cn("size-8", classNames?.indicatorClassName)} />
+      </EmptyMedia>
+      <EmptyTitle className={cn("animate-pulse", classNames?.titleClassName)}>
+        {title}
+      </EmptyTitle>
+      {description && (
+        <EmptyDescription
+          className={cn(
+            showDescription ? "not-sr-only" : "sr-only",
+            classNames?.descriptionClassName,
+          )}
+        >
+          {description}
+        </EmptyDescription>
+      )}
+    </EmptyHeader>
+    {children && (
+      <EmptyContent className={cn("w-full", classNames?.contentClassName)}>
+        {children}
+      </EmptyContent>
+    )}
+  </Empty>
+);
+LoadingScaffold.displayName = "LoadingScaffold";
+
+export { LoadingIndicator, LoadingScaffold };

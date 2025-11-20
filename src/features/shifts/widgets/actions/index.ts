@@ -5,6 +5,5 @@
  * @file - index.ts
  */
 export * from "./shift-buttons";
-export * from "./shift-commands";
-export * from "./shift-ctx-menus";
-export * from "./shift-dropdowns";
+export * from "./shift-controls";
+export * from "./shift-item-controls";

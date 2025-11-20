@@ -8,7 +8,6 @@ import * as React from "react";
 import { ClassNames } from "@pzzld/core";
 // project
 import { cn } from "@/lib/utils";
-import { TextSize } from "@/types";
 // local
 import {
   Dashboard,
@@ -18,20 +17,20 @@ import {
   DashboardLayout,
   DashboardTitle,
 } from "./dashboard";
-import { DashboardLeading, DashboardTrailing } from "./dashboard-panel";
+import { DashboardLeading } from "./dashboard-leading";
+import { DashboardTrailing } from "./dashboard-trailing";
 import { DashboardProvider } from "./dashboard-provider";
 
 // Dashboard Header
 const DynamicDashboardHeader: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<typeof DashboardHeader>, "title"> & {
     title?: React.ReactNode;
     description?: React.ReactNode;
     leading?: React.ReactNode;
     trailing?: React.ReactNode;
-    titleSize?: TextSize;
-    descriptionSize?: TextSize;
-    hideDescription?: boolean;
-    classNames?: ClassNames<"leading" | "trailing" | "title" | "description">
+    hideTitle?: boolean;
+    showDescription?: boolean;
+    classNames?: ClassNames<"leading" | "trailing" | "title" | "description">;
   }
 > = ({
   ref,
@@ -41,17 +40,16 @@ const DynamicDashboardHeader: React.FC<
   className,
   title,
   description,
-  classNames = {},
-  titleSize = "lg",
-  descriptionSize = "base",
-  hideDescription,
+  classNames,
+  hideTitle,
+  showDescription,
   ...props
 }) => (
-  <div
+  <DashboardHeader
     {...props}
     ref={ref}
     className={cn(
-      "relative z-10 flex flex-nowrap items-center w-full gap-2 lg:gap-4 mb-2",
+      "flex flex-nowrap items-center gap-2 lg:gap-4 pb-2",
       className,
     )}
   >
@@ -61,7 +59,7 @@ const DynamicDashboardHeader: React.FC<
         className={cn(
           "flex flex-nowrap items-center gap-2 h-full w-fit",
           "left-0 order-first",
-          classNames.leadingClassName,
+          classNames?.leadingClassName,
         )}
       >
         {leading}
@@ -74,8 +72,10 @@ const DynamicDashboardHeader: React.FC<
           {/* Title */}
           {title && (
             <DashboardTitle
-              className={classNames.titleClassName}
-              textSize={titleSize}
+              className={cn(
+                hideTitle ? "sr-only" : "not-sr-only",
+                classNames?.titleClassName,
+              )}
             >
               {title}
             </DashboardTitle>
@@ -85,10 +85,9 @@ const DynamicDashboardHeader: React.FC<
           {description && (
             <DashboardDescription
               className={cn(
-                hideDescription ? "sr-only" : "not-sr-only",
-                classNames.descriptionClassName,
+                showDescription ? "not-sr-only" : "sr-only",
+                classNames?.descriptionClassName,
               )}
-              textSize={descriptionSize}
             >
               {description}
             </DashboardDescription>
@@ -96,9 +95,9 @@ const DynamicDashboardHeader: React.FC<
         </div>
         <div
           className={cn(
-            "ml-auto inline-flex flex-nowrap items-center gap-2 w-fit",
+            "flex items-center justify-end gap-2 h-full w-fit",
             !trailing && "hidden",
-            classNames.trailingClassName,
+            classNames?.trailingClassName,
           )}
         >
           {trailing}
@@ -106,21 +105,23 @@ const DynamicDashboardHeader: React.FC<
       </div>
       {children}
     </div>
-  </div>
+  </DashboardHeader>
 );
 
 /** The `DashboardScaffold` component is a pre-configured dashboard that is intended to be used as a layout with parallel, intercepting routes.*/
-export const DynamicDashboard: React.FC<
+export const DashboardScaffold: React.FC<
   & Omit<React.ComponentPropsWithRef<typeof Dashboard>, "title">
   & React.PropsWithChildren<{
     classNames?: ClassNames<"content" | "leading" | "trailing">;
-    title?: React.ReactNode;
-    description?: React.ReactNode;
     leading?: React.ReactNode;
     trailing?: React.ReactNode;
-    headerLeading?: React.ReactNode;
-    headerTrailing?: React.ReactNode;
-    headerContent?: React.ReactNode;
+    header?: {
+      footer?: React.ReactNode;
+      description?: React.ReactNode;
+      title?: React.ReactNode;
+      leading?: React.ReactNode;
+      trailing?: React.ReactNode;
+    };
     fullWidth?: boolean;
     hideDescription?: boolean;
   }>
@@ -128,70 +129,56 @@ export const DynamicDashboard: React.FC<
   ref,
   children,
   classNames,
-  description,
-  title,
-  headerContent,
-  headerLeading,
-  headerTrailing,
+  header,
   leading,
   trailing,
   fullWidth,
   hideDescription,
   ...props
-}) => {
-  // destructure the classNames object
-  const { contentClassName, leadingClassName, trailingClassName } =
-    classNames || {};
-  // returns true the header content is provided
-  const hasHeader = Boolean(
-    headerContent || headerLeading || headerTrailing || title || description,
-  );
-  // render the component
-  return (
-    <DashboardProvider isCompact={!fullWidth}>
-      <Dashboard {...props} ref={ref}>
-        <DashboardHeader>
-          {hasHeader && (
-            <DynamicDashboardHeader
-              description={description}
-              title={title}
-              leading={headerLeading}
-              trailing={headerTrailing}
-              titleSize="xl"
-              hideDescription={hideDescription}
-            >
-              {headerContent}
-            </DynamicDashboardHeader>
-          )}
-        </DashboardHeader>
-        <DashboardLayout>
-          {/* Leading */}
-          {leading && (
-            <DashboardLeading
-              className={leadingClassName}
-            >
-              {leading}
-            </DashboardLeading>
-          )}
-          {/* Primary View */}
-          <DashboardContent
-            className={cn(contentClassName, !fullWidth && "container mx-auto")}
+}) => (
+  <DashboardProvider fullWidth={fullWidth}>
+    <Dashboard {...props} ref={ref}>
+      <DynamicDashboardHeader
+        description={header?.description}
+        title={header?.title}
+        leading={header?.leading}
+        trailing={header?.trailing}
+        showDescription={hideDescription}
+        hidden={!header}
+      >
+        {header?.footer}
+      </DynamicDashboardHeader>
+      <DashboardLayout>
+        {/* Leading */}
+        {leading && (
+          <DashboardLeading
+            className={classNames?.leadingClassName}
           >
-            {children}
-          </DashboardContent>
-          {/* Secondary */}
-          {trailing && (
-            <DashboardTrailing
-              className={trailingClassName}
-            >
-              {trailing}
-            </DashboardTrailing>
+            {leading}
+          </DashboardLeading>
+        )}
+        {/* Primary View */}
+        <DashboardContent
+          className={cn(
+            classNames?.contentClassName,
+            !fullWidth && "container mx-auto",
           )}
-        </DashboardLayout>
-      </Dashboard>
-    </DashboardProvider>
-  );
-};
-DynamicDashboard.displayName = "DynamicDashboard";
+        >
+          {children}
+        </DashboardContent>
+        {/* Secondary */}
+        {trailing && (
+          <DashboardTrailing
+            className={classNames?.trailingClassName}
+          >
+            {trailing}
+          </DashboardTrailing>
+        )}
+      </DashboardLayout>
+    </Dashboard>
+  </DashboardProvider>
+);
 
-export default DynamicDashboard;
+DashboardScaffold.displayName = "DynamicDashboard";
+
+export default DashboardScaffold;

@@ -5,31 +5,14 @@
  * @file - auth.forgot-password.test.tsx
  */
 import * as React from "react";
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
-// Prevent server-side middleware from executing during import
-jest.mock("@/lib/supabase/middleware", () => ({
-  supabaseCreds: () => ({ url: "http://localhost", anonKey: "anon" }),
-  NextResponse: { next: ({ request }: any) => ({ request }) },
-}));
-
-// Stub the UI Button to make assertions simple
-jest.mock("@/components/ui/button", () => ({
-  Button: ({ disabled, children, ...rest }: any) => (
-    // eslint-disable-next-line react/button-has-type
-    <button data-testid="submit-btn" disabled={!!disabled} {...rest}>
-      {children}
-    </button>
-  ),
-}));
-
 // Prevent the real server action from running at module-eval
-jest.mock("@/features/auth/utils/actions", () => ({
+jest.mock("../src/features/auth", () => ({
   resetPasswordAction: jest.fn(),
 }));
 
-import { ForgotPasswordForm } from "../src/features/auth";
+import { ForgotPasswordForm } from "../src/features/auth/widgets/forms/forgot-password-form";
 
 describe("ForgotPasswordForm", () => {
   let useActionStateSpy: jest.SpyInstance;

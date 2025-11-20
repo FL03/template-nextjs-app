@@ -5,5 +5,5 @@
  */
 export * from "./tip-charts";
 
-export * from "./daily-averages";
+export * from "./tips-by-day";
 export * from "./tips-over-time";

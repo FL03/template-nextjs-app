@@ -7,18 +7,19 @@
 // imports
 import * as React from "react";
 import dynamic from "next/dynamic";
+import { formatAsCurrency } from "@pzzld/core";
 // project
 import { OrgCombo } from "@/features/orgs";
 import { cn } from "@/lib/utils";
-import { formatAsCurrency } from "@/lib/fmt";
 // local
 import { useWorkSchedule } from "../providers";
 import { averageTips, totalTips } from "../utils";
-import { ShiftCommandDropdownMenu } from "./actions";
+import { ShiftCommandDialog, ShiftCommandMenu } from "./actions";
 import { TipCharts } from "./charts";
 import { ShiftFormModal } from "./modals";
+import { ShiftList } from "./shift-list";
 // components
-import { InfoCard } from "@/components/common/cards";
+import { InfoItem } from "@/components/common/info-card";
 import {
   Dashboard,
   DashboardContent,
@@ -26,33 +27,33 @@ import {
   DashboardLayout,
   DashboardLeading,
   DashboardProvider,
+  DashboardSection,
   DashboardTrailing,
 } from "@/components/common/dashboard";
+import { LoadingScaffold } from "@/components/common/loading";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Card } from "@/components/ui/card";
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
 
-export const ShiftDashboardLeading: React.FC<
-  Omit<React.ComponentPropsWithoutRef<"div">, "children">
+const ShiftDashboardLeading: React.FC<
+  Omit<React.ComponentPropsWithoutRef<typeof DashboardSection>, "children">
 > = ({ className, ...props }) => {
   const Calendar = dynamic(
     async () =>
       await import("./shift-calendar").then((mod) => mod.ShiftCalendar),
     {
       ssr: false,
-      loading: () => (
-        <Card className="w-full h-96 animate-pulse bg-secondary/10 px-4 py-2" />
-      ),
+      loading: () => <LoadingScaffold />,
     },
   );
   return (
-    <div
+    <DashboardSection
       {...props}
       className={cn(
         "flex flex-1 flex-col h-full w-full relative z-auto gap-2",
@@ -60,51 +61,59 @@ export const ShiftDashboardLeading: React.FC<
       )}
     >
       <Calendar className="order-first w-full" />
-    </div>
+      <ShiftList descending className="flex-1 h-full w-full" itemCount={5} />
+    </DashboardSection>
   );
 };
 
-export const ShiftDashboardContent: React.FC<
-  Omit<React.ComponentPropsWithoutRef<"div">, "children">
+const ShiftDashboardContent: React.FC<
+  Omit<React.ComponentPropsWithoutRef<typeof DashboardSection>, "children">
 > = ({ className, ...props }) => {
   const { data } = useWorkSchedule();
   return (
-    <div
+    <DashboardSection
       className={cn(
         "flex flex-1 flex-col h-full w-full gap-4 lg:gap-6",
         className,
       )}
       {...props}
     >
-      <div className="flex flex-wrap w-full gap-2 lg:gap-4 items-center justify-evenly">
-        <InfoCard
-          id="average-tips-card"
+      <ItemGroup className="flex-row flex-wrap gap-2 justify-evenly w-full">
+        <InfoItem
+          id="item-average-tips"
+          variant="outline"
           title="Average"
-          description="The average amount of tips recieved per shift."
+          description="The average amount of earned tips per shift."
         >
-          {formatAsCurrency(averageTips(data))}
-        </InfoCard>
-        <InfoCard
-          id="total-tips-card"
+          <span className="font-mono">
+            {formatAsCurrency(averageTips(data))}
+          </span>
+        </InfoItem>
+        <InfoItem
+          id="item-total-tips"
+          variant="outline"
           title="Total"
-          description="The total amount of tips recieved throughout all shifts."
+          description="Total amount of tips recieved"
         >
-          {formatAsCurrency(totalTips(data))}
-        </InfoCard>
-        <InfoCard
-          id="shift-count-card"
+          <span className="font-mono">
+            {formatAsCurrency(totalTips(data))}
+          </span>
+        </InfoItem>
+        <InfoItem
+          id="item-shift-count"
+          variant="outline"
           title="Count"
-          description="The total number of shifts recorded."
+          description="The number of shifts recorded."
         >
-          {data.length}
-        </InfoCard>
-      </div>
+          <span className="font-mono">{data.length}</span>
+        </InfoItem>
+      </ItemGroup>
       <TipCharts className="flex-1 h-full w-full" />
-    </div>
+    </DashboardSection>
   );
 };
 
-export const ShiftDashboard: React.FC<
+const ShiftDashboard: React.FC<
   React.ComponentPropsWithoutRef<typeof Dashboard> & {
     description?: React.ReactNode;
     title?: React.ReactNode;
@@ -154,7 +163,7 @@ export const ShiftDashboard: React.FC<
                     : undefined}
                   triggerVariant="outline"
                 />
-                <ShiftCommandDropdownMenu triggerVariant="outline" />
+                <ShiftCommandMenu triggerVariant="outline" />
               </ButtonGroup>
             </ItemActions>
           </Item>
@@ -165,9 +174,10 @@ export const ShiftDashboard: React.FC<
           {trailing && <DashboardTrailing>{trailing}</DashboardTrailing>}
         </DashboardLayout>
       </Dashboard>
+      <ShiftCommandDialog />
     </DashboardProvider>
   );
 };
 ShiftDashboard.displayName = "ShiftDashboard";
 
-export default ShiftDashboard;
+export { ShiftDashboard, ShiftDashboardContent, ShiftDashboardLeading };

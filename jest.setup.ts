@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom";
+
 // Global polyfills required by Next/server code during tests
 if (typeof (globalThis as any).Request === "undefined") {
   (globalThis as any).Request = class Request {};
@@ -43,15 +45,19 @@ jest.mock("next/navigation", () => ({
   useRouter: () => mockRouter,
 }));
 
-
 // Prevent server-side middleware from executing during module evaluation in tests
 
-jest.mock("@/lib/supabase/helpers/credentials", () => ({
+jest.mock("./src/lib/supabase/helpers", () => ({
   supabaseKey: () => "anon",
   supabaseUrl: () => "http://localhost",
   supabaseCreds: () => ({ url: "http://localhost", anonKey: "anon" }),
 }));
 
-jest.mock("@/lib/supabase/middleware", () => ({
+jest.mock("./src/lib/supabase/middleware", () => ({
   NextResponse: { next: ({ request }: any) => ({ request }) },
 }));
+
+jest.mock(
+  "./src/lib/logger",
+  () => ({ logger: { trace: jest.fn(), info: jest.fn(), error: jest.fn() } }),
+);

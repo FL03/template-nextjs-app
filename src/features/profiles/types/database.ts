@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - types/database.ts
  */
-import { Database, Tables } from "@/types/database.types/database.public.types";
+import type { Database } from "@/types/database.types/database.public.types";
 
 export const profileTable = {
   name: "profiles",

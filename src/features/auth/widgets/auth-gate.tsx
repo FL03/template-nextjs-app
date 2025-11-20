@@ -17,7 +17,7 @@ import {
   ForgotPasswordForm,
   PasswordlessLoginForm,
   RegistrationForm,
-} from "../forms";
+} from "./forms";
 import { resolveAuthView } from "../utils";
 // components
 import { CloudflareTurnstile } from "@/components/common/captcha";

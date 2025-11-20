@@ -7,7 +7,7 @@
 // imports
 import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 // project
-import { handleUserSession } from "@/lib/supabase";
+import { supabaseUserSessionProxy } from "@/lib/supabase";
 import { ignorePaths } from "@/lib/utils";
 
 /**
@@ -30,7 +30,7 @@ export async function proxy(
     return NextResponse.next();
   }
   // modify and return the response to integrate with Supabase
-  return await handleUserSession(request);
+  return await supabaseUserSessionProxy(request);
 }
 
 export const config: MiddlewareConfig = {
@@ -42,6 +42,6 @@ export const config: MiddlewareConfig = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!about|api|auth|pricing|privacy|terms|help|_next/static|_next/image|.*\\.svg|png|jpg|jpeg|gif|webp|ico$).*)",
+    "/((?!about|api|auth|docs|pricing|privacy|terms|help|_next/static|_next/image|.*\\.svg|png|jpg|jpeg|gif|webp|ico$).*)",
   ],
 };

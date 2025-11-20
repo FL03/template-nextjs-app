@@ -6,7 +6,6 @@
  */
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
 // Prevent the real server action from running at module-eval
 jest.mock("../src/features/profiles/utils", () => ({

@@ -56,6 +56,7 @@ namespace UseAuth {
     state: State;
     status: Status;
     user?: User;
+    // user info
     email?: string;
     userId?: string;
   }
@@ -66,10 +67,10 @@ namespace UseAuth {
  */
 export const useAuth: UseAuth.Callback = (
   {
-    supabase = createBrowserClient(),
     onAuthStateChange,
     onError,
     onUserChange,
+    supabase = createBrowserClient(),
   } = {},
 ) => {
   const authSubRef = useRef<Subscription | null>(null);
@@ -77,15 +78,7 @@ export const useAuth: UseAuth.Callback = (
   const [_user, _setUser] = useState<User | null>(null);
   const [_error, _setError] = useState<Error | null>(null);
 
-  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(true);
-  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
-
-  const isLoading = useMemo<UseAuth.LoadingState>(() => {
-    if (isLoadingSession) return "session";
-    if (isLoadingUser) return "user";
-    return null;
-  }, [isLoadingSession, isLoadingUser]);
-
+  const [isLoading, setIsLoading] = useState<UseAuth.LoadingState>("session");
   // Auth status
   const _status = useMemo<UseAuth.Status>(() => {
     if (_session?.user) return "authenticated";
@@ -203,13 +196,14 @@ export const useAuth: UseAuth.Callback = (
 
   // Load user
   const _loadUser = useCallback(async (): Promise<User | null> => {
-    if (isLoadingSession) {
+    // prevent the user loading while session is loading
+    if (isLoading === "session") {
       logger.warn(
         "Session is still loading, cannot fetch user at this time.",
       );
       return null;
     }
-    if (!isLoadingUser) setIsLoadingUser(true);
+    if (isLoading === null) setIsLoading("user");
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
@@ -224,9 +218,9 @@ export const useAuth: UseAuth.Callback = (
       handleError(error);
       return null;
     } finally {
-      setIsLoadingUser(false);
+      setIsLoading(null);
     }
-  }, [supabase.auth, isLoadingUser, _onUserChange, handleError]);
+  }, [supabase.auth, isLoading, _onUserChange, handleError]);
 
   const updateUser = useCallback(
     async (values: UserAttributes) => {
@@ -254,11 +248,14 @@ export const useAuth: UseAuth.Callback = (
 
   // Effects
   useEffect(() => {
-    if (isLoadingSession) {
-      _getSession().finally(() => setIsLoadingSession(false));
+    if (isLoading === "session") {
+      _getSession().finally(() => setIsLoading(null));
     }
-    return () => setIsLoadingSession(false);
-  }, [isLoadingSession, _getSession]);
+    if (isLoading === "user") {
+      _loadUser().finally(() => setIsLoading(null));
+    }
+    return () => setIsLoading(null);
+  }, [isLoading, _getSession]);
 
   useEffect(() => {
     if (!authSubRef.current) {

@@ -7,17 +7,17 @@
 // imports
 import * as React from "react";
 // content
-import Terms from "../content/terms.mdx";
+import Terms from "@/content/terms.mdx";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 
 export const TermScreen: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "description" | "title" | "children"
   >
 > = ({ ...props }) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     showDescription
     author="Joe McCain III"
@@ -25,7 +25,7 @@ export const TermScreen: React.FC<
     description="This is an example content card to demonstrate the structure."
   >
     <Terms />
-  </ContentCard>
+  </ArticleCard>
 );
 TermScreen.displayName = "TermScreen";
 

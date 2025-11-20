@@ -4,6 +4,6 @@
  * @directory - src/features/orgs/widgets/actions
  * @file - index.ts
  */
-export * from "./orgs-buttons";
-export * from "./orgs-context-menus";
-export * from "./orgs-dropdown-menus";
+export * from "./org-buttons";
+export * from "./org-item-commands";
+export * from "./orgs-commands";

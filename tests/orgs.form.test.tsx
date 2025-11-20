@@ -6,8 +6,7 @@
  */
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
-// project
+
 import { OrganizationForm } from "../src/features/orgs/widgets/org-form";
 
 describe("OrganizationForm", () => {

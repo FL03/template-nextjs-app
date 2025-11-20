@@ -6,6 +6,8 @@
  */
 "use client";
 import * as React from "react";
+// project
+import { cn } from "@/lib/utils";
 // local
 import { useOrgs } from "@/hooks/use-orgs";
 // components
@@ -55,7 +57,7 @@ export const OrgSelect: React.FC<
       value={selected}
       onValueChange={onChange}
     >
-      <SelectTrigger className={classNames?.triggerClassName}>
+      <SelectTrigger className={cn("flex-auto w-auto max-w-[200px]", classNames?.triggerClassName)}>
         <SelectValue placeholder="Select an organization" />
       </SelectTrigger>
       <SelectContent className={classNames?.contentClassName}>

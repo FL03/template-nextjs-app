@@ -65,7 +65,7 @@ export const AppBar: React.FC<
       data-slot="appbar"
       className={cn(
         appBarVariants({ flavor, position, size, variant }),
-        "border-b border-border/50 shadow-inner opacity-90 backdrop-blur-sm",
+        "shadow-inner opacity-90 backdrop-blur-sm",
         className,
       )}
       {...props}
@@ -84,9 +84,10 @@ export const AppBarContent: React.FC<
   return (
     <Comp
       ref={ref}
+      data-slot="appbar-content"
       className={cn(
-        "flex flex-1 flex-nowrap basis-2/3 w-full items-center gap-2",
-        "order-2",
+        "flex flex-1 flex-nowrap items-center gap-2",
+        "order-2 not-[data-slot=appbar-leading]:order-first",
         centered && "justify-center",
         className,
       )}
@@ -95,85 +96,6 @@ export const AppBarContent: React.FC<
   );
 };
 AppBarContent.displayName = "AppBarContent";
-
-// AppBarLogo
-export const AppBarLogo: React.FC<
-  React.ComponentPropsWithRef<"div"> & { asChild?: boolean }
-> = ({ ref, className, asChild, ...props }) => {
-  // fallback to a Slot component if asChild is true
-  const Comp = asChild ? Slot : "div";
-  // render the component
-  return (
-    <Comp
-      ref={ref}
-      data-slot="appbar-logo"
-      className={cn("h-4 w-4 m-auto border-none ring-none", className)}
-      {...props}
-    />
-  );
-};
-AppBarLogo.displayName = "AppBarLogo";
-
-export const AppBarTitle: React.FC<
-  React.ComponentPropsWithRef<"div"> & {
-    asChild?: boolean;
-    centerTitle?: boolean;
-  }
-> = ({ ref, className, asChild, centerTitle, ...props }) => {
-  // fallback to a Slot component if asChild is true
-  const Comp = asChild ? Slot : "div";
-  // render the component
-  return (
-    <Comp
-      {...props}
-      ref={ref}
-      data-slot="appbar-title"
-      className={cn(
-        "font-semibold tracking-tight",
-        centerTitle && "absolute left-1/2 transform -translate-x-1/2",
-        className,
-      )}
-    />
-  );
-};
-AppBarTitle.displayName = "AppBarTitle";
-
-// AppBarActions
-export const AppBarActions: React.FC<
-  React.ComponentPropsWithRef<"ul"> & { asChild?: boolean }
-> = ({ ref, className, asChild = false, ...props }) => {
-  // fallback to a Slot component if asChild is true
-  const Comp = asChild ? Slot : "ul";
-  // render the component
-  return (
-    <Comp
-      ref={ref}
-      className={cn(
-        "inline-flex flex-nowrap items-center gap-2 lg:gap-4 list-none",
-        className,
-      )}
-      {...props}
-    />
-  );
-};
-AppBarActions.displayName = "AppBarActions";
-
-// AppBarActions
-export const AppBarAction: React.FC<
-  React.ComponentPropsWithRef<"li"> & { asChild?: boolean }
-> = ({ ref, className, asChild = false, ...props }) => {
-  // fallback to a Slot component if asChild is true
-  const Comp = asChild ? Slot : "li";
-  // render the component
-  return (
-    <Comp
-      ref={ref}
-      className={cn("inline-flex flex-1 gap-2 items-center", className)}
-      {...props}
-    />
-  );
-};
-AppBarAction.displayName = "AppBarAction";
 
 // AppBarLeading
 export const AppBarLeading: React.FC<
@@ -188,7 +110,7 @@ export const AppBarLeading: React.FC<
     <Comp
       ref={ref}
       className={cn(
-        "flex shrink-0 flex-nowrap items-center gap-2 w-fit h-full",
+        "flex flex-nowrap items-center justify-start gap-2 h-full w-fit",
         "order-first left-0",
         className,
       )}
@@ -211,8 +133,8 @@ export const AppBarTrailing: React.FC<
     <Comp
       ref={ref}
       className={cn(
-        "flex shrink-0 flex-nowrap items-center gap-2 w-fit h-full",
-        "order-last right-0 ml-auto justify-end",
+        "flex flex-nowrap items-center justify-end gap-2 h-full w-fit",
+        "order-last right-0",
         className,
       )}
       {...props}
@@ -262,3 +184,48 @@ export const AppBarMenuItem: React.FC<
   );
 };
 AppBarMenuItem.displayName = "AppBarMenuItem";
+
+// AppBarTitle
+export const AppBarTitle: React.FC<
+  React.ComponentPropsWithRef<"div"> & {
+    asChild?: boolean;
+    centerTitle?: boolean;
+  }
+> = ({ ref, className, asChild, centerTitle, ...props }) => {
+  // fallback to a Slot component if asChild is true
+  const Comp = asChild ? Slot : "div";
+  // render the component
+  return (
+    <Comp
+      {...props}
+      ref={ref}
+      data-slot="appbar-title"
+      className={cn(
+        "font-semibold tracking-tight",
+        centerTitle && "absolute left-1/2 transform -translate-x-1/2",
+        className,
+      )}
+    />
+  );
+};
+AppBarTitle.displayName = "AppBarTitle";
+
+// AppBarActions
+export const AppBarActions: React.FC<
+  React.ComponentPropsWithRef<"div"> & { asChild?: boolean }
+> = ({ ref, className, asChild = false, ...props }) => {
+  // fallback to a Slot component if asChild is true
+  const Comp = asChild ? Slot : "div";
+  // render the component
+  return (
+    <Comp
+      ref={ref}
+      className={cn(
+        "inline-flex flex-nowrap items-center gap-2 lg:gap-4 list-none",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+AppBarActions.displayName = "AppBarActions";

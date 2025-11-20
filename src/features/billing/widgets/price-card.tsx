@@ -7,9 +7,9 @@
 "use client";
 // imports
 import * as React from "react";
+import { formatAsCurrency } from "@pzzld/core";
 // project
 import { usePrice } from "@/hooks/use-price";
-import { formatAsCurrency } from "@/lib/fmt";
 import { cn } from "@/lib/utils";
 // local
 import { CustomCheckoutAction } from "./checkout-action";

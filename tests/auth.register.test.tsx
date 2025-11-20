@@ -5,15 +5,8 @@
  * @file - auth.register.test.tsx
  */
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
-// Prevent server-side middleware from executing during import
-jest.mock("@/lib/supabase/middleware", () => ({
-  supabaseCreds: () => ({ url: "http://localhost", anonKey: "anon" }),
-  NextResponse: { next: ({ request }: any) => ({ request }) },
-}));
-
-import { RegistrationForm } from "../src/features/auth";
+import { RegistrationForm } from "../src/features/auth/widgets/forms/registration-form";
 
 describe("RegistrationForm", () => {
   it("renders the fields and actions for the registration form", () => {

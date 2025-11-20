@@ -24,14 +24,15 @@ const config: Config = {
     "^uuid/(.*)$": "<rootDir>/tests/__mocks__/uuid.js",
   },
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/.next/",
     "<rootDir>/tests/__e2e__/",
+    "<rootDir>/tests/__mocks__/",
     "<rootDir>/tests/__cy__/",
     "<rootDir>/cypress/",
-  ]
+  ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

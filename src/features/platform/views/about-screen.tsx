@@ -7,13 +7,13 @@
 // imports
 import * as React from "react";
 // project
-import About from "../content/about.mdx";
+import About from "@/content/about.mdx";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 
 export const AboutPage: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "children"
   >
 > = (
@@ -23,13 +23,13 @@ export const AboutPage: React.FC<
     ...props
   },
 ) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     description={description}
     title={title}
   >
     <About />
-  </ContentCard>
+  </ArticleCard>
 );
 AboutPage.displayName = "AboutPage";
 

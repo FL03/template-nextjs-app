@@ -16,7 +16,7 @@ import { PropsWithModal } from "@/types";
 // local
 import { ShiftForm } from "../shift-form";
 // components
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/common/button";
 import {
   Dialog,
   DialogClose,
@@ -118,11 +118,9 @@ export const ShiftFormDialog: React.FC<
           {...props}
         />
         <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">
-              <XIcon className="size-4" />
-              <span>Close</span>
-            </Button>
+          <DialogClose>
+            <XIcon className="size-4" />
+            <span>Close</span>
           </DialogClose>
         </DialogFooter>
       </div>
@@ -197,11 +195,9 @@ export const ShiftFormSheet: React.FC<
           {...props}
         />
         <SheetFooter className="w-full">
-          <SheetClose asChild>
-            <Button variant="outline">
-              <XIcon className="size-4" />
-              <span>Close</span>
-            </Button>
+          <SheetClose>
+            <XIcon className="size-4" />
+            <span>Close</span>
           </SheetClose>
         </SheetFooter>
       </div>
@@ -274,11 +270,9 @@ export const ShiftFormDrawer: React.FC<
           {...props}
         />
         <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">
-              <XIcon className="size-4" />
-              <span>Close</span>
-            </Button>
+          <DrawerClose>
+            <XIcon className="size-4" />
+            <span>Close</span>
           </DrawerClose>
         </DrawerFooter>
       </div>
@@ -294,8 +288,8 @@ export const ShiftFormModal: React.FC<
       title?: React.ReactNode;
       triggerIcon?: React.ReactNode;
       triggerLabel?: React.ReactNode;
-      triggerSize?: React.ComponentProps<typeof Button>["size"];
-      triggerVariant?: React.ComponentProps<typeof Button>["variant"];
+      triggerSize?: React.ComponentProps<typeof IconButton>["size"];
+      triggerVariant?: React.ComponentProps<typeof IconButton>["variant"];
       drawer?: boolean;
       isEditing?: boolean;
       showDescription?: boolean;
@@ -327,22 +321,15 @@ export const ShiftFormModal: React.FC<
   const modal = useModal({ defaultOpen, open, onOpenChange });
 
   const Trigger = () => (
-    <Button
+    <IconButton
       className={triggerClassName}
+      classNames={{ labelClassName }}
       size={triggerSize}
       variant={triggerVariant}
       onClick={modal.toggle}
     >
       <PlusIcon className={cn("size-4", iconClassName)} />
-      <span
-        className={cn(
-          triggerSize?.startsWith("icon") ? "sr-only" : "not-sr-only",
-          labelClassName,
-        )}
-      >
-        {triggerLabel}
-      </span>
-    </Button>
+    </IconButton>
   );
 
   if (isMobile || drawer) {

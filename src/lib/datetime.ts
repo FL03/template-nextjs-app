@@ -16,8 +16,6 @@ export type DayOfWeek =
   | "Thursday"
   | "Friday"
   | "Saturday";
-
-export type DayOfWeekIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 /** A constant list of days in the week */
 export const DAYS_OF_WEEK: Record<number, DayOfWeek> = {
   0: "Sunday",
@@ -29,10 +27,9 @@ export const DAYS_OF_WEEK: Record<number, DayOfWeek> = {
   6: "Saturday",
 };
 
-export type WeekMap<TValue> =
-  | Record<DayOfWeek, TValue>
-  | { [key in DayOfWeek]: TValue }
-  | { [key in DayOfWeekIndex]: TValue };
+export type DayOfWeekIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export type WeekMap<TDays extends string | number | symbol = Days, TValue = any> = { [key in TDays]: TValue };
 
 export interface Time {
   hour: number;
@@ -42,13 +39,13 @@ export interface Time {
 export type DateLike = Date | number | string;
 
 export enum Days {
-  Sunday = "sunday",
-  Monday = "monday",
-  Tuesday = "tuesday",
-  Wednesday = "wednesday",
-  Thursday = "thursday",
-  Friday = "friday",
-  Saturday = "saturday",
+  Sunday = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
 }
 
 export class Day extends Date {
@@ -61,58 +58,3 @@ export class Day extends Date {
     return DAYS_OF_WEEK[this.getDay() % 7];
   }
 }
-
-export const coerceUtcDate = (value?: string | number | Date) => {
-  const date = new Date(value ?? Date.now());
-  return new UTCDate(date);
-};
-
-export const dateWithTimezone = (
-  value?: string | number | Date,
-  timezone: string = "America/Chicago",
-) => {
-  const date = value ? new Date(value) : new Date();
-  return new TZDate(date, timezone);
-};
-
-export const coerceAnyDate = (value?: any | null) => {
-  if (!value) return null;
-  return new Date(value);
-};
-
-/** This method tries to resolve the input into a particular DayLiteral */
-export const resolveDayLiteral = (day: string): DayOfWeek => {
-  const formattedDay = day.trim().toLowerCase();
-  if (formattedDay.startsWith("sun")) return "Sunday";
-  else if (formattedDay.startsWith("mon")) return "Monday";
-  else if (formattedDay.startsWith("tue")) return "Tuesday";
-  else if (formattedDay.startsWith("wed")) return "Wednesday";
-  else if (formattedDay.startsWith("thu")) return "Thursday";
-  else if (formattedDay.startsWith("fri")) return "Friday";
-  else if (formattedDay.startsWith("sat")) return "Saturday";
-  else {
-    throw new Error(`Invalid day: ${day}`);
-  }
-};
-
-export const stringToDay = (day: string): Days | null => {
-  switch (day.toLowerCase()) {
-    case "sunday":
-      return Days.Sunday;
-    case "monday":
-      return Days.Monday;
-    case "tuesday":
-      return Days.Tuesday;
-    case "wednesday":
-      return Days.Wednesday;
-    case "thursday":
-      return Days.Thursday;
-    case "friday":
-      return Days.Friday;
-    case "saturday":
-      return Days.Saturday;
-
-    default:
-      return null;
-  }
-};

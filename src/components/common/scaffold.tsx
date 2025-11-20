@@ -23,9 +23,7 @@ export const Scaffold: React.FC<
     ...props
   },
 ) => {
-  // declare the slot component
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -41,7 +39,7 @@ export const Scaffold: React.FC<
 };
 Scaffold.displayName = "Scaffold";
 
-// Scaffold Content
+// ScaffoldContent
 export const ScaffoldContent: React.FC<
   & React.ComponentPropsWithRef<"div">
   & React.PropsWithChildren<{
@@ -55,9 +53,7 @@ export const ScaffoldContent: React.FC<
   compact,
   ...props
 }) => {
-  // handle asChild
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -73,16 +69,14 @@ export const ScaffoldContent: React.FC<
 };
 ScaffoldContent.displayName = "ScaffoldContent";
 
-// Scaffold Nav
+// ScaffoldNav
 export const ScaffoldNav: React.FC<
   & React.ComponentPropsWithRef<"nav">
   & React.PropsWithChildren<{
     asChild?: boolean;
   }>
 > = ({ ref, className, asChild, ...props }) => {
-  // render the component as a `Slot` when asChild
   const Comp = asChild ? Slot : "nav";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -94,16 +88,14 @@ export const ScaffoldNav: React.FC<
 };
 ScaffoldNav.displayName = "ScaffoldNav";
 
-// Scaffold Header Component
+// ScaffoldHeader
 export const ScaffoldHeader: React.FC<
   & React.ComponentPropsWithRef<"header">
   & React.PropsWithChildren<{
     asChild?: boolean;
   }>
 > = ({ ref, className, asChild, ...props }) => {
-  // render the component as a `Slot` when asChild
   const Comp = asChild ? Slot : "header";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -115,15 +107,13 @@ export const ScaffoldHeader: React.FC<
 };
 ScaffoldHeader.displayName = "ScaffoldHeader";
 
-// Scaffold Footer
+// ScaffoldFooter
 export const ScaffoldFooter: React.FC<
   Omit<React.ComponentPropsWithRef<"footer">, "data-slot"> & {
     asChild?: boolean;
   }
 > = ({ ref, className, asChild, ...props }) => {
-  // render the component as a `Slot` when asChild
   const Comp = asChild ? Slot : "footer";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -138,15 +128,13 @@ export const ScaffoldFooter: React.FC<
 };
 ScaffoldFooter.displayName = "ScaffoldFooter";
 
-// Scaffold Leading
+// ScaffoldLeading
 export const ScaffoldLeading: React.FC<
   React.ComponentPropsWithRef<"div"> & {
     asChild?: boolean;
   }
 > = ({ ref, className, asChild, ...props }) => {
-  // render the component as a `Slot` when asChild
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       ref={ref}
@@ -162,15 +150,13 @@ export const ScaffoldLeading: React.FC<
 };
 ScaffoldLeading.displayName = "ScaffoldLeading";
 
-// Scaffold Trailing
+// ScaffoldTrailing
 export const ScaffoldTrailing: React.FC<
   React.ComponentPropsWithRef<"div"> & {
     asChild?: boolean;
   }
 > = ({ ref, className, asChild, ...props }) => {
-  // render the component as a `Slot` when asChild
   const Comp = asChild ? Slot : "div";
-  // render the component
   return (
     <Comp
       ref={ref}

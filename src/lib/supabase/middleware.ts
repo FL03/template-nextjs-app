@@ -18,7 +18,7 @@ const pricingEndpoint = "/pricing";
  * @param {NextRequest} request - the initial request object for the current request.
  * @returns {Promise<NextResponse>} - the response object for the current request.
  */
-export const handleUserSession = async (
+export const supabaseUserSessionProxy = async (
   request: NextRequest,
 ): Promise<NextResponse> => {
   let supabaseResponse = NextResponse.next({
@@ -71,4 +71,4 @@ export const handleUserSession = async (
   return supabaseResponse;
 };
 
-export default handleUserSession;
+export default supabaseUserSessionProxy;

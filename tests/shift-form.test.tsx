@@ -6,7 +6,6 @@
  */
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
 // Mock current user hook
 jest.mock("../src/features/auth", () => ({

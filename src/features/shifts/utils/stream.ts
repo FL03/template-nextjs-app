@@ -9,7 +9,7 @@ import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 // project
 import { logger } from "@/lib/logger";
 import { createBrowserClient } from "@/lib/supabase";
-import { DatabaseFilter } from "@/types/filter";
+import { DatabaseFilter } from "@/types/queries";
 import { Database } from "@/types/database.types";
 // local
 import { ShiftData } from "../types";

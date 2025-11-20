@@ -7,17 +7,17 @@
 // imports
 import * as React from "react";
 // local
-import Test from "../content/test.mdx";
+import Test from "@/content/test.mdx";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 
 export const SampleScreen: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "description" | "title" | "children"
   >
 > = ({ ...props }) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     showDescription
     author="Joe McCain III"
@@ -25,7 +25,7 @@ export const SampleScreen: React.FC<
     description="This is an example content card to demonstrate the structure."
   >
     <Test />
-  </ContentCard>
+  </ArticleCard>
 );
 SampleScreen.displayName = "SampleScreen";
 

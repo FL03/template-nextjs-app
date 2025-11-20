@@ -7,11 +7,16 @@
 // imports
 import * as React from "react";
 import Link from "next/link";
-import { BookOpenTextIcon, DollarSignIcon, HomeIcon } from "lucide-react";
+import {
+  DollarSignIcon,
+  EqualApproximatelyIcon,
+  HomeIcon,
+  LibraryBigIcon,
+} from "lucide-react";
 // project
 import { LoginButton, useCurrentUser } from "@/features/auth";
 import { cn } from "@/lib/utils";
-import { NavItem } from "@/types";
+import { NavItemData } from "@/types";
 // local
 import { PlatformSidebarTrigger } from "./platform-sidebar";
 // components
@@ -34,16 +39,16 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-const PLATFORM_MENU_LINKS: NavItem[] = [
+const PLATFORM_MENU_LINKS: NavItemData[] = [
   {
     label: "About",
     href: "/about",
-    icon: <HomeIcon className="size-4" />,
+    icon: <EqualApproximatelyIcon className="size-4" />,
   },
   {
     label: "Docs",
     href: "/docs",
-    icon: <BookOpenTextIcon className="size-4" />,
+    icon: <LibraryBigIcon className="size-4" />,
   },
   {
     label: "Pricing",
@@ -82,7 +87,10 @@ const PlatformNavbar: React.FC<
   <NavigationMenu
     {...props}
     id="platform-navbar"
-    className={cn("flex flex-nowrap items-center w-full", className)}
+    className={cn(
+      "flex-nowrap justify-start",
+      className,
+    )}
   >
     <NavigationMenuList>
       <NavigationMenuItem>
@@ -118,27 +126,6 @@ const PlatformNavbar: React.FC<
   </NavigationMenu>
 );
 
-const PlatformBanner: React.FC<
-  Partial<React.ComponentPropsWithRef<typeof Link>>
-> = ({ ref, className, href = "/", ...props }) => (
-  <Link
-    {...props}
-    ref={ref}
-    className={cn(
-      "inline-flex items-center flex-nowrap gap-1 p-2",
-      "cursor-pointer transition-colors rounded-lg",
-      "hover:opacity-80 hover:animate-pulse",
-      className,
-    )}
-    href={href}
-  >
-    <PzzldLogo className="size-8" />
-    <AppBarTitle className="text-xl font-bold sr-only md:not-sr-only">
-      pzzld
-    </AppBarTitle>
-  </Link>
-);
-
 /** The primary appbar used throughout the application  */
 export const PlatformAppBar: React.FC<
   Omit<
@@ -152,7 +139,7 @@ export const PlatformAppBar: React.FC<
   position = "top",
   ...props
 }) => {
-  const { authState: { isAuthenticated } } = useCurrentUser();
+  const { user } = useCurrentUser();
   return (
     <AppBar
       {...props}
@@ -162,16 +149,35 @@ export const PlatformAppBar: React.FC<
       position={position}
     >
       <AppBarLeading>
-        <PlatformBanner href="/" />
+        <Link
+          className={cn(
+            "inline-flex items-center flex-nowrap gap-1 p-2",
+            "cursor-pointer transition-colors rounded-lg",
+            "hover:opacity-80 hover:animate-pulse",
+            className,
+          )}
+          href="/"
+        >
+          <PzzldLogo className="size-8" />
+          <AppBarTitle className="text-xl font-bold sr-only md:not-sr-only">
+            pzzld
+          </AppBarTitle>
+        </Link>
       </AppBarLeading>
-      <AppBarContent asChild>
+      <AppBarContent>
         <PlatformNavbar />
       </AppBarContent>
       <AppBarTrailing asChild>
         <ButtonGroup>
           <ThemeButton size="icon" variant="ghost" />
-          {isAuthenticated
-            ? <PlatformSidebarTrigger size="icon" variant="ghost" side="right"/>
+          {user
+            ? (
+              <PlatformSidebarTrigger
+                size="icon"
+                variant="ghost"
+                side="right"
+              />
+            )
             : <LoginButton variant="ghost" />}
         </ButtonGroup>
       </AppBarTrailing>

@@ -15,7 +15,8 @@ import type { ShiftData } from "../types";
 
 type ScheduleContext =
   & Omit<ReturnType<typeof useShifts>, "data">
-  & ReturnType<typeof useFilter<ShiftData>>;
+  & ReturnType<typeof useFilter<ShiftData>>
+  & {};
 
 const ScheduleContext = React.createContext<ScheduleContext | null>(null);
 

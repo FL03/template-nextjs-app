@@ -8,13 +8,13 @@
 // imports
 import * as React from "react";
 // local
-import Docs from "../content/docs.mdx";
+import Docs from "@/content/docs.mdx";
 // components
-import { ContentCard } from "@/components/common/cards";
+import { ArticleCard } from "@/components/common/articles";
 
 export const DocsScreen: React.FC<
   Omit<
-    React.ComponentPropsWithoutRef<typeof ContentCard>,
+    React.ComponentPropsWithoutRef<typeof ArticleCard>,
     "author" | "children"
   >
 > = (
@@ -24,13 +24,13 @@ export const DocsScreen: React.FC<
     ...props
   },
 ) => (
-  <ContentCard
+  <ArticleCard
     {...props}
     description={description}
     title={title}
   >
     <Docs />
-  </ContentCard>
+  </ArticleCard>
 );
 DocsScreen.displayName = "DocsScreen";
 

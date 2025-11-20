@@ -4,7 +4,7 @@
  * @directory - src/app/(platform)/[username]/orgs
  * @file - page.tsx
  */
-import { OrgsListView } from "@/features/orgs/views";
+import { OrgsListView } from "@/features/orgs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

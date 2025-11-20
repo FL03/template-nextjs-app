@@ -9,149 +9,279 @@
 import * as React from "react";
 import { compareAsc } from "date-fns";
 import {
-  Bar,
   Brush,
-  CartesianGrid,
   ComposedChart,
   Legend,
+  Line,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ClassNames, formatAsCurrency } from "@pzzld/core";
 // project
-import { formatAsCurrency } from "@/lib/fmt";
 import { cn } from "@/lib/utils";
-// feature-specific
+// local
 import { useWorkSchedule } from "../../providers";
 import { ShiftData } from "../../types";
 // components
-import { ChartTooltip } from "@/components/common/chart-tooltip";
+import { ChartTooltip } from "@/components/common/charts";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 
 export const TipsOverTimeChart: React.FC<
-  Omit<React.ComponentPropsWithoutRef<"div">, "children" | "title"> & {
-    chartHeight?: number | string;
-    chartWidth?: number | string;
+  Omit<React.ComponentPropsWithRef<typeof ResponsiveContainer>, "children"> & {
+    data?: ShiftData[];
+    locale?: Intl.LocalesArgument;
+    dateFormatOptions?: Intl.DateTimeFormatOptions;
   }
-> = (
-  { chartHeight, className, style },
-) => {
-  // use the schedule provider
-  const { data: shifts } = useWorkSchedule();
-
-  const handleData = (
-    { date, tips_cash = 0, tips_credit = 0 }: ShiftData,
-  ) => ({
+> = ({
+  ref,
+  data = [],
+  debounce = 1,
+  height = "100%",
+  width = "100%",
+  locale = "en-us",
+  dateFormatOptions = { timeZone: "UTC" },
+  ...props
+}) => {
+  const handleData = ({
     date,
+    tips_cash = 0,
+    tips_credit = 0,
+  }: ShiftData) => ({
+    date: new Date(date),
     tips_cash,
     tips_credit,
     total_tips: tips_cash + tips_credit,
   });
 
-  const chartData = shifts.map(handleData).sort((a, b) => (
+  const chartData = data.map(handleData).sort((a, b) => (
     compareAsc(a.date, b.date)
   ));
   return (
-    <div
-      className={cn("h-[200px] lg:h-[400px] w-full", className)}
-      style={{ height: chartHeight, ...style }}
+    <ResponsiveContainer
+      ref={ref}
+      debounce={debounce}
+      height={height}
+      width={width}
+      {...props}
     >
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          accessibilityLayer
-          data={chartData}
-          title="Earned Tips"
-        >
-          <CartesianGrid vertical={false} />
-          <Bar
-            stackId="tips"
-            barSize={1}
-            dataKey="tips_cash"
-            name="Cash"
-            radius={4}
-            strokeWidth={1}
-            type="monotone"
-            fill="var(--color-chart-1)"
-          />
-          <Bar
-            stackId="tips"
-            barSize={1}
-            dataKey="tips_credit"
-            name="Credit"
-            radius={4}
-            strokeWidth={1}
-            type="monotone"
-            fill="var(--color-chart-2)"
-          />
-          <ReferenceLine y={0} stroke="--var(--color-primary)" />
-          <Brush
-            dataKey="date"
-            height={30}
-            stroke="var(--color-chart-1)"
-            tickFormatter={(value) => (
-              new Date(value).toLocaleDateString("en-us", { timeZone: "UTC" })
-            )}
-          />
-          <XAxis
-            dataKey="date"
-            name="Date"
-            textAnchor="middle"
-            tickFormatter={(tick) => (
-              new Date(tick).toLocaleDateString("en-us", { timeZone: "UTC" })
-            )}
-            tickMargin={2}
-            type="category"
-          />
-          <YAxis
-            allowDecimals
-            name="Amount"
-            tickFormatter={(tick) => (
-              formatAsCurrency(Number(tick), { precision: 0 })
-            )}
-            tickMargin={2}
-            type="number"
-          />
-          <Legend name="Legend" />
-          <Tooltip
-            content={({ active, payload }) => {
-              if (!active || !payload || payload?.length === 0) {
-                return null;
-              }
-              const date = new Date(payload[0].payload.date);
-              return (
-                <ChartTooltip
-                  title={date.toLocaleDateString()}
-                >
-                  <ul className="flex flex-col w-full gap-2">
-                    {payload.map((item, index) => (
-                      <li
-                        key={index}
-                        className="flex flex-nowrap items-center gap-2"
-                      >
-                        <div className="flex shrink-0 justify-end items-center">
-                          <span
-                            className="font-semibold"
-                            style={{ color: item.stroke }}
-                          >
-                            {item.name}:
-                          </span>
-                        </div>
-                        <span className="inline-flex flex-1 items-center font-mono text-nowrap">
+      <ComposedChart
+        accessibilityLayer
+        data={chartData}
+        title="Earned Tips"
+      >
+        {/* plots */}
+        <Line
+          name="Cash"
+          dataKey="tips_cash"
+          yAxisId="tips"
+          type="monotone"
+          activeDot={false}
+          dot={false}
+          fill="var(--color-chart-1)"
+          stroke="var(--color-chart-1)"
+        />
+        <Line
+          name="Credit"
+          dataKey="tips_credit"
+          yAxisId="tips"
+          fill="var(--color-chart-2)"
+          stroke="var(--color-chart-2)"
+          strokeWidth={2}
+          type="monotone"
+          activeDot={false}
+          dot={false}
+        />
+        {/* chart */}
+        <XAxis
+          dataKey="date"
+          xAxisId="date"
+          name="Date"
+          textAnchor="middle"
+          tickFormatter={(tick) => (
+            new Date(tick).toLocaleDateString(locale, dateFormatOptions)
+          )}
+          tickMargin={2}
+          type="category"
+        />
+        <YAxis
+          allowDecimals
+          yAxisId="tips"
+          name="Earned Tips"
+          type="number"
+          width="auto"
+          label={{
+            value: "Earned Tips",
+            angle: -90,
+            position: "insideLeft",
+            className: "font-semibold sr-only md:not-sr-only",
+          }}
+          tickMargin={2}
+          tickFormatter={(tick) => (
+            formatAsCurrency(Number(tick))
+          )}
+        />
+        <Legend name="Legend" />
+        <Brush
+          dataKey="date"
+          height={30}
+          stroke="var(--color-primary)"
+          tickFormatter={(value) => (
+            new Date(value).toLocaleDateString(locale, dateFormatOptions)
+          )}
+        />
+        <ReferenceLine y={0} stroke="--var(--color-primary)" />
+        <Tooltip
+          content={({ active, payload }) => {
+            if (!active || !payload || payload?.length === 0) {
+              return null;
+            }
+            const date = new Date(payload[0].payload.date);
+            return (
+              <ChartTooltip
+                title={date.toLocaleDateString()}
+              >
+                <ItemGroup className="w-full">
+                  {payload.map((item, index) => (
+                    <Item
+                      key={index}
+                      className="flex-nowrap w-full"
+                      size="sm"
+                    >
+                      <ItemContent className="flex-1">
+                        <ItemTitle className="text-nowrap font-semibold">
+                          {item.name}
+                        </ItemTitle>
+                      </ItemContent>
+                      <ItemContent className="justify-end">
+                        <span className="font-mono">
                           {formatAsCurrency(Number(item.value))}
                         </span>
-                      </li>
-                    ))}
-                  </ul>
-                </ChartTooltip>
-              );
-            }}
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
-    </div>
+                      </ItemContent>
+                    </Item>
+                  ))}
+                </ItemGroup>
+              </ChartTooltip>
+            );
+          }}
+        />
+      </ComposedChart>
+    </ResponsiveContainer>
   );
 };
 TipsOverTimeChart.displayName = "TipsOverTimeChart";
 
-export default TipsOverTimeChart;
+export const TipsOverTime: React.FC<
+  Omit<React.ComponentPropsWithRef<typeof Card>, "children" | "title"> & {
+    classNames?: ClassNames<
+      | "action"
+      | "chart"
+      | "content"
+      | "description"
+      | "header"
+      | "footer"
+      | "title"
+    >;
+    action?: React.ReactNode;
+    description?: React.ReactNode;
+    title?: React.ReactNode;
+    showDescription?: boolean;
+    hideTitle?: boolean;
+    chartHeight?: number | `${number}%`;
+    chartWidth?: number | `${number}%`;
+    maxHeight?: number;
+    initialDimension?: { height: number; width: number };
+    locale?: Intl.LocalesArgument;
+    dateFormatOptions?: Intl.DateTimeFormatOptions;
+  }
+> = (
+  {
+    ref,
+    action,
+    className,
+    classNames,
+    locale,
+    dateFormatOptions,
+    chartHeight,
+    chartWidth = "100%",
+    initialDimension,
+    description = "Visualize your earned tips over time!",
+    title = "Tips Over Time",
+    hideTitle,
+    showDescription,
+    ...props
+  },
+) => {
+  const { data } = useWorkSchedule();
+  return (
+    <Card
+      ref={ref}
+      className={cn(
+        "relative z-auto flex flex-col w-full",
+        className,
+      )}
+      {...props}
+    >
+      <CardHeader
+        className={cn("w-full", classNames?.headerClassName)}
+        hidden={!title && !description && !action}
+      >
+        <CardTitle
+          className={cn(
+            "text-lg leading-none tracking-tight",
+            hideTitle ? "sr-only" : "not-sr-only",
+            classNames?.titleClassName,
+          )}
+          hidden={!title}
+        >
+          {title}
+        </CardTitle>
+        <CardDescription
+          className={cn(
+            "leading-none tracking-tight line-clamp-2 truncate",
+            classNames?.descriptionClassName,
+            showDescription ? "not-sr-only" : "sr-only",
+          )}
+          hidden={!description}
+        >
+          {description}
+        </CardDescription>
+        {action && (
+          <CardAction className={cn(classNames?.actionClassName)}>
+            {action}
+          </CardAction>
+        )}
+      </CardHeader>
+      <CardContent
+        className={cn(
+          "px-0 h-[45vh] w-full",
+          classNames?.contentClassName,
+        )}
+      >
+        <TipsOverTimeChart
+          data={data}
+          className={classNames?.chartClassName}
+          height={chartHeight}
+          width={chartWidth}
+          initialDimension={initialDimension}
+          locale={locale}
+          dateFormatOptions={dateFormatOptions}
+        />
+      </CardContent>
+    </Card>
+  );
+};
+TipsOverTime.displayName = "TipsOverTime";
+
+export default TipsOverTime;

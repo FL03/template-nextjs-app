@@ -7,101 +7,107 @@
 // packages
 import * as React from "react";
 import { compareAsc, compareDesc } from "date-fns";
-import { useRouter } from "next/navigation";
 import { formatAsCurrency } from "@pzzld/core";
 // project
-import { useUsername } from "@/hooks/use-username";
 import { cn } from "@/lib/utils";
 // local
 import { useWorkSchedule } from "../providers";
 import { type ShiftData } from "../types";
-import { ShiftContextMenu, ShiftDropdownMenu } from "./actions";
+import { ShiftItemContextMenu, ShiftItemDropdownMenu } from "./actions";
 // components
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemGroup,
+  ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
 
+export const ShiftListItem: React.FC<
+  Omit<React.ComponentPropsWithRef<typeof Item>, "asChild"> & {
+    value: ShiftData;
+  }
+> = (
+  {
+    ref,
+    value,
+    className,
+    size = "sm",
+    variant = "default",
+    ...props
+  },
+) => {
+  const { id, date, tips_cash = 0, tips_credit = 0 } = value;
+  return (
+    <ShiftItemContextMenu asChild itemId={id}>
+      <Item
+        ref={ref}
+        className={cn("w-full", className)}
+        size={size}
+        variant={variant}
+        {...props}
+      >
+        <ItemMedia variant="icon">
+          <Checkbox className="size-4" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-right">
+            {new Date(date).toLocaleDateString("en-US", { timeZone: "UTC" })}
+          </ItemTitle>
+        </ItemContent>
+        <ItemContent className="">
+          <ItemTitle className="text-left font-mono">
+            {formatAsCurrency(tips_cash + tips_credit)}
+          </ItemTitle>
+        </ItemContent>
+        <ItemActions>
+          {/* actions menu */}
+          <ShiftItemDropdownMenu item={value} />
+        </ItemActions>
+      </Item>
+    </ShiftItemContextMenu>
+  );
+};
+
 export const ShiftList: React.FC<
   React.ComponentPropsWithoutRef<typeof ItemGroup> & {
-    descending?: boolean;
     itemCount?: number;
+    descending?: boolean;
+    scrollable?: boolean;
   }
-> = ({ className, descending = false, itemCount = 5, ...props }) => {
+> = ({ className, descending, scrollable, itemCount = 5, ...props }) => {
   // initialize providers
-  const { username: username } = useUsername();
   const { data: shifts } = useWorkSchedule();
-  // setup the router
-  const router = useRouter();
 
-  const handleData = React.useCallback(
-    (
-      values: ShiftData[],
-      { ascending = false, limit }: { ascending?: boolean; limit?: number } =
-        {},
-    ) => {
-      values = values.sort((lhs, rhs) =>
-        ascending
-          ? compareAsc(new Date(lhs.date), new Date(rhs.date))
-          : compareDesc(new Date(lhs.date), new Date(rhs.date))
-      );
-      if (limit) {
-        values = values.slice(0, limit);
-      }
-      return values;
-    },
-    [],
-  );
+  function handleShifts(
+    values: ShiftData[],
+    { ascending, limit }: { ascending?: boolean; limit?: number } = {},
+  ) {
+    // sort the items by date
+    values = values.sort(({ date: lhs }, { date: rhs }) => {
+      return ascending ? compareAsc(lhs, rhs) : compareDesc(lhs, rhs);
+    });
+
+    if (limit) values = values.slice(0, limit);
+
+    return values;
+  }
 
   const data = React.useMemo<ShiftData[]>(() => (
-    handleData(shifts, { ascending: !descending, limit: itemCount })
+    handleShifts(shifts, { ascending: !descending, limit: itemCount })
   ), [shifts, descending, itemCount]);
 
-  const renderItem = (
-    itemData: ShiftData,
-    index?: number,
-  ) => {
-    const { id, date, tips_cash: cash = 0, tips_credit: credit = 0 } = itemData;
-    return (
-      <ShiftContextMenu asChild key={index} itemId={itemData.id}>
-        <Item
-          id={itemData?.id}
-          key={itemData?.id ?? index}
-          className="items-center"
-          onClick={() => {
-            router.push(`/shifts/${id}?mode=read&username=${username}`);
-          }}
-        >
-          <ItemContent>
-            <ItemTitle className="text-right">
-              {new Date(date).toLocaleDateString("en-US", { timeZone: "UTC" })}
-            </ItemTitle>
-          </ItemContent>
-          <ItemContent className="">
-            <ItemTitle className="text-left font-mono">
-              {formatAsCurrency(cash + credit)}
-            </ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            {/* actions menu */}
-            <ShiftDropdownMenu item={itemData} />
-          </ItemActions>
-        </Item>
-      </ShiftContextMenu>
-    );
-  };
   return (
     <ItemGroup
-      className={cn("w-full", itemCount && "overflow-y-auto", className)}
+      className={cn("w-full", scrollable && "overflow-y-auto", className)}
       {...props}
     >
-      {data?.map(renderItem)}
+      {data?.map((item, index) => (
+        <ShiftListItem key={item.id ?? index} value={item} />
+      ))}
     </ItemGroup>
   );
 };
 ShiftList.displayName = "ShiftList";
-
-export default ShiftList;

@@ -26,32 +26,11 @@ export const countByAgg: ReactTable.AggregationFn<any> = (
 };
 
 export function formatNumberAs(
-  value?: number | null,
-  { mode, placeholder = "-", precision = 2 }: {
-    mode?: string;
-    placeholder?: string;
-    precision?: number;
-  } = {},
+  data?: number | null,
+  options?: Intl.NumberFormatOptions,
 ): string {
-  if (!value || value === null || isNaN(value)) {
-    return placeholder;
-  }
-  if (mode === "currency") {
-    return new Intl.NumberFormat("en-us", {
-      style: "currency",
-      currency: "usd",
-      maximumFractionDigits: precision,
-    }).format(value);
-  } else if (mode === "percent") {
-    return new Intl.NumberFormat("en-us", {
-      style: "percent",
-      maximumFractionDigits: precision,
-    }).format(value);
-  } else {
-    return new Intl.NumberFormat("en-us", {
-      maximumFractionDigits: precision,
-    }).format(value);
-  }
+  const value = data ? Number(data) : 0;
+  return new Intl.NumberFormat("en-US", options).format(value);
 }
 
 type SummaryFnCallback = <

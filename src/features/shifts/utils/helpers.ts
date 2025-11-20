@@ -4,31 +4,20 @@
  * @directory - @/features/shifts/utils
  * @file - helpers.ts
  */
-// project
-import { DayOfWeek, Days, DAYS_OF_WEEK } from "@/lib/datetime";
-import { sumBy } from "@/lib/utils";
+import { sumBy } from "@pzzld/core";
 // feature-specific
 import { ShiftData } from "../types";
 
 /** compute the average amount of earned tips using the given shifts. */
-export const averageTips = (records: ShiftData[]): number => {
+export function averageTips(records: ShiftData[]): number {
   return totalTips(records) / records.length;
-};
+}
 /** compute the total amount of earned tips. */
-export const totalTips = (values: ShiftData[]): number => (
-  sumBy({ key: "tips_cash", values }) +
-  sumBy({ key: "tips_credit", values: values })
-);
-
-export const utcLocalDateString = (
-  value: Date | string | number,
-  options?: Omit<Intl.DateTimeFormatOptions, "timeZone">,
-): string => (
-  new Date(value).toLocaleDateString("en-US", {
-    ...options,
-    timeZone: "UTC",
-  })
-);
+export function totalTips(values: ShiftData[]): number {
+  const cashSum = sumBy({ key: "tips_cash", values });
+  const creditSum = sumBy({ key: "tips_credit", values });
+  return cashSum + creditSum;
+}
 
 export const normalizeToUTCDate = (value?: Date | string | number): Date => {
   const date = value ? new Date(value) : new Date();
@@ -46,11 +35,31 @@ export const adjustShiftDate = (
   return { ...values, date: normalizeToUTCDate(date).toUTCString() };
 };
 
+export type DayOfWeek =
+  | "Sunday"
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday";
+
+export const DAYS_OF_WEEK: Record<number, DayOfWeek> = {
+  0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+};
+
 type DailyMetrics = {
   day: DayOfWeek;
   average: number;
   count: number;
   total: number;
+  totalPercentage?: number;
 };
 /**
  * Computes the average amount of tips received for each day of the week from an array of shift records.
@@ -93,7 +102,7 @@ export const computeDailyTipMetrics = (
     const { total, count } = dailyTotals[Number(key)];
     return {
       day: DAYS_OF_WEEK[Number(key)],
-      average: total / count,
+      average: count === 0 ? 0 : total / count,
       count,
       total,
     };
@@ -105,29 +114,35 @@ export const computeDailyTipMetrics = (
   >;
 };
 
-const defaultMetrics: Record<DayOfWeek, DailyMetrics> = Object.fromEntries(
-  Object.values(DAYS_OF_WEEK).map((day) => [
-    day,
-    { day, average: 0, count: 0, total: 0 },
-  ]),
-) as Record<DayOfWeek, DailyMetrics>;
-
-export class ShiftMetrics {
-  private _DayOfWeek: Record<DayOfWeek, DailyMetrics> = defaultMetrics;
+class ShiftMetrics {
+  private data: Record<DayOfWeek, DailyMetrics> = Object.fromEntries(
+    Object.values(DAYS_OF_WEEK).map((day) => [
+      day,
+      { day, average: 0, count: 0, total: 0 },
+    ]),
+  ) as Record<DayOfWeek, DailyMetrics>;
 
   constructor(shifts: ShiftData[]) {
-    this._DayOfWeek = computeDailyTipMetrics(shifts);
+    this.data = computeDailyTipMetrics(shifts);
   }
 
   evaluate(shifts: ShiftData[]) {
-    this._DayOfWeek = computeDailyTipMetrics(shifts);
+    this.data = computeDailyTipMetrics(shifts);
   }
 
   day(day: DayOfWeek): DailyMetrics {
-    return this._DayOfWeek[day];
+    return this.data[day];
   }
 
   get DayOfWeek(): Record<DayOfWeek, DailyMetrics> {
-    return this._DayOfWeek;
+    return this.data;
+  }
+
+  valueOf(): Record<DayOfWeek, DailyMetrics> {
+    return this.data;
   }
 }
+
+class ShiftStatistics {}
+
+export { ShiftMetrics, ShiftStatistics };

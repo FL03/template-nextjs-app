@@ -1,24 +1,24 @@
 /**
+ * The Next.js configuration file.
  * Created At: 2025.07.05:20:42:27
  * @author - @FL03
  * @file - next.config.ts
  */
-// imports
-import type { NextConfig } from "next";
-// markdown
-import createMDX from "@next/mdx";
 // types
+import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
+// mdx support
+import createMDX from "@next/mdx";
 
-const nextBuildOutput = (): "export" | "standalone" | undefined => {
+function nextBuildOutput(): "export" | "standalone" | undefined {
   const value = process.env["NEXT_PUBLIC_BUILD_OUTPUT"] ??
     process.env["BUILD_OUTPUT"];
   return value === "export" || value === "standalone" ? value : undefined;
-};
+}
 
-const nextConfigImages = (
+function nextConfigImages(
   { supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL } = {},
-): NextConfig["images"] => {
+): NextConfig["images"] {
   let remotePatterns: (URL | RemotePattern)[] = [
     {
       hostname: "images.unsplash.com",
@@ -46,17 +46,12 @@ const nextConfigImages = (
   }
 
   return {
-    remotePatterns: [
-      ...remotePatterns,
-    ],
+    remotePatterns,
   };
-};
-
+}
 /**
- * The Next.js configuration file.
- *
- * Visit the [`next-config-js`](https://nextjs.org/docs/app/api-reference/config/next-config-js) website for more information.
- * @type {NextConfig}
+ * The Next.js configuration object;
+ * @see https://nextjs.org/docs/app/api-reference/config/next-config-js for more information.
  */
 const nextConfig: NextConfig = {
   compress: true,
@@ -78,4 +73,8 @@ const withMDX = createMDX({
   },
 });
 
+/**
+
+ * @type {NextConfig}
+ */
 export default withMDX(nextConfig);

@@ -22,7 +22,6 @@ import {
 // project
 import { cn } from "@/lib/utils";
 // components
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,7 +34,7 @@ import {
 import { Label } from "@/components/ui/label";
 
 interface ColumnHeaderProps<TData extends RowData, TValue = unknown>
-  extends React.ComponentPropsWithRef<typeof Button> {
+  extends Omit<React.ComponentPropsWithRef<typeof DropdownMenuTrigger>, "asChild"> {
   column: ReactTable.Column<TData, TValue>;
   classNames?: ClassNames<"content" | "icon" | "label">;
 }

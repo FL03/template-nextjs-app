@@ -1,6 +1,75 @@
-# Development
+# **** Language Specific ****
+## Python
+**/__pycache__
+**/.pytest_cache
+**/venv
 
-## Configuration Files
+## Rust
+**/target
+
+!**/Cargo.lock
+
+**/*.rs.bk
+**/*.rs.bk.*
+
+## Node.js
+**/.DS_STORE
+**/.pnp
+**/.pnp.*
+**/.vercel
+**/build
+**/node_modules
+
+### package managers 
+**/.yarn/install-state.gz
+!**/package-lock.json
+**/npm-debug.log
+
+**/yarn-error.log
+**/yarn-debug.log
+
+## JavaScript/TypeScript
+**/*.tsbuildinfo
+
+# **** Frameworks ****
+
+### Deno
+**/deno.json
+**/deno.jsonc
+
+### Next.js
+**/.next
+**/out
+
+**/next-env.d.ts
+
+### Jest
+**/.swc
+**/coverage
+
+### OpenNext (Cloudflare)
+**/.open-next
+**/.wrangler
+**/.vercel
+
+### Supabase
+**/supabase/temp
+
+### Vercel
+**/.vercel
+
+# **** General ****
+**/.DS_Store
+**/.artifacts/data
+**/.artifacts/logs
+**/.artifacts/tmp
+**/build
+**/coverage
+**/debug
+**/dist
+**/release
+
+## ** Configuration Files **
 **/.config/*.config.*
 
 !**/.config/example.config.*
@@ -22,7 +91,7 @@
 !*.example.env
 !*.example.env.*
 
-## IDEs
+## ** Editors **
 
 ### JetBrains Intellij
 **/.idea
@@ -39,7 +108,7 @@
 !**/.vscode/launch.json
 !**/.vscode/settings.json
 
-## Services and Platforms
+## ** Operating Systems **
 
 ### Nix
 !**/flake.lock
@@ -47,76 +116,7 @@
 ### Windows Subsystem for Linux (WSL)
 **/*:Zone.identifier
 
-### OpenNext (Cloudflare)
-**/.open-next
-**/.wrangler
-**/.vercel
-
-### Supabase
-**/supabase/temp
-
-### Vercel
-**/.vercel
-
-# Language Specific
-
-## Node.js
-**/.DS_STORE
-**/.pnp
-**/.pnp.*
-**/.vercel
-**/.yarn/install-state.gz
-**/build
-**/node_modules
-
-#### Jest
-**/.swc
-**/coverage
-
-### File Extensions
-!**/*.lock
-!**/*-lock.*
-
-**/*.tsbuildinfo
-**/yarn-error.log
-
-### Frameworks
-
-#### Deno
-**/deno.json
-**/deno.jsonc
-
-#### Next.js
-**/.next
-**/out
-
-**/next-env.d.ts
-
-## Python
-**/__pycache__
-**/.pytest_cache
-**/venv
-
-## Rust
-**/target
-
-!**/Cargo.lock
-
-**/*.rs.bk
-**/*.rs.bk.*
-
-# Miscellaneous
-**/.DS_Store
-**/.artifacts/data
-**/.artifacts/logs
-**/.artifacts/tmp
-**/build
-**/coverage
-**/debug
-**/dist
-**/release
-
-## File Extensions
+## ** File Extensions **
 *.bak
 *.bak.*
 

@@ -31,7 +31,6 @@ export default function Error({
       </section>
       <section className="flex flex-1 flex-nowrap items-center justify-center">
         <ErrorCard
-          showStatus
           status={error.digest || "500"}
           reset={reset}
         >

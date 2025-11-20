@@ -5,24 +5,16 @@
  * @file - auth.passwordless.test.tsx
  */
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
 // Mock the browser supabase client so no network/server code runs
 const mockSignInWithOtp = jest.fn();
 
-jest.mock("@/lib/supabase", () => ({
+jest.mock("../src/lib/supabase", () => ({
   createBrowserClient: () => ({ auth: { signInWithOtp: mockSignInWithOtp } }),
 }));
 
-// Stub logger
-jest.mock(
-  "@/lib/logger",
-  () => ({ logger: { trace: jest.fn(), info: jest.fn(), error: jest.fn() } }),
-);
-
-
 // Import after mocks
-import { PasswordlessLoginForm } from "../src/features/auth";
+import { PasswordlessLoginForm } from "../src/features/auth/widgets/forms/passwordless-form";
 
 describe("PasswordlessLoginForm", () => {
   beforeEach(() => {
@@ -30,7 +22,7 @@ describe("PasswordlessLoginForm", () => {
   });
 
   it("renders the fields and actions for the passwordless login form", () => {
-    render(<PasswordlessLoginForm defaultValues={{ email: "" }} />);
+    render(<PasswordlessLoginForm />);
 
     const email = screen.getByPlaceholderText(
       "Email address",
@@ -51,7 +43,7 @@ describe("PasswordlessLoginForm", () => {
     const onSuccess = jest.fn();
     render(
       <PasswordlessLoginForm
-        defaultValues={{ email: "" }}
+        defaultValues={{ email: "test@example.com" }}
         onSuccess={onSuccess}
       />,
     );

@@ -3,7 +3,6 @@
  * @author - @FL03
  * @file - net.ts
  */
-// types
 import type { NextResponse } from "next/server";
 // local
 import type { QueryParams } from "./routes";
