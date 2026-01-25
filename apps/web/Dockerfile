@@ -1,15 +1,16 @@
 ARG BUN_VERSION=1
 
 # Base image used by all stages
-FROM oven/bun:${BUN_VERSION}-alpine AS base
+FROM oven/bun:${BUN_VERSION}-alpine AS builder-base
 
 WORKDIR /space
 
 # Disable Next.js telemetry by default
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production
 
 # === Dependencies stage ===
-FROM base AS deps
+FROM builder-base AS deps
 
 # Copy package.json (always needed)
 COPY package.json ./
@@ -18,18 +19,19 @@ COPY package.json ./
 COPY bun.lock* bun.lockb* ./
 
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install
-# RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then \
-#     echo "Lockfile found, installing dependencies with frozen lockfile..."; \
-#     bun install --frozen-lockfile; \
-#     else \
-#     echo "No lockfile found, installing dependencies normally..."; \
-#     bun install; \
-#     fi
+# RUN bun install
+RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then \
+    echo "Lockfile found, installing dependencies with frozen lockfile..."; \
+    bun install --frozen-lockfile; \
+    else \
+    echo "No lockfile found, installing dependencies normally..."; \
+    bun install; \
+    fi
 # === Build stage ===
-FROM base AS builder
+FROM builder-base AS builder
 
 ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
+    NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
 
 WORKDIR /space
