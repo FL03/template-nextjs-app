@@ -6,10 +6,11 @@
   "type": "module",
   "version": "0.0.2",
   "scripts": {
-    "build": "bun run --bun tsc --build",
-    "build:watch": "bun run --bun tsc --watch",
+    "build": "tsc --build",
+    "build:watch": "tsc --watch",
     "lint": "echo \"No tests specified\"",
-    "test": "echo \"No tests specified\""
+    "test": "echo \"No tests specified\"",
+    "publish": "bun run build && bun publish --access public"
   },
   "devDependencies": {
     "@types/node": "^25",

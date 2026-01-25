@@ -29,14 +29,17 @@
     "clean": "bun run --if-present clean",
     "dev": "bun run app:dev",
     "lint": "bun run app:lint",
-    "app:build": "bun run --if-present build --filter ",
+    "app:build": "bun run --filter './apps/*' build ",
     "app:dev": "bun run --workspace @template-nextjs/app dev",
     "app:lint": "bun run --workspace @template-nextjs/app lint",
     "app:start": "bun run start --workspace @template-nextjs/app",
     "app:test": "bun run --workspace @template-nextjs/app test"
   },
+  "publishConfig": {
+    "tag": "next"
+  },
   "workspaces": [
-    "packages/*",
-    "apps/*"
+    "./apps/*",
+    "./packages/*"
   ]
 }

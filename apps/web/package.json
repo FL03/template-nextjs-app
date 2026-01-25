@@ -1,9 +1,6 @@
 {
   "name": "@template-nextjs/app",
   "version": "0.0.2",
-  "publishConfig": {
-    "tag": "next"
-  },
   "scripts": {
     "build": "bun run --bun next build",
     "dev": "bun run --bun next dev",

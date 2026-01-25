@@ -11,15 +11,12 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
 
 # === Dependencies stage ===
 FROM builder-base AS deps
-
 # Copy package.json (always needed)
 COPY package.json ./
-
 # Copy lockfiles if they exist (bun.lockb takes priority over bun.lock)
 COPY bun.lock* bun.lockb* ./
-
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install
+RUN 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
 # === Build stage ===
 FROM builder-base AS builder
 
@@ -33,18 +30,18 @@ WORKDIR /space
 COPY . .
 COPY --from=deps /space/node_modules ./node_modules
 # Build the Next.js app (standalone output)
-RUN bun run --bun next build
+RUN bun run --filter './apps/web' build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
 
-COPY --from=deps /space/package.json ./
+COPY --from=deps ./package.json ./
 
 # Copy lockfiles from deps stage if they exist
-COPY --from=deps /space/bun.lock* /space/bun.lockb* ./
+COPY --from=deps ./bun.lock* ./bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN bun install --frozen-lockfile
+RUN 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
@@ -68,9 +65,9 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /space/build/public ./public
-COPY --from=builder --chown=nextjs:nodejs /space/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /space/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/public ./public
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
 
 # Copy production dependencies for better performance
 COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules

@@ -87,4 +87,4 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: publish to npm
-        run: npm publish --tag ${{ env.RELEASE_TAG }} --access public --workspace @template-nextjs/${{ matrix.package }}
+        run: bun run --filter '!./apps/*' publish --tag ${{ env.RELEASE_TAG }} --access public --workspace @template-nextjs/${{ matrix.package }}

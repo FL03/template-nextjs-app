@@ -30,7 +30,7 @@ WORKDIR /space
 COPY . .
 COPY --from=deps /space/node_modules ./node_modules
 # Build the Next.js app (standalone output)
-RUN bun run build --workspace @template-nextjs/app
+RUN bun run --filter './apps/web' build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
