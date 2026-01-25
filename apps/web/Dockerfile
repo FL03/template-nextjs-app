@@ -33,7 +33,7 @@ WORKDIR /space
 COPY . .
 COPY --from=deps /space/node_modules ./node_modules
 # Build the Next.js app (standalone output)
-RUN bun run build
+RUN bun run --bun next build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
