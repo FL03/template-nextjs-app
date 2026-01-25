@@ -20,14 +20,12 @@ on:
         required: false
         type: string
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
     env:
+      BUILD_DIR: build
       BUN_VERSION: ${{ github.event.inputs.bun-version || 'latest' }}
     steps:
       - name: Checkout
@@ -44,7 +42,7 @@ jobs:
         with:
           path: |
             ~/.bun/install/cache
-            app/.next/cache
+            app/${{ env.BUILD_DIR }}/cache
           # Generate a new cache whenever packages or source files change.
           key: bun-${{ runner.os }}-${{ hashFiles('**/*.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
@@ -60,4 +58,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: nextjs-build
-          path: ./app/build
+          path: ./app/${{ env.BUILD_DIR }}
