@@ -49,7 +49,7 @@ COPY --from=deps /space/package.json ./
 COPY --from=deps /space/bun.lock* /space/bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN if [ -f bun.lockb ] || [ -f bun.lock ]; then bun install --frozen-lockfile --production; else bun install --production; fi
+RUN bun install --frozen-lockfile --production
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
