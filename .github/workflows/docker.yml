@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILDER_CONTEXT: .
-      PATH_TO_DOCKERFILE: ./.docker/app.dockerfile
+      PATH_TO_DOCKERFILE: ./apps/web/Dockerfile
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
