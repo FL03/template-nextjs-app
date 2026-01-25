@@ -1,0 +1,90 @@
+name: Publish
+
+concurrency:
+  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  repository_dispatch:
+    types: [npm-publish, node-publish]
+  workflow_dispatch:
+    inputs:
+      bun-version:
+        description: "Bun version"
+        required: false
+        default: "latest"
+      node-version:
+        description: "Node.js version"
+        required: false
+        default: "24.x"
+      tag:
+        description: "Tag to publish"
+        required: false
+        default: "latest"
+
+permissions:
+  contents: read
+  deployments: write
+  packages: write
+
+jobs:
+  npm:
+    environment: npm
+    name: Build and Publish to npm
+    runs-on: ubuntu-latest
+    env:
+      BUN_VERSION: ${{ github.event.inputs['bun-version'] || 'latest' }}
+      RELEASE_TAG: ${{ github.event.inputs.tag || 'latest' }}
+      NODE_VERSION: ${{ github.event.inputs['node-version'] || '24.x' }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_TOKEN }}
+    strategy:
+      matrix:
+        package:
+          - core
+          - types
+          - ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          clean: true
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ github.event.inputs['node-version'] || github.env.NODE_VERSION }}
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - name: Setup the Cache
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+          # Generate a new cache whenever packages or source files change.
+          key: bun-${{ runner.os }}-${{ hashFiles('**/*.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            bun-${{ runner.os }}-${{ hashFiles('**/*.lock') }}-
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Setup wasm-pack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: publish to npm
+        run: npm publish --tag ${{ env.RELEASE_TAG }} --access public --workspace @template-nextjs/${{ matrix.package }}
