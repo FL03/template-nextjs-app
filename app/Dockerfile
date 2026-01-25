@@ -15,7 +15,7 @@ FROM base AS deps
 COPY package.json bun.lockb* bun.lock* ./
 
 # Install dependencies with frozen lockfile for reproducible builds
-RUN bun install --frozen-lockfile --production=false
+RUN bun install --frozen-lockfile
 
 # === Build stage ===
 FROM base AS builder
