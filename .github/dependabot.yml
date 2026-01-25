@@ -13,7 +13,11 @@ updates:
   directory: /
   schedule:
     interval: monthly
-- package-ecosystem: npm
-  directory: /
+- package-ecosystem: bun
   schedule:
     interval: monthly
+  directories:
+    - /
+    - /app
+    - /apps/*
+    - /packages/*
