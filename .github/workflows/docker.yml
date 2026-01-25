@@ -26,16 +26,13 @@ permissions:
 jobs:
   app:
     runs-on: ubuntu-latest
-    env:
-      BUILDER_CONTEXT: .
-      PATH_TO_DOCKERFILE: ./apps/web/Dockerfile
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
     strategy:
       matrix:
         dockerfile:
-          - .docker/app.dockerfile
+          - apps/web/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v6
