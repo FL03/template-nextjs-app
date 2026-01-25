@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened]
+    types: [opened, ready_for_review, reopened, synchronize]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
@@ -28,13 +28,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILDER_CONTEXT: .
-      PATH_TO_DOCKERFILE: ./Dockerfile
+      PATH_TO_DOCKERFILE: .docker/app.dockerfile
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Setup Docker Metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -59,13 +61,13 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
+          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: ${{ env.BUILDER_CONTEXT }}
-          file: ${{ env.PATH_TO_DOCKERFILE }}/Dockerfile
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           platforms: linux/amd64
-          push: true
+          context: ${{ env.BUILDER_CONTEXT }}
+          file: ${{ env.PATH_TO_DOCKERFILE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
       - name: Establish Proveance

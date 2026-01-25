@@ -2,12 +2,12 @@ version: "4.0"
 
 services:
   frontend:   
-    command: npm start
+    command: bun run start
     container_name: app  
     image: jo3mccain/template-nextjs-app:latest
     build: 
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: app.dockerfile
       tags:
         - jo3mccain/template-nextjs-app:latest   
     env_file:
