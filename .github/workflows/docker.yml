@@ -58,7 +58,7 @@ jobs:
         with:
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: ./app
+          context: .
           file: ./app/Dockerfile
           github-token: ${{ github.token }}
           platforms: linux/amd64

@@ -3,7 +3,7 @@ ARG BUN_VERSION=1
 # Base image used by all stages
 FROM oven/bun:${BUN_VERSION}-alpine AS base
 
-WORKDIR /app
+WORKDIR /space
 
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -15,7 +15,7 @@ FROM base AS deps
 COPY package.json bun.lockb* bun.lock* ./
 
 # Install dependencies 
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # === Build stage ===
 FROM base AS builder
@@ -23,18 +23,18 @@ FROM base AS builder
 ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
     NODE_ENV=production
 
-WORKDIR /app
+WORKDIR /space
 
 # Copy source and previously installed dependencies
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /space/node_modules ./node_modules
 # Build the Next.js app (standalone output)
 RUN bun run build
 
 # === Pruned dependencies stage ===
 FROM base AS deps-prod
 
-COPY --from=deps /app/package.json /app/bun.lock* ./
+COPY --from=deps /space/package.json /space/bun.lock* ./
 
 # Install only production dependencies for smaller runtime image
 RUN bun install --frozen-lockfile --production
@@ -53,7 +53,7 @@ ENV NODE_ENV=production \
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-WORKDIR /app
+WORKDIR /space
 
 # Ensure prerender cache directory exists and is writable
 RUN mkdir -p build && \
@@ -61,12 +61,12 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /space/app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /space/app/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /space/app/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
 
 USER nextjs
 
