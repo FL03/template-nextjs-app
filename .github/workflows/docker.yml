@@ -52,24 +52,25 @@ jobs:
         with:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           username: ${{ vars.DOCKERHUB_USERNAME }}
-      - id: build
-        name: Build & Push the image to DockerHub
+      - name: Build & Push the image to DockerHub
+        id: build
         uses: docker/build-push-action@v6
         with:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .
-          file: ./app/Dockerfile
+          file: ./apps/web/Dockerfile
           github-token: ${{ github.token }}
           platforms: linux/amd64
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-      - id: attestation
+      - name: Establish Proveance
+        id: attestation
         if: ${{ !github.event.repository.private }}
-        name: Establish Proveance
         uses: actions/attest-build-provenance@v3
         with:
-          push-to-registry: false
+          push-to-registry: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           subject-digest: ${{ steps.build.outputs.digest }}
           subject-name: ${{ github.event.repository.name }}
