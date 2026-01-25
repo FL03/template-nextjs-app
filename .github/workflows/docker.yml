@@ -27,7 +27,7 @@ jobs:
   app:
     environment: 
       name: dockerhub
-      url: https://hub.docker.com/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+      url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
