@@ -33,14 +33,14 @@ COPY --from=deps /space/node_modules ./node_modules
 # Build the Next.js app (standalone output)
 RUN bun run --filter './apps/web' build
 
-# === Pruned dependencies stage ===
-FROM builder-base AS deps-prod
+# # === Pruned dependencies stage ===
+# FROM builder-base AS deps-prod
 
-COPY package.json bun.lock* bun.lockb* ./
+# COPY package.json bun.lock* bun.lockb* ./
 
-# Install only production dependencies for smaller runtime image
-RUN bun install --production
-# RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
+# # Install only production dependencies for smaller runtime image
+# RUN bun install --production
+# # RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
@@ -69,7 +69,7 @@ COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
+COPY --from=deps --chown=nextjs:nodejs /space/node_modules ./node_modules
 
 USER nextjs
 
