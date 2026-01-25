@@ -5,7 +5,7 @@
     "": {
       "name": "@pzzld-org-tips/root",
     },
-    "app": {
+    "apps/web": {
       "name": "@template-nextjs/app",
       "version": "0.0.1",
       "dependencies": {
@@ -559,7 +559,7 @@
 
     "@tanstack/table-core": ["@tanstack/table-core@8.21.3", "", {}, "sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg=="],
 
-    "@template-nextjs/app": ["@template-nextjs/app@workspace:app"],
+    "@template-nextjs/app": ["@template-nextjs/app@workspace:apps/web"],
 
     "@template-nextjs/core": ["@template-nextjs/core@workspace:packages/core"],
 
