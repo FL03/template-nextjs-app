@@ -4,16 +4,16 @@ services:
   frontend:   
     command: npm start
     container_name: app  
-    image: jo3mccain/pzzld-org-tips:latest
+    image: jo3mccain/template-nextjs-app:latest
     build: 
-      context: ..
+      context: .
       dockerfile: Dockerfile
       tags:
-        - jo3mccain/pzzld-org-tips:latest   
+        - jo3mccain/template-nextjs-app:latest   
     env_file:
       - .env
     volumes:
-      - ..:/usr/src/app
+      - ./app:/usr/src/app
     networks: [ default, frontend ]
     ports:
       - "3000:3000"
