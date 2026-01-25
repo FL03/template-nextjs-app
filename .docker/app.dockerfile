@@ -19,7 +19,7 @@ COPY package.json ./
 COPY bun.lock* bun.lockb* ./
 
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install
+RUN if [ -f bun.lockb ] || [ -f bun.lock ]; then bun install --frozen-lockfile; else bun install; fi
 # === Build stage ===
 FROM builder-base AS builder
 
@@ -44,7 +44,7 @@ COPY --from=deps /space/package.json ./
 COPY --from=deps /space/bun.lock* /space/bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN bun install --frozen-lockfile
+RUN if [ -f bun.lockb ] || [ -f bun.lock ]; then bun install --frozen-lockfile --production; else bun install --production; fi
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
