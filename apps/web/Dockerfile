@@ -11,12 +11,10 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
 
 # === Dependencies stage ===
 FROM builder-base AS deps
-# Copy package.json (always needed)
-COPY package.json ./
-# Copy lockfiles if they exist (bun.lockb takes priority over bun.lock)
-COPY bun.lock* bun.lockb* ./
+# copy dependency-related files
+COPY ./package.json ./bun.lock* ./bun.lockb* ./
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install --frozen-lockfile
+RUN bun install
 # RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
 # === Build stage ===
 FROM builder-base AS builder
@@ -41,7 +39,7 @@ COPY --from=deps ./package.json ./
 COPY --from=deps ./bun.lock* ./bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 # RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
 
 # === Runtime stage ===
