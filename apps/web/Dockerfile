@@ -36,9 +36,7 @@ RUN bun run --filter './apps/web' build
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
 
-COPY --from=deps ./package.json ./
-# Copy lockfiles from deps stage if they exist
-COPY --from=deps ./bun.lock* ./bun.lockb* ./
+COPY package.json bun.lock* bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
 RUN bun install --production
