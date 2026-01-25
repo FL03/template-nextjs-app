@@ -43,7 +43,7 @@ COPY --from=deps /space/node_modules ./node_modules
 RUN bun run build
 
 # === Pruned dependencies stage ===
-FROM base AS deps-prod
+FROM builder-base AS deps-prod
 
 COPY --from=deps /space/package.json ./
 
