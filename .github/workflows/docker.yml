@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened, synchronize]
+    types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
@@ -25,10 +25,13 @@ permissions:
 
 jobs:
   app:
+    runs-on: ubuntu-latest
+    env:
+      BUILDER_CONTEXT: ./apps/web
+      PATH_TO_DOCKERFILE: ./apps/web
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -58,9 +61,9 @@ jobs:
         with:
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: ./apps/web
-          file: ./apps/web/Dockerfile
-          github-token: ${{ github.token }}
+          context: ${{ env.BUILDER_CONTEXT }}
+          file: ${{ env.PATH_TO_DOCKERFILE }}/Dockerfile
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           platforms: linux/amd64
           push: true
           labels: ${{ steps.meta.outputs.labels }}
