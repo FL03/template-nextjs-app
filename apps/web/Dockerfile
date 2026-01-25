@@ -16,7 +16,8 @@ COPY package.json ./
 # Copy lockfiles if they exist (bun.lockb takes priority over bun.lock)
 COPY bun.lock* bun.lockb* ./
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
+RUN bun install --frozen-lockfile
+# RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
 # === Build stage ===
 FROM builder-base AS builder
 
@@ -36,12 +37,12 @@ RUN bun run --filter './apps/web' build
 FROM builder-base AS deps-prod
 
 COPY --from=deps ./package.json ./
-
 # Copy lockfiles from deps stage if they exist
 COPY --from=deps ./bun.lock* ./bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
+RUN bun install --frozen-lockfile --production
+# RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
