@@ -1,4 +1,4 @@
-ARG BUN_VERSION=latest
+ARG BUN_VERSION=1
 
 # Base image used by all stages
 FROM oven/bun:${BUN_VERSION}-alpine AS base
