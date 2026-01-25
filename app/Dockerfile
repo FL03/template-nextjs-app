@@ -15,7 +15,7 @@ FROM base AS deps
 COPY package.json bun.lockb* bun.lock* ./
 
 # Install dependencies with frozen lockfile for reproducible builds
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # === Build stage ===
 FROM base AS builder
@@ -35,7 +35,7 @@ RUN bun run build
 # === Pruned dependencies stage ===
 FROM base AS deps-prod
 
-COPY package.json bun.lockb* bun.lock* ./
+COPY --from=deps /app/package.json /app/bun.lockb* /app/bun.lock* ./
 
 # Install only production dependencies for smaller runtime image
 RUN bun install --frozen-lockfile --production
