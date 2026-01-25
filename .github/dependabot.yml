@@ -18,6 +18,5 @@ updates:
     interval: monthly
   directories:
     - /
-    - /app
     - /apps/*
     - /packages/*

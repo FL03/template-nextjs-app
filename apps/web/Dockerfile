@@ -11,12 +11,21 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # === Dependencies stage ===
 FROM base AS deps
 
-# Copy the necessary files to install dependencies
-COPY package.json bun.lockb* bun.lock* ./
+# Copy package.json (always needed)
+COPY package.json ./
+
+# Copy lockfiles if they exist (bun.lockb takes priority over bun.lock)
+COPY bun.lock* bun.lockb* ./
 
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then bun install --frozen-lockfile; else bun install; fi
-
+RUN bun install
+# RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then \
+#     echo "Lockfile found, installing dependencies with frozen lockfile..."; \
+#     bun install --frozen-lockfile; \
+#     else \
+#     echo "No lockfile found, installing dependencies normally..."; \
+#     bun install; \
+#     fi
 # === Build stage ===
 FROM base AS builder
 
@@ -34,10 +43,13 @@ RUN bun run build
 # === Pruned dependencies stage ===
 FROM base AS deps-prod
 
-COPY --from=deps /space/package.json /space/bun.lock* ./
+COPY --from=deps /space/package.json ./
+
+# Copy lockfiles from deps stage if they exist
+COPY --from=deps /space/bun.lock* /space/bun.lockb* ./
 
 # Install only production dependencies for smaller runtime image
-RUN bun install --frozen-lockfile --production
+RUN if [ -f bun.lockb ] || [ -f bun.lock ]; then bun install --frozen-lockfile --production; else bun install --production; fi
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
@@ -61,9 +73,9 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /space/app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /space/app/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /space/app/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/public ./public
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
 
 # Copy production dependencies for better performance
 COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules

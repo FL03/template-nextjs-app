@@ -5,9 +5,9 @@
     "": {
       "name": "@pzzld-org-tips/root",
     },
-    "app": {
+    "apps/web": {
       "name": "@template-nextjs/app",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@date-fns/tz": "^1.4.1",
         "@date-fns/utc": "^2.1.1",
@@ -87,7 +87,7 @@
     },
     "packages/core": {
       "name": "@template-nextjs/core",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "devDependencies": {
         "@types/node": "^25",
         "typescript": "^5.9.3",
@@ -95,7 +95,7 @@
     },
     "packages/types": {
       "name": "@template-nextjs/types",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "devDependencies": {
         "@types/node": "^25",
         "typescript": "^5.9.3",
@@ -103,7 +103,7 @@
     },
     "packages/ui": {
       "name": "@template-nextjs/ui",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "devDependencies": {
         "@types/node": "^25",
         "typescript": "^5.9.3",
@@ -559,7 +559,7 @@
 
     "@tanstack/table-core": ["@tanstack/table-core@8.21.3", "", {}, "sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg=="],
 
-    "@template-nextjs/app": ["@template-nextjs/app@workspace:app"],
+    "@template-nextjs/app": ["@template-nextjs/app@workspace:apps/web"],
 
     "@template-nextjs/core": ["@template-nextjs/core@workspace:packages/core"],
 

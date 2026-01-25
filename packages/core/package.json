@@ -4,7 +4,7 @@
   "description": "Core modules for the template platform",
   "private": false,
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "build": "bun run --bun tsc --build",
     "build:watch": "bun run --bun tsc --watch",
