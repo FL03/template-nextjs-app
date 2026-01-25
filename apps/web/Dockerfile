@@ -68,9 +68,9 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/public ./public
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /space/build/public ./public
+COPY --from=builder --chown=nextjs:nodejs /space/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /space/build/static ./build/static
 
 # Copy production dependencies for better performance
 COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
