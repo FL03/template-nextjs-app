@@ -1,4 +1,4 @@
-name: Bun
+name: Node.js
 
 concurrency:
   cancel-in-progress: false
@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [synchronize]
+    types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
   repository_dispatch:
