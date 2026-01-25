@@ -23,7 +23,7 @@
   "license": "Apache-2.0",
   "name": "@template-nextjs/root",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "build": "bun run --workspaces --if-present build",
     "dev": "bun run --workspaces --if-present dev",
