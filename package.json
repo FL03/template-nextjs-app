@@ -34,8 +34,5 @@
   "workspaces": [
     "packages/*",
     "app"
-  ],
-  "devDependencies": {
-    "@vercel/config": "^0.0.26"
-  }
+  ]
 }
