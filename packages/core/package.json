@@ -1,0 +1,18 @@
+{
+  "main": "build/index.js",
+  "name": "@template-nextjs/core",
+  "description": "Core modules for the template platform",
+  "private": false,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "bun run --bun tsc --build",
+    "build:watch": "bun run --bun tsc --watch",
+    "lint": "echo \"No tests specified\"",
+    "test": "echo \"No tests specified\""
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "typescript": "^5.9.3"
+  }
+}
