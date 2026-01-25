@@ -14,8 +14,8 @@ FROM base AS deps
 # Copy the necessary files to install dependencies
 COPY package.json bun.lockb* bun.lock* ./
 
-# Install dependencies 
-RUN bun install --frozen-lockfile
+# Install dependencies (use --frozen-lockfile if lockfile exists)
+RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then bun install --frozen-lockfile; else bun install; fi
 
 # === Build stage ===
 FROM base AS builder
@@ -53,7 +53,7 @@ ENV NODE_ENV=production \
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-WORKDIR /space
+WORKDIR /app
 
 # Ensure prerender cache directory exists and is writable
 RUN mkdir -p build && \
@@ -66,7 +66,7 @@ COPY --from=builder --chown=nextjs:nodejs /space/app/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /space/app/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 USER nextjs
 
