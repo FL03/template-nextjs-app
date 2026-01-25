@@ -78,7 +78,7 @@ COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
 
 USER nextjs
 
