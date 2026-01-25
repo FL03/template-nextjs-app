@@ -3,7 +3,7 @@ ARG BUN_VERSION=1
 # Base image used by all stages
 FROM oven/bun:${BUN_VERSION}-alpine AS base
 
-WORKDIR /src
+WORKDIR /app
 
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -14,7 +14,7 @@ FROM base AS deps
 # Copy the necessary files to install dependencies
 COPY package.json bun.lockb* bun.lock* ./
 
-# Install dependencies with frozen lockfile for reproducible builds
+# Install dependencies 
 RUN bun install
 
 # === Build stage ===
@@ -23,18 +23,18 @@ FROM base AS builder
 ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
     NODE_ENV=production
 
-WORKDIR /src
+WORKDIR /app
 
 # Copy source and previously installed dependencies
 COPY . .
-COPY --from=deps /src/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 # Build the Next.js app (standalone output)
 RUN bun run build
 
 # === Pruned dependencies stage ===
 FROM base AS deps-prod
 
-COPY --from=deps /src/package.json /src/bun.lock* ./
+COPY --from=deps /app/package.json /app/bun.lock* ./
 
 # Install only production dependencies for smaller runtime image
 RUN bun install --frozen-lockfile --production
@@ -53,7 +53,7 @@ ENV NODE_ENV=production \
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-WORKDIR /src
+WORKDIR /app
 
 # Ensure prerender cache directory exists and is writable
 RUN mkdir -p build && \
@@ -61,12 +61,12 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /src/app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /src/app/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /src/app/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /src/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 USER nextjs
 
