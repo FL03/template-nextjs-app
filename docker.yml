@@ -1,10 +1,14 @@
-name: Docker
+name: docker
 
 concurrency:
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
 on:
+  pull_request:
+    branches: [main, master]
+    # types: [auto_merge_enabled, opened, ready_for_review, reopened]
+    types: [synchronize, opened, reopened]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
@@ -21,10 +25,8 @@ permissions:
   packages: write
 
 jobs:
-  app:
-    environment: 
-      name: dockerhub
-      url: https://hub.docker.com/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+  docker:
+    environment: dockerhub
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,8 +57,7 @@ jobs:
         with:
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: ./app
-          file: ./app/Dockerfile
+          file: ./Dockerfile
           github-token: ${{ github.token }}
           platforms: linux/amd64
           push: true
