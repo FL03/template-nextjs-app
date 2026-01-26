@@ -62,7 +62,7 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /app/build/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/build/static ./build/static
 
