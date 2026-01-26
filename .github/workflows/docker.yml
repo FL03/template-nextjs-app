@@ -10,29 +10,23 @@ on:
     types: [opened, ready_for_review, reopened, synchronize]
   push:
     branches: [main, master]
-    tags: [latest, v*.*.*, "*-nightly"]
+    tags: [latest, v*.*.*]
   repository_dispatch:
     types: [docker, dockerhub, docker-publish]
   workflow_dispatch:
     inputs:
       build_context:
-        description: 'The path to the build context for the Docker build'
+        description: "The path to the build context for the Docker build"
         required: false
-        default: '.'
+        default: "."
       dockerfile:
-        description: 'The Dockerfile to use for the build'
+        description: "The Dockerfile to use for the build"
         required: false
-        default: 'Dockerfile'
+        default: "Dockerfile"
 
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-
-permissions:
-  attestations: write
-  contents: read
-  id-token: write
-  packages: write
 
 jobs:
   bnp:
@@ -41,9 +35,14 @@ jobs:
     env:
       BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
       DOCKERFILE: ${{ github.event.inputs.dockerfile || 'Dockerfile' }}
-    environment: 
+    environment:
       name: dockerhub
       url: https://hub.docker.com/r/${{ env.IMAGE_NAME }}
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -83,7 +82,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
       - name: Establish Proveance
-        id: attestation
+        continue-on-error: true
         if: ${{ !github.event.repository.private }}
         uses: actions/attest-build-provenance@v3
         with:
