@@ -44,6 +44,7 @@ FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
     NEXT_PUBLIC_SITE_URL="http://localhost:3000" \
     NEXT_PUBLIC_SUPABASE_URL="https://gilqgzjkzkmhbbcqidqb.supabase.co" \
     HOSTNAME="0.0.0.0" \
