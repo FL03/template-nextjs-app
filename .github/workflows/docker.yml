@@ -24,6 +24,10 @@ on:
         required: false
         default: 'Dockerfile'
 
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+
 permissions:
   actions: read
   attestations: write
@@ -41,7 +45,7 @@ jobs:
       DOCKERFILE: ${{ github.event.inputs.dockerfile || 'Dockerfile' }}
     environment: 
       name: dockerhub
-      url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+      url: https://hub.docker.com/r/${{ env.IMAGE_NAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,7 +56,7 @@ jobs:
         id: meta
         with:
           flavor: latest=true
-          images: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -88,4 +92,4 @@ jobs:
           push-to-registry: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           subject-digest: ${{ steps.build.outputs.digest }}
-          subject-name: ${{ github.event.repository.name }}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
