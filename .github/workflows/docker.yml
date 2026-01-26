@@ -14,6 +14,15 @@ on:
   repository_dispatch:
     types: [docker, dockerhub, docker-publish]
   workflow_dispatch:
+    inputs:
+      build_context:
+        description: 'The path to the build context for the Docker build'
+        required: false
+        default: '.'
+      dockerfile:
+        description: 'The Dockerfile to use for the build'
+        required: false
+        default: 'Dockerfile'
 
 permissions:
   actions: read
@@ -26,13 +35,12 @@ permissions:
 jobs:
   dockerhub:
     runs-on: ubuntu-latest
+    env:
+      BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
+      DOCKERFILE: ${{ github.event.inputs.dockerfile || 'Dockerfile' }}
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-    strategy:
-      matrix:
-        context: [.]
-        dockerfile: [Dockerfile]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -66,8 +74,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
-          context: ${{ matrix.context }}
-          file: ./${{ matrix.dockerfile }}
+          context: ${{ env.BUILD_CONTEXT }}
+          file: ./${{ env.DOCKERFILE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
