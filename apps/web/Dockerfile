@@ -1,79 +1,69 @@
+# ARG Stage: Base Image
 ARG BUN_VERSION=1
 
-# Base image used by all stages
+# Stage 1: Base Layer
 FROM oven/bun:${BUN_VERSION}-alpine AS builder-base
-
 WORKDIR /space
 
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
 
-# === Dependencies stage ===
+# Stage 2: Dependency Installation
 FROM builder-base AS deps
-# copy dependency-related files
-COPY package.json ./
 
+# Only copy dependency-related files from the monorepo
+COPY package.json ./ # Monorepo root `package.json`
 COPY bun.lock* bun.lockb* ./
-# Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install
-# RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
-# === Build stage ===
+
+# Install dependencies with workspace awareness
+RUN bun workspaces install --frozen-lockfile || bun install
+# Alternatively, force workspace-specific install:
+# RUN sh -c 'bun install --frozen-lockfile || bun install'
+
+# Stage 3: Build Layer
 FROM builder-base AS builder
-
-ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
-    NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production
-
 WORKDIR /space
 
-# Copy source and previously installed dependencies
+# Copy all source files from the monorepo
 COPY . .
+
+# Copy dependencies from deps stage
 COPY --from=deps /space/node_modules ./node_modules
-# Build the Next.js app (standalone output)
+
+# Build the Next.js application at apps/web
+WORKDIR /space/apps/web
 RUN bun run --filter './apps/web/' build
 
-# # === Pruned dependencies stage ===
-# FROM builder-base AS deps-prod
-
-# COPY package.json bun.lock* bun.lockb* ./
-
-# # Install only production dependencies for smaller runtime image
-# RUN bun install --production
-# # RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile --production; else bun install --production; fi'
-
-# === Runtime stage ===
+# Stage 4: Runtime Layer
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
+WORKDIR /app
 
+# Set environment variables - customize these for production!
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    NEXT_PUBLIC_SITE_URL="http://localhost:3000" \
-    NEXT_PUBLIC_SUPABASE_URL="https://gilqgzjkzkmhbbcqidqb.supabase.co" \
     HOSTNAME="0.0.0.0" \
     PORT=3000
 
-# Create non-root user
+# Set nextjs non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-WORKDIR /app
-
-# Ensure prerender cache directory exists and is writable
+# Setup working directory for the app
 RUN mkdir -p build && \
     chown nextjs:nodejs build && \
     chmod 755 build
 
-# Copy only the necessary build artifacts
+# Copy built artifacts into the runtime image
 COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/public ./public
 COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
 
-# Copy production dependencies for better performance
+# Ensure production dependencies exist (if applicable)
 COPY --from=deps --chown=nextjs:nodejs /space/node_modules ./node_modules
 
 USER nextjs
-
 EXPOSE 3000
 
-# Use Bun to run the Next.js server for better performance
+# Use Bun for serving
 CMD ["bun", "run", "server.js"]
