@@ -24,11 +24,15 @@ permissions:
   packages: write
 
 jobs:
-  app:
+  dockerhub:
     runs-on: ubuntu-latest
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+    strategy:
+      matrix:
+        context: [.]
+        dockerfile: [Dockerfile]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -62,8 +66,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
-          context: .
-          file: ./Dockerfile
+          context: ${{ matrix.context }}
+          file: ./${{ matrix.dockerfile }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
