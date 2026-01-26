@@ -13,8 +13,7 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
 FROM builder-base AS deps
 
 # Only copy dependency-related files from the monorepo
-COPY package.json ./ # Monorepo root `package.json`
-COPY bun.lock* bun.lockb* ./
+ADD package.json bun.lock* bun.lockb* ./
 
 # Install dependencies with workspace awareness
 RUN bun workspaces install --frozen-lockfile || bun install
