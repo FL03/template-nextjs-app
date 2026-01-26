@@ -12,7 +12,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { logger } from "@/lib/logger";
 import { Json, PublicDatabase } from "@/types/database.types";
 // feature-specific
-import { ProfileData, ProfileUpdate } from "../types";
+import { ProfileData, ProfileUpdate } from ".";
 import { getUserProfile } from "../utils";
 
 const defaultProfileData = (values?: Partial<ProfileData>): ProfileData => ({

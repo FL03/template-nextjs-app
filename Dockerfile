@@ -8,15 +8,13 @@ WORKDIR /space
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
-
 # === Dependencies stage ===
 FROM builder-base AS deps
-# Copy package.json (always needed)
-COPY package.json ./
-# Copy lockfiles if they exist (bun.lockb takes priority over bun.lock)
-COPY bun.lock* bun.lockb* ./
+# Copy dependency related files
+COPY package.json bun.lock* bun.lockb* ./
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
+RUN bun install --frozen-lockfile || bun install
+
 # === Build stage ===
 FROM builder-base AS builder
 
@@ -26,22 +24,20 @@ ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
 
 WORKDIR /space
 
-# Copy source and previously installed dependencies
+# copy source files
 COPY . .
+# copy pre-installed node_modules from deps stage
 COPY --from=deps /space/node_modules ./node_modules
-# Build the Next.js app (standalone output)
-RUN bun run --filter './apps/web' build
+# build the app
+RUN bun run build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
-
-COPY --from=deps ./package.json ./
-
-# Copy lockfiles from deps stage if they exist
-COPY --from=deps ./bun.lock* ./bun.lockb* ./
-
+# copy dependency related files from deps stage
+# to gaurentee consistency between stages
+COPY --from=deps /space/package.json /space/bun.lock* /space/bun.lockb* ./
 # Install only production dependencies for smaller runtime image
-RUN sh -c 'if test -f bun.lockb || test -f bun.lock; then bun install --frozen-lockfile; else bun install; fi'
+RUN bun install --production --frozen-lockfile
 
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
@@ -73,8 +69,7 @@ COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/s
 COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
 
 USER nextjs
-
+# expose the listening port
 EXPOSE 3000
-
-# Use Bun to run the Next.js server for better performance
+# use bun to run the server
 CMD ["bun", "run", "server.js"]

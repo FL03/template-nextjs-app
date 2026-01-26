@@ -29,10 +29,6 @@ jobs:
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-    strategy:
-      matrix:
-        dockerfile:
-          - apps/web/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -67,7 +63,7 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
           context: .
-          file: ./${{ matrix.dockerfile }}
+          file: ./Dockerfile
           github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
