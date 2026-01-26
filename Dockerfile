@@ -15,13 +15,7 @@ COPY package.json bun.lock* bun.lockb* ./
 # Install dependencies (use --frozen-lockfile if lockfile exists)
 # RUN bun install --frozen-lockfile || bun install
 
-RUN if [ -f bun.lock ] || [ -f bun.lockb ]; then \
-    echo "Found a valid lockfile; installing dependencies"; \
-    bun --frozen-lockfile install; \
-    else; \
-    echo "No lockfile found, installing a fresh set of dependencies"; \
-    bun install; \
-    fi
+RUN bun --frozen-lockfile install || bun install
 
 # === Build stage ===
 FROM builder-base AS builder
