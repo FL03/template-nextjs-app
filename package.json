@@ -10,10 +10,11 @@
   ],
   "description": "Track and maintain your own ledger of tips and gratuities with ease.",
   "engines": {
+    "bun": ">=1.0.0",
     "node": "24.x || 25.x",
     "npm": "<=11.x"
   },
-  "homepage": "https://tips.pzzld.org",
+  "homepage": "https://template-nextjs-app-psi.vercel.app",
   "keywords": [
     "tips",
     "gratuity",
