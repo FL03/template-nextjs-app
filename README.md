@@ -1,6 +1,7 @@
-# template-nextjs-app
+# @template-nextjs/app
 
 [![GitHub License](https://img.shields.io/github/license/FL03/template-nextjs-app?style=for-the-badge&logo=github)](LICENSE)
+![Docker Image Version](https://img.shields.io/docker/v/jo3mccain/template-nextjs-app/latest?style=for-the-badge&logo=docker)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com)
 
@@ -10,12 +11,15 @@ A complete application template for creating modern web applications using NextJ
 
 ## Features
 
+### *Stack*
+
 * NextJS 16.x with the App Router
 * Bun as the package manager and runtime
 * Tailwind CSS for styling
 * ESLint and Prettier for code quality
+* Tests with Jest and React Testing Library
 
-### *Integrations*
+### *External Integrations*
 
 * Docker for containerization
 * GitHub Actions for CI/CD

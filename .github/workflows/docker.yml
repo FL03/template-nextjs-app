@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened]
+    types: [opened, ready_for_review, reopened, synchronize]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
@@ -25,13 +25,15 @@ permissions:
 
 jobs:
   app:
+    runs-on: ubuntu-latest
     environment: 
       name: dockerhub
       url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Setup Docker Metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -52,24 +54,25 @@ jobs:
         with:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           username: ${{ vars.DOCKERHUB_USERNAME }}
-      - id: build
-        name: Build & Push the image to DockerHub
+      - name: Build & Push the image to DockerHub
+        id: build
         uses: docker/build-push-action@v6
         with:
+          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: .
-          file: ./app/Dockerfile
-          github-token: ${{ github.token }}
           platforms: linux/amd64
-          push: true
+          context: .
+          file: ./Dockerfile
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-      - id: attestation
+      - name: Establish Proveance
+        id: attestation
         if: ${{ !github.event.repository.private }}
-        name: Establish Proveance
         uses: actions/attest-build-provenance@v3
         with:
-          push-to-registry: false
+          push-to-registry: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           subject-digest: ${{ steps.build.outputs.digest }}
           subject-name: ${{ github.event.repository.name }}
