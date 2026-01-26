@@ -29,10 +29,8 @@ env:
   IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
 
 permissions:
-  actions: read
   attestations: write
   contents: read
-  deployments: write
   id-token: write
   packages: write
 
