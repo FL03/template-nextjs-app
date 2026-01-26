@@ -2,10 +2,10 @@
   "name": "@template-nextjs/app",
   "version": "0.0.2",
   "scripts": {
-    "build": "bun run --bun next build",
-    "dev": "bun run --bun next dev",
+    "build": "next build",
+    "dev": "next dev",
     "lint": "echo \"No linting configured yet!\"",
-    "start": "bun run --bun next start",
+    "start": "next start",
     "test": "bunx jest",
     "test:watch": "bunx jest --watch",
     "typegen": "./scripts/typegen.ts",
