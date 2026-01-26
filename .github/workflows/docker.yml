@@ -33,7 +33,8 @@ permissions:
   packages: write
 
 jobs:
-  dockerhub:
+  bnp:
+    name: Build and Push
     runs-on: ubuntu-latest
     env:
       BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
