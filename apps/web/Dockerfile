@@ -32,7 +32,7 @@ COPY --from=deps /space/node_modules ./node_modules
 
 # Build the Next.js application at apps/web
 WORKDIR /space/apps/web
-RUN bun run --filter './apps/web/' build
+RUN bun run --filter './apps/web' build
 
 # Stage 4: Runtime Layer
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
