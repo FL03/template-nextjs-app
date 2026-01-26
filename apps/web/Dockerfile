@@ -22,16 +22,13 @@ RUN bun workspaces install --frozen-lockfile || bun install
 
 # Stage 3: Build Layer
 FROM builder-base AS builder
+# set the working directory
 WORKDIR /space
-
 # Copy all source files from the monorepo
 COPY . .
-
 # Copy dependencies from deps stage
-COPY --from=deps /space/node_modules ./node_modules
-
-# Build the Next.js application at apps/web
-WORKDIR /space/apps/web
+COPY --from=deps /space/node_modules ./
+# Build the application
 RUN bun run build
 
 # Stage 4: Runtime Layer
