@@ -2,5 +2,5 @@
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "jest.rootPath": "app/src"
+  "jest.rootPath": "src"
 }

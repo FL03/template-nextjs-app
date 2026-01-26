@@ -3,7 +3,7 @@ ARG BUN_VERSION=1
 # Base image used by all stages
 FROM oven/bun:${BUN_VERSION}-alpine AS builder-base
 
-WORKDIR /space
+WORKDIR /app
 
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1 \
@@ -13,7 +13,9 @@ FROM builder-base AS deps
 # Copy dependency related files
 COPY package.json bun.lock* bun.lockb* ./
 # Install dependencies (use --frozen-lockfile if lockfile exists)
-RUN bun install --frozen-lockfile || bun install
+# RUN bun install --frozen-lockfile || bun install
+
+RUN bun --frozen-lockfile install || bun install
 
 # === Build stage ===
 FROM builder-base AS builder
@@ -22,12 +24,12 @@ ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
     NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
 
-WORKDIR /space
+WORKDIR /app
 
 # copy source files
 COPY . .
 # copy pre-installed node_modules from deps stage
-COPY --from=deps /space/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 # build the app
 RUN bun run build
 
@@ -35,7 +37,7 @@ RUN bun run build
 FROM builder-base AS deps-prod
 # copy dependency related files from deps stage
 # to gaurentee consistency between stages
-COPY --from=deps /space/package.json /space/bun.lock* /space/bun.lockb* ./
+COPY --from=deps /app/package.json /app/bun.lock* /app/bun.lockb* ./
 # Install only production dependencies for smaller runtime image
 RUN bun install --production --frozen-lockfile
 
@@ -61,12 +63,12 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/public ./public
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /space/apps/web/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/build/static ./build/static
 
 # Copy production dependencies for better performance
-COPY --from=deps-prod --chown=nextjs:nodejs /space/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 USER nextjs
 # expose the listening port
