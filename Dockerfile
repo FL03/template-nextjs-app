@@ -3,13 +3,14 @@ ARG BUN_VERSION=1
 # STAGE 1
 # base image used by builder stages
 FROM oven/bun:${BUN_VERSION} AS builder-base
-# set the working directory for all stages to /usr/src/app
-WORKDIR /usr/src/app
+# set the working directory for all stages
+WORKDIR /usr/src
+
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM builder-base AS install
 
-RUN mkdir -p /temp/dev/app
+RUN mkdir -p /temp/dev /temp/dev/app
 
 COPY package.json bun.lock* /temp/dev/
 COPY app/package.json /temp/dev/app/
@@ -17,7 +18,7 @@ COPY app/package.json /temp/dev/app/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod/app
+RUN mkdir -p /temp/prod /temp/prod/app
 COPY package.json bun.lock* /temp/prod/
 COPY app/package.json /temp/prod/app/
 
@@ -26,7 +27,7 @@ RUN cd /temp/prod && \
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
-FROM builder-base AS builder
+FROM builder-base AS prerelease
 
 COPY --from=install /temp/dev/node_modules node_modules
 
@@ -36,10 +37,11 @@ COPY . .
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
-    PATH="/usr/src/app/node_modules/.bin:$PATH"
+    PATH="/usr/src/node_modules/.bin:$PATH"
 
 RUN cd app && bun run --bun next build
 
+# === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
 ENV NODE_ENV=production \
@@ -61,11 +63,11 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts from the app workspace
-COPY --from=builder --chown=ausr:apg /usr/src/app/app/public ./public
-COPY --from=builder --chown=ausr:apg /usr/src/app/app/build/standalone ./
-COPY --from=builder --chown=ausr:apg /usr/src/app/app/build/static ./build/static
+COPY --from=prerelease --chown=ausr:apg /usr/src/app/public ./public
+COPY --from=prerelease --chown=ausr:apg /usr/src/app/build/standalone ./
+COPY --from=prerelease --chown=ausr:apg /usr/src/app/build/static ./build/static
 
-# Copy production node_modules (includes all workspace dependencies)
+# Copy production node_modules
 COPY --chown=ausr:apg --from=install /temp/prod/node_modules node_modules
 
 USER ausr
