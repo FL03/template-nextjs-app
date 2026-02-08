@@ -7,7 +7,6 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*]
@@ -22,7 +21,7 @@ on:
       dockerfile:
         description: "The Dockerfile to use for the build"
         required: false
-        default: "Dockerfile"
+        default: ".docker/Dockerfile"
 
 env:
   REGISTRY: docker.io
@@ -30,11 +29,11 @@ env:
 
 jobs:
   bnp:
-    name: Build and Push
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     env:
-      BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
-      DOCKERFILE: ${{ github.event.inputs.dockerfile || 'Dockerfile' }}
+      BUILD_CONTEXT: ${{ github.event.inputs.build_context || './app' }}
+      DOCKERFILE: ${{ github.event.inputs.dockerfile || 'app/Dockerfile' }}
     environment:
       name: dockerhub
       url: https://hub.docker.com/r/${{ env.IMAGE_NAME }}
