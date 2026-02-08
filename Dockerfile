@@ -8,17 +8,20 @@ WORKDIR /src
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
+
 # === Dependencies stage ===
 FROM builder-base AS deps
 
 WORKDIR /src
-# Copy dependency related files
-COPY package.json bun.lock* bun.lockb* ./
-COPY app/package.json* ./app/
-# Install dependencies (use --frozen-lockfile if lockfile exists)
-# RUN bun install --frozen-lockfile || bun install
 
-RUN bun --frozen-lockfile install || bun install
+# Copy workspace root and package files
+COPY package.json bun.lock* bun.lockb* ./
+
+# Copy workspace package files
+COPY app/package.json ./app/package.json
+
+# Install dependencies (respects bun workspace setup)
+RUN bun install --frozen-lockfile || bun install
 
 # === Build stage ===
 FROM builder-base AS builder
@@ -29,19 +32,22 @@ ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
 
 WORKDIR /src
 
-# copy source files
+# Copy all source files
 COPY . .
-# copy pre-installed node_modules from deps stage
+
+# Copy pre-installed node_modules from deps stage
 COPY --from=deps /src/node_modules ./node_modules
-# build the src
-RUN bun run build
+
+# Build the app workspace
+RUN bun run --filter '@template-nextjs/app' build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
-# copy dependency related files from deps stage
-# to gaurentee consistency between stages
+
+# Copy workspace root and package files to ensure consistency
 COPY --from=deps /src/package.json /src/bun.lock* /src/bun.lockb* ./
-COPY --from=deps /src/app/package.json /app/
+COPY --from=deps /src/app/package.json ./app/package.json
+
 # Install only production dependencies for smaller runtime image
 RUN bun install --production --frozen-lockfile
 
@@ -66,16 +72,18 @@ RUN mkdir -p build && \
     chown nextjs:nodejs build && \
     chmod 755 build
 
-# Copy only the necessary build artifacts
+# Copy only the necessary build artifacts from the app workspace
 COPY --from=builder --chown=nextjs:nodejs /src/app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /src/app/build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /src/app/build/static ./build/static
 
-# Copy production dependencies for better performance
+# Copy production node_modules (includes all workspace dependencies)
 COPY --from=deps-prod --chown=nextjs:nodejs /src/node_modules ./node_modules
 
 USER nextjs
-# expose the listening port
+
+# Expose the listening port
 EXPOSE 3000
-# use bun to run the server
+
+# Start the Next.js server
 CMD ["bun", "run", "server.js"]
