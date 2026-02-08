@@ -1,44 +1,31 @@
 ARG BUN_VERSION=1
 
-# STAGE 1
-# base image used by builder stages
+# base image used by all stages
 FROM oven/bun:${BUN_VERSION} AS builder-base
-# set the working directory for all stages to /usr/src/app
 WORKDIR /usr/src/app
-# install dependencies into temp directory
-# this will cache them and speed up future builds
+
+# === Install all dependencies (cached unless package files change) ===
 FROM builder-base AS install
+COPY package.json bun.lock* ./
+COPY app/package.json ./app/
+RUN bun install --frozen-lockfile || bun install
 
-RUN mkdir -p /temp/dev/app
+# === Install production dependencies only ===
+FROM builder-base AS install-prod
+COPY package.json bun.lock* ./
+COPY app/package.json ./app/
+RUN bun install --frozen-lockfile --production || bun install --production
 
-COPY package.json bun.lock* /temp/dev/
-COPY app/package.json /temp/dev/app/
-
-RUN cd /temp/dev && bun install --frozen-lockfile
-
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod/app
-COPY package.json bun.lock* /temp/prod/
-COPY app/package.json /temp/prod/app/
-
-RUN cd /temp/prod && \
-    bun install --frozen-lockfile --production || bun install --production
-
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
+# === Build the Next.js app ===
 FROM builder-base AS builder
-
-COPY --from=install /temp/dev/node_modules node_modules
-
+COPY --from=install /usr/src/app/node_modules ./node_modules
 COPY . .
-
-# build the Next.js app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    NEXT_PUBLIC_BUILD_OUTPUT="standalone"
+    NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
+RUN cd app && next build
 
-RUN bun run build
-
+# === Runtime ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
 ENV NODE_ENV=production \
@@ -59,16 +46,14 @@ RUN mkdir -p build && \
     chown ausr:apg build && \
     chmod 755 build
 
-# Copy only the necessary build artifacts from the app workspace
+# Copy build artifacts from the app workspace
 COPY --from=builder --chown=ausr:apg /usr/src/app/app/public ./public
 COPY --from=builder --chown=ausr:apg /usr/src/app/app/build/standalone ./
 COPY --from=builder --chown=ausr:apg /usr/src/app/app/build/static ./build/static
 
-# Copy production node_modules (includes all workspace dependencies)
-COPY --chown=ausr:apg --from=install /temp/prod/node_modules node_modules
+# Copy production node_modules
+COPY --from=install-prod --chown=ausr:apg /usr/src/app/node_modules ./node_modules
 
 USER ausr
-# Expose the listening port
 EXPOSE 3000/tcp
-# Start the Next.js server
 CMD ["bun", "run", "server.js"]

@@ -32,8 +32,8 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     env:
-      BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
-      DOCKERFILE: ${{ github.event.inputs.dockerfile || '.docker/Dockerfile' }}
+      BUILD_CONTEXT: ${{ github.event.inputs.build_context || './app' }}
+      DOCKERFILE: ${{ github.event.inputs.dockerfile || 'app/Dockerfile' }}
     environment:
       name: dockerhub
       url: https://hub.docker.com/r/${{ env.IMAGE_NAME }}

@@ -3,7 +3,7 @@ ARG BUN_VERSION=1
 # Base image used by all stages
 FROM oven/bun:${BUN_VERSION}-alpine AS builder-base
 
-WORKDIR /src
+WORKDIR /usr/src/docker
 
 # Disable Next.js telemetry by default
 ENV NEXT_TELEMETRY_DISABLED=1 \
@@ -11,20 +11,16 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
 
 # === Dependencies stage ===
 FROM builder-base AS deps
-
-WORKDIR /src
-
 # Copy workspace root and package files
-COPY package.json bun.lock* bun.lockb* ./
-
-# Create app directory and copy workspace package file
-RUN mkdir -p app
-COPY app/package.json ./app/package.json
-
-# Install dependencies (respects bun workspace setup)
-# This creates a single node_modules at /src, shared across all workspaces
+COPY package.json bun.lock* ./
+# Install dependencies
 RUN bun install --frozen-lockfile || bun install
-
+# === Production Dependencies ===
+FROM builder-base AS install
+# copy package files to temp directory for production install
+COPY --from=deps /usr/src/docker/package.json /usr/src/docker/bun.lock ./
+# Install only production dependencies for smaller runtime image
+RUN bun install -p --frozen-lockfile
 # === Build stage ===
 FROM builder-base AS builder
 
@@ -32,26 +28,14 @@ ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
     NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
 
-WORKDIR /src
-
 # Copy all source files
 COPY . .
 
 # Copy pre-installed node_modules from deps stage
-COPY --from=deps /src/node_modules ./node_modules
+COPY --from=deps /usr/src/docker/node_modules ./node_modules
 
-# Build the app workspace (specifies filter to target the app workspace package)
+# Build the app workspace
 RUN bun run app:build
-
-# === Pruned dependencies stage ===
-FROM builder-base AS deps-prod
-
-# Copy workspace root and package files to ensure consistency
-COPY --from=deps /src/package.json /src/bun.lock* /src/bun.lockb* ./
-
-# Install only production dependencies for smaller runtime image
-RUN bun install --production --frozen-lockfile
-
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
@@ -74,12 +58,12 @@ RUN mkdir -p build && \
     chmod 755 build
 
 # Copy only the necessary build artifacts from the app workspace
-COPY --from=builder --chown=nextjs:nodejs /src/app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /src/app/build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /src/app/build/static ./build/static
+COPY --from=builder --chown=nextjs:nodejs /usr/src/docker/public ./public
+COPY --from=builder --chown=nextjs:nodejs /usr/src/docker/build/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /usr/src/docker/build/static ./build/static
 
 # Copy production node_modules (includes all workspace dependencies)
-COPY --from=deps-prod --chown=nextjs:nodejs /src/node_modules ./node_modules
+COPY --from=install --chown=nextjs:nodejs /usr/src/docker/node_modules ./node_modules
 
 USER nextjs
 
