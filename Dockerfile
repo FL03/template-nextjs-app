@@ -39,7 +39,7 @@ COPY . .
 COPY --from=deps /src/node_modules ./node_modules
 
 # Build the app workspace
-RUN bun run build
+RUN bun run app:build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod

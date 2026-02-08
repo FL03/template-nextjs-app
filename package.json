@@ -26,9 +26,9 @@
   "private": true,
   "version": "0.0.4",
   "scripts": {
-    "build": "bun run build --workspaces",
+    "build": "bun run build",
     "dev": "bun run app:dev",
-    "lint": "bun run lint --workspaces",
+    "lint": "bun run lint",
     "start": "bun run app:start",
     "test": "bun ",
     "app:dev": "bun run --filter '@template-nextjs/app' dev",
