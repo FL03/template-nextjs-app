@@ -3,10 +3,9 @@
  * @author - @FL03
  * @file - platform-sidebar.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import * as React from 'react';
 import {
   BellIcon,
   BriefcaseBusinessIcon,
@@ -15,23 +14,23 @@ import {
   SheetIcon,
   SidebarCloseIcon,
   SidebarOpenIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 // project
-import { LogoutButton, useCurrentUser } from "@/features/auth";
-import { BillingPortalAction } from "@/features/billing";
+import { LogoutButton, useCurrentUser } from '@/features/auth';
+import { BillingPortalAction } from '@/features/billing';
 import {
   ProfileAvatar,
   ProfileSettingsButton,
   UserProfileCard,
-} from "@/features/profiles";
-import { cn } from "@/lib/utils";
+} from '@/features/profiles';
+import { cn } from '@/lib/utils';
 // components
-import { Endpoint } from "@/components/common/endpoint";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { DialogTitle } from "@/components/ui/dialog";
+import { Endpoint } from '@/components/common/endpoint';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { DialogTitle } from '@/components/ui/dialog';
 import {
   Sidebar,
   SidebarContent,
@@ -46,30 +45,30 @@ import {
   SidebarRail,
   SidebarSeparator,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { ClassNames } from "@pzzld/core";
-import ProfileContextMenu from "@/features/profiles/widgets/profile-actions";
+} from '@/components/ui/sidebar';
+import { ClassNames } from '@pzzld/core';
+import ProfileContextMenu from '@/features/profiles/widgets/profile-actions';
 
 type LinkItem = {
   label: string;
-  href: React.ComponentProps<typeof Link>["href"];
+  href: React.ComponentProps<typeof Link>['href'];
   icon?: React.ReactNode;
 };
 
 /** A custom sidebar trigger for the platform with additional controls */
 export const PlatformSidebarTrigger: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof Button>, "children"> & {
-    side?: "left" | "right";
-    classNames?: ClassNames<"icon" | "label">;
+  Omit<React.ComponentPropsWithRef<typeof Button>, 'children'> & {
+    side?: 'left' | 'right';
+    classNames?: ClassNames<'icon' | 'label'>;
   }
 > = ({
   ref,
   className,
   classNames,
   disabled,
-  side = "left",
-  size = "icon",
-  variant = "ghost",
+  side = 'left',
+  size = 'icon',
+  variant = 'ghost',
   onClick,
   ...props
 }) => {
@@ -77,10 +76,7 @@ export const PlatformSidebarTrigger: React.FC<
   // use the sidebar context to get the current sidebar state
   const { open, openMobile, toggleSidebar } = useSidebar();
 
-  const isOpen = React.useMemo(
-    () => (open || openMobile),
-    [open, openMobile],
-  );
+  const isOpen = React.useMemo(() => open || openMobile, [open, openMobile]);
   // returns a click handler
   function handleOnClick(): React.MouseEventHandler<HTMLButtonElement> {
     return (event) => {
@@ -101,37 +97,35 @@ export const PlatformSidebarTrigger: React.FC<
       disabled={disabled || !authState.isAuthenticated}
       ref={ref}
       className={cn(
-        "items-center justify-center min-w-8",
-        "hover:background-blur hover:text-accent-foreground/75",
+        'items-center justify-center min-w-8',
+        'hover:background-blur hover:text-accent-foreground/75',
         className,
       )}
       size={size}
       variant={variant}
       onClick={handleOnClick()}
     >
-      {isOpen
-        ? (
-          <SidebarCloseIcon
-            className={cn(
-              "size-4",
-              side === "right" && "rotate-180",
-              classNames?.iconClassName,
-            )}
-          />
-        )
-        : (
-          <SidebarOpenIcon
-            className={cn(
-              "size-4",
-              side === "right" && "rotate-180",
-              classNames?.iconClassName,
-            )}
-          />
-        )}
+      {isOpen ? (
+        <SidebarCloseIcon
+          className={cn(
+            'size-4',
+            side === 'right' && 'rotate-180',
+            classNames?.iconClassName,
+          )}
+        />
+      ) : (
+        <SidebarOpenIcon
+          className={cn(
+            'size-4',
+            side === 'right' && 'rotate-180',
+            classNames?.iconClassName,
+          )}
+        />
+      )}
       <span
-        className={cn(size?.startsWith("icon") ? "sr-only" : "not-sr-only")}
+        className={cn(size?.startsWith('icon') ? 'sr-only' : 'not-sr-only')}
       >
-        {isOpen ? "Close" : "Open"}
+        {isOpen ? 'Close' : 'Open'}
       </span>
     </Button>
   );
@@ -142,9 +136,9 @@ export const PlatformSidebar: React.FC<
 > = ({
   children,
   className,
-  collapsible = "offcanvas",
-  side = "right",
-  variant = "inset",
+  collapsible = 'offcanvas',
+  side = 'right',
+  variant = 'inset',
   ...props
 }) => {
   // hooks
@@ -153,7 +147,7 @@ export const PlatformSidebar: React.FC<
   const { open, openMobile, state, toggleSidebar } = useSidebar();
   // determine if the sidebar is open or not
   const isOpen = React.useMemo(
-    () => (open || openMobile || state === "expanded"),
+    () => open || openMobile || state === 'expanded',
     [open, openMobile, state],
   );
 
@@ -181,35 +175,35 @@ export const PlatformSidebar: React.FC<
 
   const linkTree = {
     user: {
-      name: "User",
+      name: 'User',
       links: [
         {
-          label: "Dashboard",
+          label: 'Dashboard',
           href: `/${username}/shifts`,
           icon: <LayoutDashboardIcon className="size-4" />,
         },
       ],
     },
     records: {
-      name: "Records",
+      name: 'Records',
       links: [
         {
-          label: "Shifts",
+          label: 'Shifts',
           href: {
-            pathname: "/shifts",
+            pathname: '/shifts',
             query: {
-              filterBy: "all",
-              sortBy: "date:desc",
-              view: "table",
+              filterBy: 'all',
+              sortBy: 'date:desc',
+              view: 'table',
               username,
             },
           },
           icon: <SheetIcon className="size-4" />,
         },
         {
-          label: "Organizations",
+          label: 'Organizations',
           href: {
-            pathname: "/orgs",
+            pathname: '/orgs',
             query: { username },
           },
           icon: <BriefcaseBusinessIcon className="size-4" />,
@@ -217,11 +211,11 @@ export const PlatformSidebar: React.FC<
       ],
     },
     platform: {
-      name: "Info",
+      name: 'Info',
       links: [
         {
-          label: "Help & Support",
-          href: "/help",
+          label: 'Help & Support',
+          href: '/help',
           icon: <CircleQuestionMarkIcon className="size-4" />,
         },
       ],
@@ -234,7 +228,7 @@ export const PlatformSidebar: React.FC<
     <Sidebar
       {...props}
       draggable
-      className={cn("h-full", className)}
+      className={cn('h-full', className)}
       collapsible={collapsible}
       side={side}
       variant={variant}
@@ -247,40 +241,31 @@ export const PlatformSidebar: React.FC<
               if (openMobile) toggleSidebar();
             }}
           >
-            {isOpen
-              ? (
-                <UserProfileCard
-                  compact
-                  profile={profile}
-                  className={cn(
-                    "bg-radial-[at_25%_25%] from-background to-background/45 to-65%",
-                    "transition-opacity duration-200 ease-in-out hover:opacity-80 hover:ring hover:ring-accent/20 hover:ring-inset-0.5",
-                  )}
-                />
-              )
-              : <ProfileAvatar src={profile?.avatar_url} />}
+            {isOpen ? (
+              <UserProfileCard
+                compact
+                profile={profile}
+                className={cn(
+                  'bg-radial-[at_25%_25%] from-background to-background/45 to-65%',
+                  'transition-opacity duration-200 ease-in-out hover:opacity-80 hover:ring hover:ring-accent/20 hover:ring-inset-0.5',
+                )}
+              />
+            ) : (
+              <ProfileAvatar src={profile?.avatar_url} />
+            )}
           </Link>
         </ProfileContextMenu>
-        {openMobile && (
-          <VisuallyHidden>
-            <DialogTitle>Sidebar</DialogTitle>
-          </VisuallyHidden>
-        )}
+        {openMobile && <DialogTitle className="sr-only">Sidebar</DialogTitle>}
       </SidebarHeader>
       {/* Sidebar Content */}
       <SidebarContent className="flex flex-col flex-1 h-full w-full items-center overflow-x-clip">
         <SidebarGroup className="order-first w-full">
-          <SidebarGroupLabel className="sr-only">
-            User
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="sr-only">User</SidebarGroupLabel>
           {generateMenu({ links: linkTree.user.links })}
-          <SidebarGroupContent>
-          </SidebarGroupContent>
+          <SidebarGroupContent></SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup className="order-2 flex-1 h-full w-full">
-          <SidebarGroupLabel>
-            Records
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Records</SidebarGroupLabel>
           <SidebarGroupContent>
             {generateMenu({ links: linkTree.records.links })}
           </SidebarGroupContent>
@@ -289,9 +274,7 @@ export const PlatformSidebar: React.FC<
         <div className="order-last flex flex-col h-fit w-full justify-end mt-auto">
           <SidebarSeparator />
           <SidebarGroup>
-            <SidebarGroupLabel>
-              Platform
-            </SidebarGroupLabel>
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarGroupContent>
               {generateMenu({ links: linkTree.platform.links })}
             </SidebarGroupContent>
@@ -320,10 +303,10 @@ export const PlatformSidebar: React.FC<
           <Button asChild size="icon" variant="outline">
             <Link
               href={{
-                pathname: "/notifications",
+                pathname: '/notifications',
                 query: {
-                  filterBy: "status:unread",
-                  sortBy: "date:desc",
+                  filterBy: 'status:unread',
+                  sortBy: 'date:desc',
                   username,
                 },
               }}
@@ -336,16 +319,16 @@ export const PlatformSidebar: React.FC<
             size="icon"
             variant="outline"
             username={username}
-            classNames={{ iconClassName: "size-4" }}
+            classNames={{ iconClassName: 'size-4' }}
           />
           <LogoutButton
-            classNames={{ iconClassName: "size-4" }}
+            classNames={{ iconClassName: 'size-4' }}
             size="icon"
             onSignOut={() => {
               // close the sidebar on mobile
               if (isOpen) toggleSidebar();
               // redirect to the home page
-              router.push("/");
+              router.push('/');
             }}
           />
         </ButtonGroup>
