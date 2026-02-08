@@ -5,12 +5,13 @@ FROM oven/bun:${BUN_VERSION}-alpine AS builder-base
 
 WORKDIR /usr/src/docker
 
-# Disable Next.js telemetry by default
-ENV NEXT_TELEMETRY_DISABLED=1 \
+ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
+    NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production
 
 # === Dependencies stage ===
 FROM builder-base AS deps
+
 # Copy workspace root and package files
 COPY package.json bun.lock* ./
 # Install dependencies
@@ -18,7 +19,7 @@ RUN bun install --frozen-lockfile || bun install
 # === Production Dependencies ===
 FROM builder-base AS install
 # copy package files to temp directory for production install
-COPY --from=deps /usr/src/docker/package.json /usr/src/docker/bun.lock ./
+COPY --from=deps /usr/src/docker/package.json /usr/src/docker/bun.lock* ./
 # Install only production dependencies for smaller runtime image
 RUN bun install -p --frozen-lockfile
 # === Build stage ===
