@@ -35,10 +35,9 @@ COPY . .
 # build the Next.js app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
-    PATH="/usr/src/app/node_modules/.bin:$PATH"
+    NEXT_PUBLIC_BUILD_OUTPUT="standalone"
 
-RUN cd app && bun run --bun next build
+RUN bun run build
 
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
