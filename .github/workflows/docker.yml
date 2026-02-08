@@ -5,8 +5,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 on:
-  pull_request:
-    branches: [main, master]
+  # pull_request:
+  #   branches: [main, master]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*]
