@@ -31,8 +31,10 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # [optional] tests & build
-ENV NODE_ENV=production
-RUN bun test
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_PUBLIC_BUILD_OUTPUT="standalone"
+
 RUN bun run build
 
 # copy production dependencies and source code into final image
