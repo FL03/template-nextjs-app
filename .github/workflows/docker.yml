@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened]
+    # types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*]
