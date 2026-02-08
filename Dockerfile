@@ -39,7 +39,7 @@ COPY . .
 COPY --from=deps /src/node_modules ./node_modules
 
 # Build the app workspace
-RUN bun run --filter '@template-nextjs/app' build
+RUN bun run build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
