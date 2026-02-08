@@ -2,6 +2,7 @@
 
 [![GitHub License](https://img.shields.io/github/license/FL03/template-nextjs-app?style=for-the-badge&logo=github)](LICENSE)
 ![Docker Image Version](https://img.shields.io/docker/v/jo3mccain/template-nextjs-app/latest?style=for-the-badge&logo=docker)
+[![TypeScript](https://img.shields.io/badge/TypeScript-latest-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com)
 

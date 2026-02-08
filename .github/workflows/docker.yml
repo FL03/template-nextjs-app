@@ -30,7 +30,7 @@ env:
 
 jobs:
   bnp:
-    name: Build and Push
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     env:
       BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
