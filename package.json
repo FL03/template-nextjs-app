@@ -31,8 +31,9 @@
     "lint": "bun run lint",
     "start": "bun run app:start",
     "test": "bun ",
+    "app:build": "bun run --filter '@template-nextjs/app' build",
     "app:dev": "bun run --filter '@template-nextjs/app' dev",
-    "app:start": "bun run --filter '@template-nextjs/app' run start"
+    "app:start": "bun run --filter '@template-nextjs/app' start"
   },
   "workspaces": [
     "app"
