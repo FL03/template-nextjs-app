@@ -24,19 +24,12 @@ COPY --from=deps /usr/src/docker/package.json /usr/src/docker/bun.lock* ./
 RUN bun install -p --frozen-lockfile
 # === Build stage ===
 FROM builder-base AS builder
-
-ENV NEXT_PUBLIC_BUILD_OUTPUT="standalone" \
-    NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production
-
 # Copy all source files
 COPY . .
-
 # Copy pre-installed node_modules from deps stage
 COPY --from=deps /usr/src/docker/node_modules ./node_modules
-
 # Build the app workspace
-RUN bun run app:build
+RUN bun run build
 # === Runtime stage ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
 
