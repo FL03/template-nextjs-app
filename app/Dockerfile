@@ -48,7 +48,6 @@ FROM builder-base AS deps-prod
 
 # Copy workspace root and package files to ensure consistency
 COPY --from=deps /src/package.json /src/bun.lock* /src/bun.lockb* ./
-COPY --from=deps /src/app/package.json ./app/package.json
 
 # Install only production dependencies for smaller runtime image
 RUN bun install --production --frozen-lockfile

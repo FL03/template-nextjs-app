@@ -21,7 +21,7 @@ on:
       dockerfile:
         description: "The Dockerfile to use for the build"
         required: false
-        default: "Dockerfile"
+        default: ".docker/Dockerfile"
 
 env:
   REGISTRY: docker.io
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD_CONTEXT: ${{ github.event.inputs.build_context || '.' }}
-      DOCKERFILE: ${{ github.event.inputs.dockerfile || 'Dockerfile' }}
+      DOCKERFILE: ${{ github.event.inputs.dockerfile || '.docker/Dockerfile' }}
     environment:
       name: dockerhub
       url: https://hub.docker.com/r/${{ env.IMAGE_NAME }}
