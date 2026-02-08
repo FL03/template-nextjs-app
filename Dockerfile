@@ -17,10 +17,12 @@ WORKDIR /src
 # Copy workspace root and package files
 COPY package.json bun.lock* bun.lockb* ./
 
-# Copy workspace package files
+# Create app directory and copy workspace package file
+RUN mkdir -p app
 COPY app/package.json ./app/package.json
 
 # Install dependencies (respects bun workspace setup)
+# This creates a single node_modules at /src, shared across all workspaces
 RUN bun install --frozen-lockfile || bun install
 
 # === Build stage ===
@@ -38,8 +40,8 @@ COPY . .
 # Copy pre-installed node_modules from deps stage
 COPY --from=deps /src/node_modules ./node_modules
 
-# Build the app workspace
-RUN bun run app:build
+# Build the app workspace (specifies filter to target the app workspace package)
+RUN bun run --filter '@template-nextjs/app' build
 
 # === Pruned dependencies stage ===
 FROM builder-base AS deps-prod
