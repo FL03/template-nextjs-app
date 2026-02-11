@@ -2,7 +2,10 @@ ARG BUN_VERSION=1
 
 # base image used by all stages
 FROM oven/bun:${BUN_VERSION} AS builder-base
-# set the working directory to the app workspace for all stages
+
+# make sure the app workspace exists
+RUN mkdir -p /usr/src/app
+# set the working directory to the app workspace
 WORKDIR /usr/src/app
 # configure environment variables for all stages
 ENV NODE_ENV=production \
@@ -39,7 +42,8 @@ FROM builder-base AS builder
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_BUILD_OUTPUT="standalone"
-
+# set the working directory to the app workspace
+WORKDIR /usr/src/app
 # copy dependencies from the deps stage to the builder stage
 COPY --from=deps /tmp/dev/node_modules ./
 # copy source files to the builder stage
