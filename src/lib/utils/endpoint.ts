@@ -5,19 +5,17 @@
  * @file - endpoint.ts
  */
 
-type QueryParams =
-  | Record<string, string>
-  | URLSearchParams
-  | string[][];
+type QueryParams = Record<string, string> | URLSearchParams | string[][];
 
 /**
  * Automatically resolve the _**origin**_ of the caller; this is a useful workaround for NextJS applications as it accounts
  * for both server-side and client-side environments.
  */
-export function resolveOrigin(
-  { key = "NEXT_PUBLIC_SITE_URL", defaultValue = "http://localhost:3000" } = {},
-): string {
-  if (typeof window !== "undefined") {
+export function resolveOrigin({
+  key = 'NEXT_PUBLIC_SITE_URL',
+  defaultValue = 'http://localhost:3000',
+} = {}): string {
+  if (typeof window !== 'undefined') {
     return window.location.origin;
   }
   return process.env[key] ?? defaultValue;

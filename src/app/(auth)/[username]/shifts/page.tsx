@@ -4,10 +4,10 @@
  * @directory - src/app/(platform)/[username]/shifts
  * @file - page.tsx
  */
-"use client";
-import { ShiftDashboardContent } from "@/features/shifts";
+'use client';
+import { ShiftDashboardContent } from '@/features/shifts';
 
 export default async function Page() {
   return <ShiftDashboardContent />;
 }
-Page.displayName = "ShiftDashboardContentPage";
+Page.displayName = 'ShiftDashboardContentPage';

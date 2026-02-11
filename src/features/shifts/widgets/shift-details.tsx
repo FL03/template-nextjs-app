@@ -3,22 +3,22 @@
  * @author - @FL03
  * @file - shift-info.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { EditIcon, XIcon } from "lucide-react";
+import * as React from 'react';
+import { EditIcon, XIcon } from 'lucide-react';
 // project
-import { useCurrentUser } from "@/features/auth";
-import { cn } from "@/lib/utils";
+import { useCurrentUser } from '@/features/auth';
+import { cn } from '@/lib/utils';
 // local
-import { ShiftItemContextMenu, ShiftItemDropdownMenu } from "./actions";
-import { ShiftForm } from "./shift-form";
-import { ShiftTips } from "./shift-tips";
+import { ShiftItemContextMenu, ShiftItemDropdownMenu } from './actions';
+import { ShiftForm } from './shift-form';
+import { ShiftTips } from './shift-tips';
 // components
-import { IconButton } from "@/components/common/button";
-import { DetailScaffold } from "@/components/common/details";
-import { Badge } from "@/components/ui/badge";
-import { ButtonGroup } from "@/components/ui/button-group";
+import { IconButton } from '@/components/common/button';
+import { DetailScaffold } from '@/components/common/details';
+import { Badge } from '@/components/ui/badge';
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
   Card,
   CardAction,
@@ -27,8 +27,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+} from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Empty,
   EmptyContent,
@@ -36,8 +36,8 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { useWorkShift } from "../providers";
+} from '@/components/ui/empty';
+import { useWorkShift } from '../providers';
 
 type ShiftDetailsProps = {
   defaultMode?: string;
@@ -48,34 +48,35 @@ type ShiftDetailsProps = {
 };
 
 export const ShiftDetails: React.FC<
-  & Omit<
+  Omit<
     React.ComponentProps<typeof DetailScaffold>,
-    "children" | "id" | "trailing"
-  >
-  & ShiftDetailsProps
-> = (
-  {
-    className,
-    readonly,
-    shiftId,
-    defaultMode = "read",
-    mode: modeProp,
-    ...props
-  },
-) => {
+    'children' | 'id' | 'trailing'
+  > &
+    ShiftDetailsProps
+> = ({
+  className,
+  readonly,
+  shiftId,
+  defaultMode = 'read',
+  mode: modeProp,
+  ...props
+}) => {
   const [currentMode, setCurrentMode] = React.useState<string>(defaultMode);
   const isEditing = React.useMemo(
-    () => currentMode.match(/^(edit|update|updating)/gmi),
+    () => currentMode.match(/^(edit|update|updating)/gim),
     [currentMode],
   );
   // use the hook to get a reference to the username
   const { username } = useCurrentUser();
-  const { data, state: { isLoading } } = useWorkShift();
-  // determine if the user is assigned to the shift
-  const isAssigned = React.useMemo(() => data?.assignee === username, [
+  const {
     data,
-    username,
-  ]);
+    state: { isLoading },
+  } = useWorkShift();
+  // determine if the user is assigned to the shift
+  const isAssigned = React.useMemo(
+    () => data?.assignee === username,
+    [data, username],
+  );
 
   React.useEffect(() => {
     if (modeProp && modeProp !== currentMode) setCurrentMode(modeProp);
@@ -92,22 +93,24 @@ export const ShiftDetails: React.FC<
   const ActionGroup = () => (
     <ButtonGroup>
       <IconButton
-        size="icon"
-        variant="outline"
+        size='icon'
+        variant='outline'
         disabled={readonly}
-        label={isEditing ? "Close" : "Edit"}
+        label={isEditing ? 'Close' : 'Edit'}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
           // switch to form view
-          setCurrentMode((prev) => (prev === "read" ? "update" : "read"));
+          setCurrentMode((prev) => (prev === 'read' ? 'update' : 'read'));
         }}
       >
-        {isEditing
-          ? <XIcon className="size-4" />
-          : <EditIcon className="size-4" />}
+        {isEditing ? (
+          <XIcon className='size-4' />
+        ) : (
+          <EditIcon className='size-4' />
+        )}
       </IconButton>
-      <ShiftItemDropdownMenu item={data} triggerVariant="outline" />
+      <ShiftItemDropdownMenu item={data} triggerVariant='outline' />
     </ButtonGroup>
   );
 
@@ -117,9 +120,9 @@ export const ShiftDetails: React.FC<
         <Empty>
           <EmptyHeader>
             <EmptyMedia>
-              <Spinner className="size-8" />
+              <Spinner className='size-8' />
             </EmptyMedia>
-            <EmptyTitle className="animate-pulse">Loading...</EmptyTitle>
+            <EmptyTitle className='animate-pulse'>Loading...</EmptyTitle>
           </EmptyHeader>
         </Empty>
       );
@@ -129,10 +132,10 @@ export const ShiftDetails: React.FC<
         <Empty>
           <EmptyHeader>
             <EmptyMedia>
-              <EditIcon className="size-8" />
+              <EditIcon className='size-8' />
             </EmptyMedia>
             <EmptyTitle>No Data</EmptyTitle>
-            <EmptyDescription className="text-center">
+            <EmptyDescription className='text-center'>
               No data available for this shift.
             </EmptyDescription>
           </EmptyHeader>
@@ -140,33 +143,27 @@ export const ShiftDetails: React.FC<
       );
     }
     if (showForm) {
-      return (
-        <ShiftForm
-          isEditing
-          defaultValues={data}
-        />
-      );
+      return <ShiftForm isEditing defaultValues={data} />;
     }
     return (
       <>
         <CardHeader>
-          <CardTitle className="text-lg">
-            {new Date(data?.date).toLocaleDateString("en-us", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              timeZone: "UTC",
+          <CardTitle className='text-lg'>
+            {new Date(data?.date).toLocaleDateString('en-us', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              timeZone: 'UTC',
             })}
           </CardTitle>
-          <CardDescription>
-          </CardDescription>
+          <CardDescription></CardDescription>
           <CardAction>
-            <Badge variant="outline">
-              {isAssigned ? "Assigned" : "Unassigned"}
+            <Badge variant='outline'>
+              {isAssigned ? 'Assigned' : 'Unassigned'}
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex flex-col flex-1 h-full w-full">
+        <CardFooter className='flex flex-col flex-1 h-full w-full'>
           <ShiftTips value={data} />
         </CardFooter>
       </>
@@ -179,15 +176,13 @@ export const ShiftDetails: React.FC<
         showDescription
         withBack
         id={shiftId}
-        title="Shift Details"
-        description="View and edit the details of a particular shift"
+        title='Shift Details'
+        description='View and edit the details of a particular shift'
         trailing={<ActionGroup />}
         {...props}
       >
-        <Card
-          className={cn("flex flex-1 h-full w-full", className)}
-        >
-          <CardContent className="flex-1 h-full w-full">
+        <Card className={cn('flex flex-1 h-full w-full', className)}>
+          <CardContent className='flex-1 h-full w-full'>
             <Content />
           </CardContent>
         </Card>
@@ -195,4 +190,4 @@ export const ShiftDetails: React.FC<
     </ShiftItemContextMenu>
   );
 };
-ShiftDetails.displayName = "ShiftDetails";
+ShiftDetails.displayName = 'ShiftDetails';

@@ -4,16 +4,15 @@
  * @file - terms/page.tsx
  */
 // features
-import { TermScreen } from "@/features/platform";
+import { TermScreen } from '@/features/platform';
 
 export default function Page() {
   // render the page
   return <TermScreen />;
 }
-Page.displayName = "TermsPage";
+Page.displayName = 'TermsPage';
 
 // page metadata
-export const metadata: import("next").Metadata = {
-  title: "Terms & Conditions",
-}
-
+export const metadata: import('next').Metadata = {
+  title: 'Terms & Conditions',
+};

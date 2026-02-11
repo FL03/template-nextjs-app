@@ -4,15 +4,15 @@
  * @description - server-side functions for supabase
  * @file - server.ts
  */
-"use server";
+'use server';
 // imports
-import { cookies } from "next/headers";
-import * as ssr from "@supabase/ssr";
+import { cookies } from 'next/headers';
+import * as ssr from '@supabase/ssr';
 // project
-import type { Database } from "@/types/database.types";
+import type { Database } from '@/types/database.types';
 // local
-import { supabaseCreds } from "./helpers";
-import { type SupabaseSchemaName } from "./types";
+import { supabaseCreds } from './helpers';
+import { type SupabaseSchemaName } from './types';
 
 const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
   const jar = await cookies();
@@ -23,7 +23,7 @@ const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
     setAll(cookiesToSet) {
       try {
         cookiesToSet.forEach(({ name, value, options }) =>
-          jar.set(name, value, options)
+          jar.set(name, value, options),
         );
       } catch {
         // The `setAll` method was called from a Server Component.
@@ -41,9 +41,12 @@ const serverClientCookies = async (): Promise<ssr.CookieMethodsServer> => {
  */
 export const createServerClient = async <
   Db = Database,
-  Schema extends SupabaseSchemaName<Db> = "public" extends
-    keyof Omit<Db, "__InternalSupabase"> ? "public"
-    : string & keyof Omit<Db, "__InternalSupabase">,
+  Schema extends SupabaseSchemaName<Db> = 'public' extends keyof Omit<
+    Db,
+    '__InternalSupabase'
+  >
+    ? 'public'
+    : string & keyof Omit<Db, '__InternalSupabase'>,
 >(
   schema?: Schema,
 ) => {

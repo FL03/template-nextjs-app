@@ -5,13 +5,9 @@
  * @file - layout.tsx
  */
 
-export default function Layout(
-  { children }: Readonly<React.PropsWithChildren>,
-) {
-  return (
-    <div className="flex-1 h-screen w-full">
-      {children}
-    </div>
-  );
+export default function Layout({
+  children,
+}: Readonly<React.PropsWithChildren>) {
+  return <div className='flex-1 h-screen w-full'>{children}</div>;
 }
-Layout.displayName = "PricingLayout";
+Layout.displayName = 'PricingLayout';

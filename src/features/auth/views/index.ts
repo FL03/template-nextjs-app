@@ -3,5 +3,5 @@
  * @author - @FL03
  * @file - views/index.ts
  */
-export * from "./auth-screen";
-export * from "./verify-screen";
+export * from './auth-screen';
+export * from './verify-screen';

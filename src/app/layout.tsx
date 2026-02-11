@@ -4,28 +4,28 @@
  * @file - layout.tsx
  */
 // imports
-import { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { cookies } from "next/headers";
-import { Toaster } from "sonner";
+import { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import { cookies } from 'next/headers';
+import { Toaster } from 'sonner';
 // vercel
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 // project
-import { PlatformProvider } from "@/features/platform";
-import { cn } from "@/lib/utils";
+import { PlatformProvider } from '@/features/platform';
+import { cn } from '@/lib/utils';
 // stylesheet(s)
-import "@/styles/globals.css";
-import { publicSiteUrl } from "@/lib/config";
+import '@/styles/globals.css';
+import { publicSiteUrl } from '@/lib/config';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 /**
@@ -38,28 +38,24 @@ export default async function RootLayout({
   children,
 }: Readonly<React.PropsWithChildren>) {
   // get the cookies
-  const {
-    defaultTheme,
-  } = await cookies().then(
-    (store) => ({
-      defaultTheme: store.get("theme")?.value,
-    }),
-  );
+  const { defaultTheme } = await cookies().then((store) => ({
+    defaultTheme: store.get('theme')?.value,
+  }));
   // render the layout
   return (
-    <html lang="en" suppressContentEditableWarning suppressHydrationWarning>
+    <html lang='en' suppressContentEditableWarning suppressHydrationWarning>
       <head>
-        <meta name="apple-mobile-web-app-title" content="Puzzled" />
+        <meta name='apple-mobile-web-app-title' content='Puzzled' />
       </head>
       <body
         className={cn(
-          "antialiased relative z-0",
-          "flex flex-col flex-1 min-h-screen w-full",
+          'antialiased relative z-0',
+          'flex flex-col flex-1 min-h-screen w-full',
           geistMono.variable,
           geistSans.variable,
         )}
       >
-        <main className="flex-1 h-full w-full">
+        <main className='flex-1 h-full w-full'>
           <PlatformProvider defaultTheme={defaultTheme}>
             {children}
           </PlatformProvider>
@@ -75,66 +71,59 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
-  title: { absolute: "Puzzled", template: "%s | pzzld" },
-  applicationName: "Tip Tracker",
-  category: "Technology",
-  classification: "application",
-  creator: "Scattered-Systems, LLC",
-  description: "Track, manage, and analyze your tips with ease.",
-  publisher: "Scattered-Systems, LLC",
+  title: { absolute: 'Puzzled', template: '%s | pzzld' },
+  applicationName: 'Tip Tracker',
+  category: 'Technology',
+  classification: 'application',
+  creator: 'Scattered-Systems, LLC',
+  description: 'Track, manage, and analyze your tips with ease.',
+  publisher: 'Scattered-Systems, LLC',
   metadataBase: publicSiteUrl,
   authors: [
     {
-      name: "Joe McCain III",
-      url: "https://github.com/FL03",
+      name: 'Joe McCain III',
+      url: 'https://github.com/FL03',
     },
     {
-      name: "Scattered-Systems, LLC",
-      url: "https://scsys.io",
+      name: 'Scattered-Systems, LLC',
+      url: 'https://scsys.io',
     },
   ],
-  keywords: [
-    "shifts",
-    "tips",
-    "finance",
-    "manage",
-    "analytics",
-    "dashboard",
-  ],
+  keywords: ['shifts', 'tips', 'finance', 'manage', 'analytics', 'dashboard'],
   icons: [
     {
-      rel: "icon",
-      url: "/favicon.ico",
+      rel: 'icon',
+      url: '/favicon.ico',
     },
     {
-      rel: "icon",
-      url: "/icon0.svg",
-      type: "image/svg+xml",
+      rel: 'icon',
+      url: '/icon0.svg',
+      type: 'image/svg+xml',
     },
     {
-      rel: "icon",
-      url: "/icon1.png",
-      type: "image/png",
+      rel: 'icon',
+      url: '/icon1.png',
+      type: 'image/png',
     },
   ],
   openGraph: {
-    emails: ["support@pzzld.org", "support@scsys.io"],
-    siteName: "pzzld_org_tips",
-    locale: "en_US",
-    type: "website",
+    emails: ['support@pzzld.org', 'support@scsys.io'],
+    siteName: 'pzzld_org_tips',
+    locale: 'en_US',
+    type: 'website',
     url: publicSiteUrl,
     images: [
       {
-        alt: "Puzzled Icon",
-        url: "/assets/icon.png",
+        alt: 'Puzzled Icon',
+        url: '/assets/icon.png',
         width: 512,
         height: 512,
-        type: "image/png",
+        type: 'image/png',
       },
       {
-        alt: "Puzzled Logo",
-        url: "/assets/pzzld.svg",
-        type: "image/svg+xml",
+        alt: 'Puzzled Logo',
+        url: '/assets/pzzld.svg',
+        type: 'image/svg+xml',
       },
     ],
   },

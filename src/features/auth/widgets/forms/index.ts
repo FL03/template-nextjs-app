@@ -4,7 +4,7 @@
  * @description - authentication forms
  * @file - index.ts
  */
-export * from "./forgot-password-form";
-export * from "./login-form";
-export * from "./passwordless-form";
-export * from "./registration-form";
+export * from './forgot-password-form';
+export * from './login-form';
+export * from './passwordless-form';
+export * from './registration-form';

@@ -4,9 +4,9 @@
  * @directory - @/features/shifts/utils
  * @file - helpers.ts
  */
-import { sumBy } from "@pzzld/core";
+import { sumBy } from '@pzzld/core';
 // feature-specific
-import { ShiftData } from "../types";
+import { ShiftData } from '../types';
 
 /** compute the average amount of earned tips using the given shifts. */
 export function averageTips(records: ShiftData[]): number {
@@ -14,8 +14,8 @@ export function averageTips(records: ShiftData[]): number {
 }
 /** compute the total amount of earned tips. */
 export function totalTips(values: ShiftData[]): number {
-  const cashSum = sumBy({ key: "tips_cash", values });
-  const creditSum = sumBy({ key: "tips_credit", values });
+  const cashSum = sumBy({ key: 'tips_cash', values });
+  const creditSum = sumBy({ key: 'tips_credit', values });
   return cashSum + creditSum;
 }
 
@@ -29,29 +29,27 @@ export const normalizeToUTCDate = (value?: Date | string | number): Date => {
   return new Date(utcDate);
 };
 
-export const adjustShiftDate = (
-  { date, ...values }: ShiftData,
-): ShiftData => {
+export const adjustShiftDate = ({ date, ...values }: ShiftData): ShiftData => {
   return { ...values, date: normalizeToUTCDate(date).toUTCString() };
 };
 
 export type DayOfWeek =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday";
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 
 export const DAYS_OF_WEEK: Record<number, DayOfWeek> = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
+  0: 'Sunday',
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
 };
 
 type DailyMetrics = {

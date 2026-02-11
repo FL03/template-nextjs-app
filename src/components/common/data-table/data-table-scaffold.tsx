@@ -4,10 +4,10 @@
  * @directory - src/components/common/data-table
  * @file - data-table-scaffold.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -16,19 +16,19 @@ import {
   PaginationState,
   RowSelectionState,
   SortingState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import { DataTable } from "./data-table";
+import { DataTable } from './data-table';
 import {
   DataTablePageSize,
   DataTablePagination,
-} from "./data-table-pagination";
-import { DataTableProvider } from "./data-table-provider";
-import { DataTableSearch } from "./data-table-search";
+} from './data-table-pagination';
+import { DataTableProvider } from './data-table-provider';
+import { DataTableSearch } from './data-table-search';
 // components
-import { ButtonGroup } from "@/components/ui/button-group";
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
   Card,
   CardAction,
@@ -37,7 +37,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 type WithTableOptions<TData, T = {}> = T & {
   columns?: any[];
@@ -51,17 +51,20 @@ type WithTableOptions<TData, T = {}> = T & {
 };
 
 export const DataTableScaffold: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Card>, "children" | "title">
-  & WithTableOptions<any, {
-    actions?: React.ReactNode;
-    description?: React.ReactNode;
-    title?: React.ReactNode;
-    showDescription?: boolean;
-    hidePageSize?: boolean;
-    classNames?: ClassNames<
-      "content" | "header" | "table" | "footer" | "title" | "description"
-    >;
-  }>
+  Omit<React.ComponentPropsWithRef<typeof Card>, 'children' | 'title'> &
+    WithTableOptions<
+      any,
+      {
+        actions?: React.ReactNode;
+        description?: React.ReactNode;
+        title?: React.ReactNode;
+        showDescription?: boolean;
+        hidePageSize?: boolean;
+        classNames?: ClassNames<
+          'content' | 'header' | 'table' | 'footer' | 'title' | 'description'
+        >;
+      }
+    >
 > = ({
   ref,
   actions,
@@ -74,7 +77,7 @@ export const DataTableScaffold: React.FC<
   title,
   hidePageSize,
   showDescription,
-  filter: filterProp = "",
+  filter: filterProp = '',
   pagination: paginationProp = { pageIndex: 0, pageSize: 10 },
   selection: selectionProp = {},
   sorting: sortingProp = [],
@@ -110,23 +113,23 @@ export const DataTableScaffold: React.FC<
     <DataTableProvider options={tableOptions}>
       <Card
         ref={ref}
-        data-slot="data-table-scaffold"
+        data-slot='data-table-scaffold'
         className={cn(
-          "flex flex-col flex-1 h-full w-full relative z-auto gap-4 lg:gap-6",
+          'flex flex-col flex-1 h-full w-full relative z-auto gap-4 lg:gap-6',
           className,
         )}
         {...props}
       >
-        <CardHeader className={cn("w-full", classNames?.headerClassName)}>
+        <CardHeader className={cn('w-full', classNames?.headerClassName)}>
           <CardTitle
-            className={cn("", classNames?.titleClassName)}
+            className={cn('', classNames?.titleClassName)}
             hidden={!title}
           >
             {title}
           </CardTitle>
           <CardDescription
             className={cn(
-              showDescription ? "not-sr-only" : "sr-only",
+              showDescription ? 'not-sr-only' : 'sr-only',
               classNames?.descriptionClassName,
             )}
             hidden={!description}
@@ -139,11 +142,11 @@ export const DataTableScaffold: React.FC<
         </CardHeader>
         <CardContent
           className={cn(
-            "flex flex-col flex-1 h-full w-full gap-2 p-0",
+            'flex flex-col flex-1 h-full w-full gap-2 p-0',
             classNames?.contentClassName,
           )}
         >
-          <ButtonGroup className="px-6 justify-end w-full">
+          <ButtonGroup className='px-6 justify-end w-full'>
             <ButtonGroup>
               <DataTableSearch />
             </ButtonGroup>
@@ -153,7 +156,7 @@ export const DataTableScaffold: React.FC<
         </CardContent>
         <CardFooter
           className={cn(
-            "flex flex-nowrap items-center justify-center w-full",
+            'flex flex-nowrap items-center justify-center w-full',
             classNames?.footerClassName,
           )}
         >
@@ -163,4 +166,4 @@ export const DataTableScaffold: React.FC<
     </DataTableProvider>
   );
 };
-DataTableScaffold.displayName = "DataTable";
+DataTableScaffold.displayName = 'DataTable';

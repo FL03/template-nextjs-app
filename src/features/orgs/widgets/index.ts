@@ -4,12 +4,12 @@
  * @directory - src/features/orgs/widgets
  * @file - index.ts
  */
-export * from "./actions";
-export * from "./modals";
+export * from './actions';
+export * from './modals';
 
-export * from "./business-card";
-export * from "./org-combo";
-export * from "./org-details";
-export * from "./org-form";
-export * from "./org-select";
-export * from "./orgs-list";
+export * from './business-card';
+export * from './org-combo';
+export * from './org-details';
+export * from './org-form';
+export * from './org-select';
+export * from './orgs-list';

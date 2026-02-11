@@ -4,26 +4,26 @@
  * @directory - src/components/common/data-list
  * @file - data-list.tsx
  */
-"use client";
+'use client';
 // imports
-import React from "react";
+import React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-function DataList(
-  { ref, className, ...props }: React.PropsWithChildren<
-    React.ComponentPropsWithRef<"div">
-  >,
-) {
+function DataList({
+  ref,
+  className,
+  ...props
+}: React.PropsWithChildren<React.ComponentPropsWithRef<'div'>>) {
   return (
     <div
       ref={ref}
-      className={cn("flex flex-col w-full", className)}
-      typeof="list"
+      className={cn('flex flex-col w-full', className)}
+      typeof='list'
       {...props}
     />
   );
 }
-DataList.displayName = "DataList";
+DataList.displayName = 'DataList';
 
 export { DataList };

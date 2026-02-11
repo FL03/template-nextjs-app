@@ -4,10 +4,10 @@
  * @directory - src/features/shifts/widgets/table
  * @file - shift-table.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
 import {
   aggregationFns,
   ColumnHelper,
@@ -20,18 +20,18 @@ import {
   RowData,
   RowSelectionState,
   SortingState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // feature-specific
-import { useWorkSchedule } from "../providers";
-import { type ShiftData } from "../types";
-import { ShiftFormModal } from "./modals";
+import { useWorkSchedule } from '../providers';
+import { type ShiftData } from '../types';
+import { ShiftFormModal } from './modals';
 import {
   ShiftCommandDialog,
   ShiftCommandMenu,
   ShiftItemDropdownMenu,
-} from "./actions";
+} from './actions';
 // components
 import {
   DataTable,
@@ -43,8 +43,8 @@ import {
   DataTableSearch,
   DataTableSelectSummaryCell,
   useDataTable,
-} from "@/components/common/data-table";
-import { ButtonGroup } from "@/components/ui/button-group";
+} from '@/components/common/data-table';
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
   Card,
   CardAction,
@@ -53,13 +53,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { TableRow } from "@/components/ui/table";
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { TableRow } from '@/components/ui/table';
 
-import "@tanstack/react-table"; //or vue, svelte, solid, qwik, etc.
+import '@tanstack/react-table'; //or vue, svelte, solid, qwik, etc.
 
-declare module "@tanstack/react-table" {
+declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     formatOptions?: Intl.NumberFormatOptions | Intl.DateTimeFormatOptions;
   }
@@ -75,58 +75,63 @@ type PropsWithTableConfig<T = {}> = T & {
 };
 
 /** Initialize a column helper for the shifts table. */
-export const shiftColHelper: ColumnHelper<ShiftData> = createColumnHelper<
-  ShiftData
->();
+export const shiftColHelper: ColumnHelper<ShiftData> =
+  createColumnHelper<ShiftData>();
 /** Define the shift table schema */
 export const shiftTableSchema = [
   shiftColHelper.display({
-    id: "select",
-    footer: () => <span className="font-semibold">Totals</span>,
+    id: 'select',
+    footer: () => <span className='font-semibold'>Totals</span>,
     header: ({ table }) => (
       <Checkbox
-        className="mx-auto"
-        checked={table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")}
+        className='mx-auto'
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
         onCheckedChange={(value) =>
-          table.toggleAllPageRowsSelected(Boolean(value))}
-        aria-label="Select all"
+          table.toggleAllPageRowsSelected(Boolean(value))
+        }
+        aria-label='Select all'
       />
     ),
     cell: ({ row }) => (
       <Checkbox
-        className="mx-auto"
-        aria-label="Select row"
+        className='mx-auto'
+        aria-label='Select row'
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
       />
     ),
   }),
-  shiftColHelper.accessor("date", {
-    id: "date",
+  shiftColHelper.accessor('date', {
+    id: 'date',
     enableGrouping: true,
     enableSorting: true,
     enableHiding: false,
     meta: {
       formatOptions: {
-        timeZone: "UTC",
+        timeZone: 'UTC',
       },
     },
     header: ({ column }) => (
       <DataTableColumnHeader column={column}>Date</DataTableColumnHeader>
     ),
-    cell: ({ row: { original: { date } } }) => (
-      new Date(date).toLocaleDateString("en-US", {
-        timeZone: "UTC",
-      })
-    ),
+    cell: ({
+      row: {
+        original: { date },
+      },
+    }) =>
+      new Date(date).toLocaleDateString('en-US', {
+        timeZone: 'UTC',
+      }),
   }),
-  shiftColHelper.accessor("tips_cash", {
-    id: "tips_cash",
+  shiftColHelper.accessor('tips_cash', {
+    id: 'tips_cash',
     meta: {
       formatOptions: {
-        currency: "USD",
-        style: "currency",
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
       },
     },
@@ -134,20 +139,19 @@ export const shiftTableSchema = [
       <DataTableColumnHeader column={column}>Cash</DataTableColumnHeader>
     ),
     aggregationFn: aggregationFns.sum,
-    cell: ({ row }) => (
-      new Intl.NumberFormat("en-us", {
-        currency: "USD",
-        style: "currency",
+    cell: ({ row }) =>
+      new Intl.NumberFormat('en-us', {
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
-      }).format(row.original.tips_cash)
-    ),
+      }).format(row.original.tips_cash),
   }),
-  shiftColHelper.accessor("tips_credit", {
-    id: "tips_credit",
+  shiftColHelper.accessor('tips_credit', {
+    id: 'tips_credit',
     meta: {
       formatOptions: {
-        currency: "USD",
-        style: "currency",
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
       },
     },
@@ -155,37 +159,36 @@ export const shiftTableSchema = [
       <DataTableColumnHeader column={column}>Credit</DataTableColumnHeader>
     ),
     aggregationFn: aggregationFns.sum,
-    cell: ({ row }) => (
-      new Intl.NumberFormat("en-us", {
-        currency: "USD",
-        style: "currency",
+    cell: ({ row }) =>
+      new Intl.NumberFormat('en-us', {
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
-      }).format(row.original.tips_credit)
-    ),
+      }).format(row.original.tips_credit),
   }),
   shiftColHelper.display({
-    id: "total_tips",
+    id: 'total_tips',
     meta: {
       formatOptions: {
-        currency: "USD",
-        style: "currency",
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
       },
     },
     aggregatedCell: ({ getValue }) => {
       const total = getValue<number>();
-      return new Intl.NumberFormat("en-us", {
-        currency: "USD",
-        style: "currency",
+      return new Intl.NumberFormat('en-us', {
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
       }).format(total);
     },
     cell: ({ row }) => {
       const { tips_cash: cash = 0, tips_credit: credit = 0 } = row.original;
 
-      return new Intl.NumberFormat("en-us", {
-        currency: "USD",
-        style: "currency",
+      return new Intl.NumberFormat('en-us', {
+        currency: 'USD',
+        style: 'currency',
         maximumFractionDigits: 2,
       }).format(cash + credit);
     },
@@ -205,7 +208,7 @@ export const shiftTableSchema = [
     },
   }),
   shiftColHelper.display({
-    id: "actions",
+    id: 'actions',
     aggregationFn: aggregationFns.count,
     cell: (props) => <ShiftItemDropdownMenu item={props.row.original} />,
   }),
@@ -218,23 +221,21 @@ const TotalRow: React.FC<React.ComponentProps<typeof TableRow>> = ({
   const { table } = useDataTable();
 
   const columns = table.getAllColumns();
-  const dataCols = columns.filter((column) => column.id.startsWith("tips_c"));
-  const dateCol = columns.find((column) => column.id === "date");
-  const totalTipsCol = columns.find((column) => column.id === "total_tips");
+  const dataCols = columns.filter((column) => column.id.startsWith('tips_c'));
+  const dateCol = columns.find((column) => column.id === 'date');
+  const totalTipsCol = columns.find((column) => column.id === 'total_tips');
   const totalRows = table.getCoreRowModel().rows.length;
 
   return (
     <TableRow
-      className={cn("flex flex-1 flex-nowrap w-full font-semibold", className)}
+      className={cn('flex flex-1 flex-nowrap w-full font-semibold', className)}
       {...props}
     >
+      <DataTableCell colSpan={1}>Total</DataTableCell>
       <DataTableCell colSpan={1}>
-        Total
-      </DataTableCell>
-      <DataTableCell colSpan={1}>
-        <span className="font-semibold">
+        <span className='font-semibold'>
           {dateCol?.getAggregationFn?.()?.(
-            "date",
+            'date',
             [],
             table.getCoreRowModel().rows,
           )}
@@ -246,17 +247,17 @@ const TotalRow: React.FC<React.ComponentProps<typeof TableRow>> = ({
           colSpan={1}
           column={column}
           formatOptions={{
-            currency: "USD",
-            style: "currency",
+            currency: 'USD',
+            style: 'currency',
             maximumFractionDigits: 2,
           }}
         />
       ))}
-      <DataTableCell id={totalTipsCol?.id} className="font-mono" colSpan={1}>
-        {new Intl.NumberFormat("en-us", {
-          currency: "USD",
+      <DataTableCell id={totalTipsCol?.id} className='font-mono' colSpan={1}>
+        {new Intl.NumberFormat('en-us', {
+          currency: 'USD',
           maximumFractionDigits: 2,
-          style: "currency",
+          style: 'currency',
         }).format(
           totalTipsCol?.getAggregationFn?.()?.(
             totalTipsCol?.id,
@@ -266,35 +267,35 @@ const TotalRow: React.FC<React.ComponentProps<typeof TableRow>> = ({
         )}
       </DataTableCell>
       <DataTableCell colSpan={1}>
-        <span className="font-mono">{totalRows}</span>
-        <span className="text-muted-foreground">rows</span>
+        <span className='font-mono'>{totalRows}</span>
+        <span className='text-muted-foreground'>rows</span>
       </DataTableCell>
     </TableRow>
   );
 };
-TotalRow.displayName = "TotalRow";
+TotalRow.displayName = 'TotalRow';
 
 export const ShiftTable: React.FC<
-  & Omit<
-    React.ComponentPropsWithoutRef<"div">,
-    "children" | "title" | "data-slot"
-  >
-  & PropsWithTableConfig<{
-    description?: React.ReactNode;
-    title?: React.ReactNode;
-    showDescription?: boolean;
-    classNames?: ClassNames<
-      "content" | "description" | "title" | "header" | "actions" | "footer"
-    >;
-  }>
+  Omit<
+    React.ComponentPropsWithoutRef<'div'>,
+    'children' | 'title' | 'data-slot'
+  > &
+    PropsWithTableConfig<{
+      description?: React.ReactNode;
+      title?: React.ReactNode;
+      showDescription?: boolean;
+      classNames?: ClassNames<
+        'content' | 'description' | 'title' | 'header' | 'actions' | 'footer'
+      >;
+    }>
 > = ({
   className,
   classNames = {},
   rowCount,
   showDescription,
-  title = "Shifts",
-  description = "View and manage your shifts as a table.",
-  filter: filterProp = "",
+  title = 'Shifts',
+  description = 'View and manage your shifts as a table.',
+  filter: filterProp = '',
   pagination: paginationProp = { pageIndex: 0, pageSize: 10 },
   selection: selectionProp = {},
   sorting: sortingProp = [],
@@ -331,7 +332,7 @@ export const ShiftTable: React.FC<
   const TableActions = ({ className }: { className?: string } = {}) => (
     <ButtonGroup
       className={cn(
-        "flex-wrap-reverse items-center justify-end w-full px-6",
+        'flex-wrap-reverse items-center justify-end w-full px-6',
         className,
       )}
     >
@@ -347,22 +348,14 @@ export const ShiftTable: React.FC<
     <DataTableProvider options={tableOptions}>
       <Card
         {...props}
-        className={cn(
-          "relative z-auto flex flex-1 flex-col w-full",
-          className,
-        )}
+        className={cn('relative z-auto flex flex-1 flex-col w-full', className)}
       >
-        <CardHeader
-          className={cn(
-            "w-full",
-            classNames?.headerClassName,
-          )}
-        >
-          {title && <CardTitle className="text-xl">{title}</CardTitle>}
+        <CardHeader className={cn('w-full', classNames?.headerClassName)}>
+          {title && <CardTitle className='text-xl'>{title}</CardTitle>}
           {description && (
             <CardDescription
               className={cn(
-                showDescription ? "not-sr-only" : "sr-only",
+                showDescription ? 'not-sr-only' : 'sr-only',
                 classNames?.descriptionClassName,
               )}
             >
@@ -375,7 +368,7 @@ export const ShiftTable: React.FC<
         </CardHeader>
         <CardContent
           className={cn(
-            "flex flex-1 flex-col h-full w-full gap-2 px-0",
+            'flex flex-1 flex-col h-full w-full gap-2 px-0',
             classNames?.contentClassName,
           )}
         >
@@ -384,7 +377,7 @@ export const ShiftTable: React.FC<
             <TotalRow />
           </DataTable>
         </CardContent>
-        <CardFooter className="flex flex-nowrap items-center justify-center w-full">
+        <CardFooter className='flex flex-nowrap items-center justify-center w-full'>
           <DataTablePagination />
         </CardFooter>
         <ShiftCommandDialog />
@@ -392,6 +385,6 @@ export const ShiftTable: React.FC<
     </DataTableProvider>
   );
 };
-ShiftTable.displayName = "ShiftTable";
+ShiftTable.displayName = 'ShiftTable';
 
 export default ShiftTable;

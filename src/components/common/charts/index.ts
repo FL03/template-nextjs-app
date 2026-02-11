@@ -4,5 +4,5 @@
  * @directory - src/components/common/charts
  * @file - index.ts
  */
-export * from "./chart-display";
-export * from "./chart-tooltip";
+export * from './chart-display';
+export * from './chart-tooltip';

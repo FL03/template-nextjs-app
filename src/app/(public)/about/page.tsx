@@ -4,17 +4,17 @@
  * @file - about/page.tsx
  */
 // imports
-import { Metadata } from "next";
-import { AboutPage } from "@/features/platform";
+import { Metadata } from 'next';
+import { AboutPage } from '@/features/platform';
 
 // page metadata
 export const metadata: Metadata = {
-  title: "About",
-  description: "About our mission, staff, and story.",
+  title: 'About',
+  description: 'About our mission, staff, and story.',
 };
 
 // render the page
 export default function Page() {
   return <AboutPage />;
 }
-Page.displayName = "AboutPage";
+Page.displayName = 'AboutPage';

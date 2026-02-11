@@ -49,7 +49,9 @@ export function FieldEditor<
   // memoize the external value prop to avoid unnecessary re-renders
   const _dataExt = React.useMemo(() => valueProp ?? undefined, [valueProp]);
   // state to manage the value and editing state
-  const [_value, _setValue] = React.useState<TValue | undefined>(defaultValue ?? _dataExt);
+  const [_value, _setValue] = React.useState<TValue | undefined>(
+    defaultValue ?? _dataExt,
+  );
   const [isEditing, setIsEditing] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -87,9 +89,7 @@ export function FieldEditor<
         try {
           if (_value && onValueSave) onValueSave(_value);
         } catch (error) {
-          logger.error(
-            `An error occurred while saving the ${field}`
-          );
+          logger.error(`An error occurred while saving the ${field}`);
         } finally {
           setIsEditing(false);
           setIsSaving(false);
@@ -99,15 +99,15 @@ export function FieldEditor<
         error: `An error occurred while saving the ${fieldLabel}`,
         loading: `Saving ${fieldLabel}...`,
         success: `${fieldLabel} updated successfully`,
-      }
+      },
     );
   }
 
   const _Display = () => {
     return (
-      <div className="flex flex-nowrap flex-1 w-full items-center gap-2">
+      <div className='flex flex-nowrap flex-1 w-full items-center gap-2'>
         <div
-          className="inline-flex flex-nowrap flex-1 w-full mr-auto gap-2"
+          className='inline-flex flex-nowrap flex-1 w-full mr-auto gap-2'
           onDoubleClick={(event) => {
             // prevent the default action
             event.preventDefault();
@@ -117,17 +117,17 @@ export function FieldEditor<
             if (!readonly && !isEditing) setIsEditing(true);
           }}
         >
-          <span className="font-semibold">{_value}</span>
+          <span className='font-semibold'>{_value}</span>
         </div>
         <Button
           disabled={readonly || isEditing || isSaving}
-          className="ml-auto"
-          size="icon"
-          variant="ghost"
+          className='ml-auto'
+          size='icon'
+          variant='ghost'
           onClick={() => setIsEditing(true)}
         >
-          <Edit3Icon className="h-4 w-4" />
-          <span className="sr-only">Edit {fieldLabel}</span>
+          <Edit3Icon className='h-4 w-4' />
+          <span className='sr-only'>Edit {fieldLabel}</span>
         </Button>
       </div>
     );
@@ -135,14 +135,14 @@ export function FieldEditor<
 
   const _Editor = () => {
     return (
-      <div className="inline-flex items-center gap-2">
+      <div className='inline-flex items-center gap-2'>
         <Input
           autoFocus
           disabled={!isEditing}
           readOnly={readonly}
-          className="font-semibold h-9 w-24"
-          type="number"
-          min="0"
+          className='font-semibold h-9 w-24'
+          type='number'
+          min='0'
           step={field === 'height' ? '0.01' : '0.1'}
           value={_value}
           onChange={(event) => {
@@ -159,24 +159,24 @@ export function FieldEditor<
             }
           }}
         />
-        <Button disabled={isSaving} size="icon" onClick={handleOnSave}>
+        <Button disabled={isSaving} size='icon' onClick={handleOnSave}>
           {isSaving ? (
-            <Loader2Icon className="animate-spin h-4 w-4" />
+            <Loader2Icon className='animate-spin h-4 w-4' />
           ) : (
-            <SaveIcon className="h-4 w-4" />
+            <SaveIcon className='h-4 w-4' />
           )}
           <span
             className={cn(
               showLabel ? 'not-sr-only' : 'sr-only',
-              isSaving && 'animate-pulse'
+              isSaving && 'animate-pulse',
             )}
           >
             {isSaving ? 'Saving...' : 'Save'}
           </span>
         </Button>
-        <Button size="icon" variant="ghost" onClick={handleOnCancel}>
-          <XIcon className="h-4 w-4" />
-          <span className="sr-only">Cancel</span>
+        <Button size='icon' variant='ghost' onClick={handleOnCancel}>
+          <XIcon className='h-4 w-4' />
+          <span className='sr-only'>Cancel</span>
         </Button>
       </div>
     );
@@ -184,7 +184,7 @@ export function FieldEditor<
 
   return (
     <div className={cn('flex flex-nowrap gap-2 items-center', className)}>
-      <span className="text-muted-foreground font-semibold tracking-tighter">
+      <span className='text-muted-foreground font-semibold tracking-tighter'>
         {fieldLabel}
       </span>
       {!readonly && isEditing ? <_Editor /> : <_Display />}

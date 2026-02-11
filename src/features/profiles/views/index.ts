@@ -3,4 +3,4 @@
  * @author - @FL03
  * @file - views/index.ts
  */
-export { ProfileDetailsView } from "./profile-details-view";
+export { ProfileDetailsView } from './profile-details-view';

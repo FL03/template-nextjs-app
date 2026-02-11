@@ -4,12 +4,12 @@
  * @directory - src/app/api/billing
  * @file - route.ts
  */
-"use server";
+'use server';
 // imports
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 // project
-import { stripeServerClient } from "@/lib/stripe";
-import { ApiResponse } from "@/types";
+import { stripeServerClient } from '@/lib/stripe';
+import { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
@@ -17,9 +17,12 @@ export async function GET(
   const stripe = stripeServerClient();
   const url = new URL(req.url);
   // extract the customer id from the query params
-  const priceId = url.searchParams.get("priceId");
+  const priceId = url.searchParams.get('priceId');
 
-  return NextResponse.json({ data: { message: "/api/stripe" }, error: null }, {
-    status: 200,
-  });
+  return NextResponse.json(
+    { data: { message: '/api/stripe' }, error: null },
+    {
+      status: 200,
+    },
+  );
 }

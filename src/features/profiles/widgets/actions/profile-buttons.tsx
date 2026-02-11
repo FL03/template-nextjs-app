@@ -4,31 +4,36 @@
  * @directory - src/features/profiles/widgets
  * @file - profile-actions.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Trash2Icon } from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { Trash2Icon } from 'lucide-react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
-import { useUsername } from "@/hooks/use-username";
+import { cn } from '@/lib/utils';
+import { useUsername } from '@/hooks/use-username';
 //local
-import { deleteUserProfile } from "../../utils";
+import { deleteUserProfile } from '../../utils';
 // components
-import { IconButton } from "@/components/common/button";
-import { Button } from "@/components/ui/button";
+import { IconButton } from '@/components/common/button';
+import { Button } from '@/components/ui/button';
 
 export const DeleteUserProfileButton: React.FC<
   Omit<
     React.ComponentPropsWithRef<typeof IconButton>,
-    "children" | "classNames" | "label" | "onClick"
-  > & { classNames?: ClassNames<"icon" | "label">; username?: string }
-> = ({ ref, username, classNames: { iconClassName, labelClassName } = {}, ...props }) => (
+    'children' | 'classNames' | 'label' | 'onClick'
+  > & { classNames?: ClassNames<'icon' | 'label'>; username?: string }
+> = ({
+  ref,
+  username,
+  classNames: { iconClassName, labelClassName } = {},
+  ...props
+}) => (
   <IconButton
     ref={ref}
-    variant="destructive"
+    variant='destructive'
     classNames={{ labelClassName }}
     onClick={(event) => {
       // clean the event
@@ -36,37 +41,34 @@ export const DeleteUserProfileButton: React.FC<
       event.stopPropagation();
       // invoke the toast
       toast.promise(deleteUserProfile({ username }), {
-        loading: "Deleting profile...",
+        loading: 'Deleting profile...',
         success: () => `Profile deleted successfully.`,
-        error: (err) => `Error deleting profile: ${err instanceof Error ? err.message : "Unknown error"}`,
+        error: (err) =>
+          `Error deleting profile: ${err instanceof Error ? err.message : 'Unknown error'}`,
       });
     }}
     {...props}
   >
-    <Trash2Icon className={cn("size-4", iconClassName)} />
+    <Trash2Icon className={cn('size-4', iconClassName)} />
   </IconButton>
 );
 
 export const UserProfileLinkButton: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Button>, "children" | "asChild">
-  & React.PropsWithChildren<
-    {
+  Omit<React.ComponentPropsWithRef<typeof Button>, 'children' | 'asChild'> &
+    React.PropsWithChildren<{
       label?: React.ReactNode;
       hideLabel?: boolean;
-      mode?: "read" | "edit";
+      mode?: 'read' | 'edit';
       username?: string;
-    }
-  >
-> = (
-  {
-    ref,
-    username,
-    mode = "read",
-    size = "default",
-    variant = "default",
-    ...props
-  },
-) => {
+    }>
+> = ({
+  ref,
+  username,
+  mode = 'read',
+  size = 'default',
+  variant = 'default',
+  ...props
+}) => {
   const { username: currentUsername } = useUsername();
   username ??= currentUsername;
   return (
@@ -79,7 +81,7 @@ export const UserProfileLinkButton: React.FC<
           },
         }}
       >
-        <span>{mode === "edit" ? "Edit" : "Visit"}</span>
+        <span>{mode === 'edit' ? 'Edit' : 'Visit'}</span>
       </Link>
     </Button>
   );

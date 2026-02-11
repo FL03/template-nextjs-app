@@ -4,10 +4,10 @@
  * @directory - src/features/notifications/widgets
  * @file - index.ts
  */
-export * from "./actions";
-export * from "./modals";
+export * from './actions';
+export * from './modals';
 
-export * from "./notification-card";
-export * from "./notification-list";
-export * from "./notification-center";
-export * from "./notification-status";
+export * from './notification-card';
+export * from './notification-list';
+export * from './notification-center';
+export * from './notification-status';

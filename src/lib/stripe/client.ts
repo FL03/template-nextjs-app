@@ -4,17 +4,17 @@
  * @directory - src/lib/stripe
  * @file - client.ts
  */
-"use client";
+'use client';
 // imports
 import {
   loadStripe,
   Stripe,
   StripeConstructorOptions,
-} from "@stripe/stripe-js";
+} from '@stripe/stripe-js';
 // project
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 // local
-import { stripePublishableKey } from "./config";
+import { stripePublishableKey } from './config';
 
 let stripePromise: Promise<Stripe | null>;
 
@@ -24,15 +24,13 @@ type ClientOpts = {
 };
 
 /** A client-side method for initializing and accessing a shared instance of the `Stripe` client for the browser. */
-export const stripeBrowserClient = async (
-  {
-    publicKey = stripePublishableKey(),
-    config,
-  }: ClientOpts = {},
-): Promise<Stripe | null> => {
+export const stripeBrowserClient = async ({
+  publicKey = stripePublishableKey(),
+  config,
+}: ClientOpts = {}): Promise<Stripe | null> => {
   if (!stripePromise) {
-    if (!publicKey || publicKey === "") {
-      return Promise.reject(new Error("Stripe public key is missing"));
+    if (!publicKey || publicKey === '') {
+      return Promise.reject(new Error('Stripe public key is missing'));
     }
     stripePromise = loadStripe(publicKey, config);
   }
@@ -40,7 +38,7 @@ export const stripeBrowserClient = async (
   return stripePromise.then((client) => {
     if (!client) {
       logger.warn(
-        "Unable to initialize the brower-side instance of the `stripe` client.",
+        'Unable to initialize the brower-side instance of the `stripe` client.',
       );
     }
     return client;

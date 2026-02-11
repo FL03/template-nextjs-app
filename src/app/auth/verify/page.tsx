@@ -5,10 +5,9 @@
  * @file - page.tsx
  */
 // imports
-import { VerificationScreen } from "@/features/auth";
-
+import { VerificationScreen } from '@/features/auth';
 
 export default function Page() {
   return <VerificationScreen />;
 }
-Page.displayName = "AuthVerificationPage";
+Page.displayName = 'AuthVerificationPage';

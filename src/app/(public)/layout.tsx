@@ -4,7 +4,7 @@
  * @file - (public)/layout.tsx
  */
 // imports
-import { PlatformScaffold } from "@/features/platform";
+import { PlatformScaffold } from '@/features/platform';
 
 /**
  * The layout for all _public_ routes; i.e. routes that do not require authentication.
@@ -13,13 +13,9 @@ import { PlatformScaffold } from "@/features/platform";
  * @param {Readonly<PropsWithChildren>} props - the props for the layout; note that children
  * are readonly and required.
  */
-export default function Layout(
-  { children }: Readonly<React.PropsWithChildren>,
-) {
-  return (
-    <PlatformScaffold compact>
-      {children}
-    </PlatformScaffold>
-  );
+export default function Layout({
+  children,
+}: Readonly<React.PropsWithChildren>) {
+  return <PlatformScaffold compact>{children}</PlatformScaffold>;
 }
-Layout.displayName = "PublicLayout";
+Layout.displayName = 'PublicLayout';

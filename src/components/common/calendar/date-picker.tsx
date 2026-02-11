@@ -4,21 +4,21 @@
  * @directory - src/components/common/calendar
  * @file - date-picker.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { CalendarIcon } from "lucide-react";
-import { OnSelectHandler } from "react-day-picker";
+import * as React from 'react';
+import { CalendarIcon } from 'lucide-react';
+import { OnSelectHandler } from 'react-day-picker';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 type HandleSelectProps<T = Date> = {
   required?: boolean;
@@ -28,18 +28,16 @@ type HandleSelectProps<T = Date> = {
 
 // DatePicker
 export const DatePickerPopover: React.FC<
-  & Omit<React.ComponentProps<typeof Button>, "children">
-  & HandleSelectProps<string | Date | number>
-> = (
-  {
-    className,
-    onDateSelect,
-    selected: selectedProp = new Date(),
-    size = "default",
-    variant = "outline",
-    ...props
-  },
-) => {
+  Omit<React.ComponentProps<typeof Button>, 'children'> &
+    HandleSelectProps<string | Date | number>
+> = ({
+  className,
+  onDateSelect,
+  selected: selectedProp = new Date(),
+  size = 'default',
+  variant = 'outline',
+  ...props
+}) => {
   const [selected, setSelected] = React.useState<Date | undefined>(
     selectedProp ? new Date(selectedProp) : undefined,
   );
@@ -56,24 +54,24 @@ export const DatePickerPopover: React.FC<
           size={size}
           variant={variant}
           className={cn(
-            "flex flex-row items-center justify-start gap-2 lg:gap-4",
-            !selected && "text-muted-foreground",
+            'flex flex-row items-center justify-start gap-2 lg:gap-4',
+            !selected && 'text-muted-foreground',
             className,
           )}
           {...props}
         >
-          <CalendarIcon className="size-5" />
-          {selected
-            ? (
-              new Date(selected)?.toLocaleDateString()
-            )
-            : <span>Pick a date</span>}
+          <CalendarIcon className='size-5' />
+          {selected ? (
+            new Date(selected)?.toLocaleDateString()
+          ) : (
+            <span>Pick a date</span>
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col shrink w-full">
+      <PopoverContent className='flex flex-col shrink w-full'>
         <Calendar
           required
-          mode="single"
+          mode='single'
           selected={selected ? new Date(selected) : undefined}
           onSelect={handleSelect}
         />
@@ -81,6 +79,6 @@ export const DatePickerPopover: React.FC<
     </Popover>
   );
 };
-DatePickerPopover.displayName = "DatePickerPopover";
+DatePickerPopover.displayName = 'DatePickerPopover';
 
 export default DatePickerPopover;

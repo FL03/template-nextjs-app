@@ -4,14 +4,14 @@
  * @endpoint - /api/auth/register
  * @file - route.ts
  */
-"use server";
+'use server';
 // imports
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { NextRequest, NextResponse } from 'next/server';
 // project
-import { logger } from "@/lib/logger";
-import { createServerClient } from "@/lib/supabase";
+import { logger } from '@/lib/logger';
+import { createServerClient } from '@/lib/supabase';
 
 type RegistrationPayload = {
   email?: string;
@@ -31,8 +31,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // parse the request url
   const { searchParams } = new URL(req.url);
   // extract the url params
-  const captcha = searchParams.get("captcha")?.toString();
-  const redirectTo = searchParams.get("redirect")?.toString() ?? "/auth/verify";
+  const captcha = searchParams.get('captcha')?.toString();
+  const redirectTo = searchParams.get('redirect')?.toString() ?? '/auth/verify';
   // load the form data
   const payload = await req.json();
   // deconstruct the payload
@@ -50,20 +50,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         data: null,
-        error: { message: "Either email or phone number is required." },
+        error: { message: 'Either email or phone number is required.' },
       },
       { status: 400 },
     );
   }
   if (!username) {
     return NextResponse.json(
-      { data: null, error: { message: "Username is required." } },
+      { data: null, error: { message: 'Username is required.' } },
       { status: 400 },
     );
   }
   if (!password) {
     return NextResponse.json(
-      { data: null, error: { message: "Password is required." } },
+      { data: null, error: { message: 'Password is required.' } },
       { status: 400 },
     );
   }
@@ -71,33 +71,33 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         data: null,
-        error: { message: "Passwords do not match." },
+        error: { message: 'Passwords do not match.' },
       },
       { status: 400 },
     );
   }
 
-  logger.trace(
-    { email, password, username },
-    "Registering a new user...",
-  );
+  logger.trace({ email, password, username }, 'Registering a new user...');
   const { error } = await supabase.auth.signUp({
     ...contact,
     password,
     options: {
       data: { username: String(username) },
       captchaToken,
-      emailRedirectTo: new URL("/auth/callback", origin).toString(),
+      emailRedirectTo: new URL('/auth/callback', origin).toString(),
     },
   });
 
   if (error) {
-    logger.error(error, "Error registering user: " + error.message);
-    return NextResponse.json({ data: null, error: error.message }, {
-      status: 400,
-    });
+    logger.error(error, 'Error registering user: ' + error.message);
+    return NextResponse.json(
+      { data: null, error: error.message },
+      {
+        status: 400,
+      },
+    );
   }
-  logger.info("Successfully registered a new user!");
+  logger.info('Successfully registered a new user!');
   revalidatePath(redirectTo);
   return redirect(redirectTo);
 }

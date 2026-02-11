@@ -1,22 +1,22 @@
 // image-picker.tsx
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Loader2Icon, UploadIcon, XIcon } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
+import * as React from 'react';
+import { Loader2Icon, UploadIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { toast } from 'sonner';
 // project
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export const ImagePicker: React.FC<
   Omit<
-    React.ComponentPropsWithRef<"div">,
-    "children" | "defaultValue" | "value"
+    React.ComponentPropsWithRef<'div'>,
+    'children' | 'defaultValue' | 'value'
   > & {
     image?: string | null;
     defaultImage?: string | null;
@@ -40,9 +40,9 @@ export const ImagePicker: React.FC<
 }) => {
   // resolve the default image file
   const defaultImageFile = defaultImage
-    ? new File([defaultImage], "default-image.png", {
-      type: "image/png",
-    })
+    ? new File([defaultImage], 'default-image.png', {
+        type: 'image/png',
+      })
     : null;
   // setup the avatar url state
   const [fileUrl, setFileUrl] = React.useState<string | null>(
@@ -59,12 +59,10 @@ export const ImagePicker: React.FC<
   // returns true if the preview is not null and showPreview is true
   const showPreview = fileUrl !== null && !hidePreview;
   // handle any changes to the image
-  const handleFileChange = (
-    selectedFiles?: File[],
-  ) => {
+  const handleFileChange = (selectedFiles?: File[]) => {
     // handle the case where no files are selected
     if (!selectedFiles) {
-      logger.warn("No files selected");
+      logger.warn('No files selected');
       return;
     }
     logger.info(`User selected ${selectedFiles.length} files`);
@@ -79,7 +77,7 @@ export const ImagePicker: React.FC<
   };
   // a callback for handling the cancel action
   function handleClear() {
-    logger.info("Clearing selected file");
+    logger.info('Clearing selected file');
     // reset to defaults
     setFileUrl(defaultImage);
     setCurrentFile(defaultImageFile);
@@ -88,7 +86,7 @@ export const ImagePicker: React.FC<
   const handleUpload = async () => {
     // handle the case where no file is selected
     if (!currentFile) {
-      logger.error("No file selected for upload...");
+      logger.error('No file selected for upload...');
       return;
     }
     // ensure the uploading toggle is triggered
@@ -108,7 +106,7 @@ export const ImagePicker: React.FC<
         loading: `Uploading ${currentFile?.name}...`,
         success: () => {
           setIsUploading(false);
-          return "Avatar uploaded successfully!";
+          return 'Avatar uploaded successfully!';
         },
         error: (error) => {
           // log the error
@@ -125,23 +123,23 @@ export const ImagePicker: React.FC<
       {...props}
       ref={ref}
       className={cn(
-        "flex flex-1 items-center gap-2 max-w-sm relative z-auto",
-        inline ? "flex-nowrap" : "flex-wrap",
+        'flex flex-1 items-center gap-2 max-w-sm relative z-auto',
+        inline ? 'flex-nowrap' : 'flex-wrap',
         className,
       )}
     >
       {showPreview && (
         <div
           className={cn(
-            "relative z-auto shrink overflow-hidden rounded-full",
-            "cursor-pointer border border-accent/10",
+            'relative z-auto shrink overflow-hidden rounded-full',
+            'cursor-pointer border border-accent/10',
           )}
           style={{ width: previewSize, height: previewSize }}
         >
           <Image
             fill
-            alt="Avatar preview"
-            className="object-cover rounded-full cursor-pointer"
+            alt='Avatar preview'
+            className='object-cover rounded-full cursor-pointer'
             src={fileUrl}
             onDoubleClick={(event) => {
               // prevent the default action
@@ -149,25 +147,25 @@ export const ImagePicker: React.FC<
               // stop the event from bubbling up
               event.stopPropagation();
               // open the image in a new tab
-              window.open(fileUrl, "_blank");
+              window.open(fileUrl, '_blank');
             }}
           />
         </div>
       )}
-      <div className="flex flex-col flex-1 gap-2 w-full">
+      <div className='flex flex-col flex-1 gap-2 w-full'>
         <Label
-          htmlFor="avatar-input"
-          className="text-muted-foreground text-nowrap"
+          htmlFor='avatar-input'
+          className='text-muted-foreground text-nowrap'
         >
           Select Avatar Image
         </Label>
-        <div className="inline-flex flex-row flex-nowrap items-center gap-2 lg:gap-4">
+        <div className='inline-flex flex-row flex-nowrap items-center gap-2 lg:gap-4'>
           <Input
             ref={fileInputRef}
-            id="avatar-input"
-            className="w-full"
-            accept="image/*"
-            type="file"
+            id='avatar-input'
+            className='w-full'
+            accept='image/*'
+            type='file'
             onChange={(event) => {
               // prevent the default action
               event.preventDefault();
@@ -181,13 +179,13 @@ export const ImagePicker: React.FC<
                 handleFileChange(Array.from(files));
               } else {
                 // log a warning if no files are selected
-                logger.warn("No files selected");
+                logger.warn('No files selected');
               }
             }}
           />
           <Button
-            size="icon"
-            variant="destructive"
+            size='icon'
+            variant='destructive'
             disabled={!currentFile || isUploading}
             onClick={(event) => {
               // prevent the default action
@@ -198,12 +196,12 @@ export const ImagePicker: React.FC<
               handleClear();
             }}
           >
-            <XIcon className="h-4 w-4" />
-            <span className="sr-only">Clear</span>
+            <XIcon className='h-4 w-4' />
+            <span className='sr-only'>Clear</span>
           </Button>
         </div>
         <Button
-          className="w-full"
+          className='w-full'
           disabled={!currentFile || isUploading}
           onClick={(event) => {
             // prevent the default action
@@ -214,22 +212,20 @@ export const ImagePicker: React.FC<
             handleUpload();
           }}
         >
-          {isUploading
-            ? (
-              <>
-                <Loader2Icon className="h-4 w-4 animate-spin" />
-                <span className="animate-pulse">Uploading...</span>
-              </>
-            )
-            : (
-              <>
-                <UploadIcon className="h-4 w-4" />
-                <span>Upload</span>
-              </>
-            )}
+          {isUploading ? (
+            <>
+              <Loader2Icon className='h-4 w-4 animate-spin' />
+              <span className='animate-pulse'>Uploading...</span>
+            </>
+          ) : (
+            <>
+              <UploadIcon className='h-4 w-4' />
+              <span>Upload</span>
+            </>
+          )}
         </Button>
       </div>
     </div>
   );
 };
-ImagePicker.displayName = "ImagePicker";
+ImagePicker.displayName = 'ImagePicker';

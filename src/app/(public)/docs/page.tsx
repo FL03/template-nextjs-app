@@ -5,19 +5,19 @@
  * @file - page.tsx
  */
 
-import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
+import { Item, ItemContent, ItemTitle } from '@/components/ui/item';
 
 export const metadata = {
-  title: "Documentation",
-  description: "The documentation for the puzzled platform.",
+  title: 'Documentation',
+  description: 'The documentation for the puzzled platform.',
 };
 
 export default function Page() {
   return (
-    <div className="flex-1 h-full w-full">
+    <div className='flex-1 h-full w-full'>
       <Item>
         <ItemContent>
-          <ItemTitle className="text-xl">Documentation</ItemTitle>
+          <ItemTitle className='text-xl'>Documentation</ItemTitle>
         </ItemContent>
       </Item>
     </div>

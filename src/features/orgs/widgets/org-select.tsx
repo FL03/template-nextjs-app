@@ -4,12 +4,12 @@
  * @directory - src/features/orgs/widgets
  * @file - org-select.tsx
  */
-"use client";
-import * as React from "react";
+'use client';
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import { useOrgs } from "@/hooks/use-orgs";
+import { useOrgs } from '@/hooks/use-orgs';
 // components
 import {
   Select,
@@ -17,30 +17,31 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export const OrgSelect: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof Select>, "children"> & {
+  Omit<React.ComponentPropsWithoutRef<typeof Select>, 'children'> & {
     classNames?: {
       contentClassName?: string;
       triggerClassName?: string;
     };
   }
-> = (
-  { classNames = {}, defaultValue, value, onValueChange, ...props },
-) => {
+> = ({ classNames = {}, defaultValue, value, onValueChange, ...props }) => {
   const [selected, setSelected] = React.useState<string | undefined>(
     defaultValue,
   );
   const { data } = useOrgs();
 
-  const onChange = React.useCallback((next: string) => {
-    setSelected((prev) => {
-      if (prev === next) return prev;
-      onValueChange?.(next);
-      return next;
-    });
-  }, [onValueChange]);
+  const onChange = React.useCallback(
+    (next: string) => {
+      setSelected((prev) => {
+        if (prev === next) return prev;
+        onValueChange?.(next);
+        return next;
+      });
+    },
+    [onValueChange],
+  );
   // synchronize external value changes
   React.useEffect(() => {
     if (value && value !== selected) {
@@ -52,13 +53,14 @@ export const OrgSelect: React.FC<
     return <div>No organizations available</div>;
   }
   return (
-    <Select
-      {...props}
-      value={selected}
-      onValueChange={onChange}
-    >
-      <SelectTrigger className={cn("flex-auto w-auto max-w-[200px]", classNames?.triggerClassName)}>
-        <SelectValue placeholder="Select an organization" />
+    <Select {...props} value={selected} onValueChange={onChange}>
+      <SelectTrigger
+        className={cn(
+          'flex-auto w-auto max-w-[200px]',
+          classNames?.triggerClassName,
+        )}
+      >
+        <SelectValue placeholder='Select an organization' />
       </SelectTrigger>
       <SelectContent className={classNames?.contentClassName}>
         {data.map(({ id, name }) => (
@@ -79,6 +81,6 @@ export const OrgSelect: React.FC<
     </Select>
   );
 };
-OrgSelect.displayName = "OrgSelect";
+OrgSelect.displayName = 'OrgSelect';
 
 export default OrgSelect;

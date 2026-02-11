@@ -4,10 +4,10 @@
  * @directory - src/lib/fs
  * @file - downloaders.ts
  */
-"use client";
+'use client';
 
 /** Defines common file-extensions  */
-type FileExtensions = "json" | "csv";
+type FileExtensions = 'json' | 'csv';
 
 /** The `FileName` type defines a string representation of the file name divided into two components, the name and the extension. */
 export type FileName<
@@ -15,8 +15,8 @@ export type FileName<
   Ext extends string = FileExtensions,
 > = `${Name}.${Ext}`;
 
-export type CsvFileExt<Name extends string = string> = FileName<Name, "csv">;
-export type JsonFileExt<Name extends string = string> = FileName<Name, "json">;
+export type CsvFileExt<Name extends string = string> = FileName<Name, 'csv'>;
+export type JsonFileExt<Name extends string = string> = FileName<Name, 'json'>;
 
 /**
  * A client-side method for triggering file downloads in the browser.
@@ -25,13 +25,15 @@ export type JsonFileExt<Name extends string = string> = FileName<Name, "json">;
  * @param filename - The desired name for the downloaded file.
  */
 export function triggerFileDownload(value: Blob | string, filename: string) {
-  if (typeof window === "undefined") {
-    throw new Error("File download can only be triggered in a browser environment.");
+  if (typeof window === 'undefined') {
+    throw new Error(
+      'File download can only be triggered in a browser environment.',
+    );
   }
   // parse the given value
   const url = value instanceof Blob ? URL.createObjectURL(value) : value;
   // create the element
-  const link = window.document.createElement("a");
+  const link = window.document.createElement('a');
   link.href = url;
   link.download = filename;
   // append to body
@@ -51,36 +53,41 @@ export function triggerFileDownload(value: Blob | string, filename: string) {
  */
 export function downloadAsJSON<T>(data: T, filename: JsonFileExt) {
   const blob = new Blob([JSON.stringify(data, undefined, 2)], {
-    type: "application/json",
+    type: 'application/json',
   });
   triggerFileDownload(blob, filename);
 }
 
 function convertToCsv<T extends Object>(obj: T): string {
   const data = Array.isArray(obj) ? obj : [obj];
-  if (data.length === 0) return "";
-  const headers = Object.keys(data[0]).join(",");
+  if (data.length === 0) return '';
+  const headers = Object.keys(data[0]).join(',');
   const rows = data
     .map((item) =>
       Object.values(item)
         .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-        .join(",")
+        .join(','),
     )
-    .join("\n");
+    .join('\n');
   return `${headers}\n${rows}`;
 }
 
-export function downloadAsCSV<T extends Object>(data: T | null, filename: CsvFileExt) {
+export function downloadAsCSV<T extends Object>(
+  data: T | null,
+  filename: CsvFileExt,
+) {
   if (!data) {
-    throw new Error("No data provided for CSV download.");
+    throw new Error('No data provided for CSV download.');
   }
   const csvData = convertToCsv(data);
-  const blob = new Blob([csvData], { type: "text/csv" });
+  const blob = new Blob([csvData], { type: 'text/csv' });
   triggerFileDownload(blob, filename);
 }
 
-
-export class Downloader<TData extends Object = any, Ext extends string = JsonFileExt> extends Object {
+export class Downloader<
+  TData extends Object = any,
+  Ext extends string = JsonFileExt,
+> extends Object {
   private _data: TData;
   private _filename: FileName<string, Ext>;
 
@@ -91,12 +98,14 @@ export class Downloader<TData extends Object = any, Ext extends string = JsonFil
   }
 
   public download() {
-    if (this._filename.endsWith(".json")) {
+    if (this._filename.endsWith('.json')) {
       downloadAsJSON(this._data, this._filename as JsonFileExt);
-    } else if (this._filename.endsWith(".csv")) {
+    } else if (this._filename.endsWith('.csv')) {
       downloadAsCSV(this._data, this._filename as CsvFileExt);
     } else {
-      throw new Error(`Unsupported file extension in filename: ${this._filename}`);
+      throw new Error(
+        `Unsupported file extension in filename: ${this._filename}`,
+      );
     }
   }
 }

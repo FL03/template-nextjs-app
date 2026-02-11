@@ -4,17 +4,17 @@
  * @file - auth/types.ts
  */
 
-export type RegistrationView = "register" | "registration";
-export type LoginView = "login" | "email-password" | "sign-in";
-export type PasswordlessView = "magic" | "passkey" | "passwordless";
-export type ResetPasswordView = "reset-password" | "forgot-password";
+export type RegistrationView = 'register' | 'registration';
+export type LoginView = 'login' | 'email-password' | 'sign-in';
+export type PasswordlessView = 'magic' | 'passkey' | 'passwordless';
+export type ResetPasswordView = 'reset-password' | 'forgot-password';
 
 export type AuthGateMode =
-  | "login"
-  | "register"
-  | "forgot-password"
-  | "reset-password"
-  | "passwordless";
+  | 'login'
+  | 'register'
+  | 'forgot-password'
+  | 'reset-password'
+  | 'passwordless';
 
 export class AuthMode extends String {
   constructor(value: string) {
@@ -22,15 +22,15 @@ export class AuthMode extends String {
   }
 
   static login(): AuthMode {
-    return new AuthMode("login");
+    return new AuthMode('login');
   }
 
   static register(): AuthMode {
-    return new AuthMode("register");
+    return new AuthMode('register');
   }
 
   static forgotPassword(): AuthMode {
-    return new AuthMode("forgot_password");
+    return new AuthMode('forgot_password');
   }
 
   get isLogin(): boolean {
@@ -49,8 +49,8 @@ export class AuthMode extends String {
 
   /** Resolves the object into a `AuthView` type */
   toView(): AuthGateMode {
-    if (this.isRegister) return "register";
-    if (this.isPasswordless) return "passwordless";
-    return "login";
+    if (this.isRegister) return 'register';
+    if (this.isPasswordless) return 'passwordless';
+    return 'login';
   }
 }

@@ -4,8 +4,8 @@
  * @directory - src/lib/stripe/config
  * @file - index.ts
  */
-export * from "./consts";
-export * from "./helpers";
-export * from "./options";
-export * from "./products";
-export * from "./types";
+export * from './consts';
+export * from './helpers';
+export * from './options';
+export * from './products';
+export * from './types';

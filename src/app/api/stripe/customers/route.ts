@@ -4,15 +4,15 @@
  * @directory - src/app/api/stripe/customers
  * @file - route.ts
  */
-"use server";
+'use server';
 // imports
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 // project
-import { logger } from "@/lib/logger";
-import { stripeServerClient } from "@/lib/stripe";
-import { ApiResponse } from "@/types";
-import { createServerClient } from "@/lib/supabase";
+import { logger } from '@/lib/logger';
+import { stripeServerClient } from '@/lib/stripe';
+import { ApiResponse } from '@/types';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET(
   req: NextRequest,
@@ -20,13 +20,16 @@ export async function GET(
   const stripe = stripeServerClient();
   const { searchParams } = new URL(req.url);
   // extract the customer id from the query params
-  const customerEmail = searchParams.get("customerEmail")?.toString();
+  const customerEmail = searchParams.get('customerEmail')?.toString();
 
   const customer = await stripe.customers.list({ email: customerEmail });
 
-  return NextResponse.json({ data: customer, error: null }, {
-    status: 200,
-  });
+  return NextResponse.json(
+    { data: customer, error: null },
+    {
+      status: 200,
+    },
+  );
 }
 
 export async function POST(
@@ -35,7 +38,10 @@ export async function POST(
   const stripe = stripeServerClient();
   const supabase = await createServerClient();
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError) {
     logger.error(authError, authError.message);
@@ -46,25 +52,30 @@ export async function POST(
   }
 
   if (!user) {
-    logger.error("Unauthorized - No user found");
+    logger.error('Unauthorized - No user found');
     return NextResponse.json({
-      error: "Unauthorized - No user found",
+      error: 'Unauthorized - No user found',
       data: null,
     });
   }
 
   const formData = await req.formData();
-  const email = formData.get("email")?.toString() || user.email;
-  const username: string | null = formData.get("username")?.toString() ??
-    user?.user_metadata?.username ?? null;
-  const userId = formData.get("userId")?.toString() ?? user?.id ?? null;
+  const email = formData.get('email')?.toString() || user.email;
+  const username: string | null =
+    formData.get('username')?.toString() ??
+    user?.user_metadata?.username ??
+    null;
+  const userId = formData.get('userId')?.toString() ?? user?.id ?? null;
 
   if (!email) {
-    logger.error("Missing `email` parameter");
-    return NextResponse.json({
-      error: "Missing email parameter",
-      data: null,
-    }, { status: 400 });
+    logger.error('Missing `email` parameter');
+    return NextResponse.json(
+      {
+        error: 'Missing email parameter',
+        data: null,
+      },
+      { status: 400 },
+    );
   }
 
   try {
@@ -78,12 +89,12 @@ export async function POST(
 
     // Update Supabase profile with Stripe customer ID
     const { error: dbError } = await supabase
-      .from("profiles")
+      .from('profiles')
       .update({ customer_id: customer.id })
-      .eq("id", String(userId));
+      .eq('id', String(userId));
 
     if (dbError) {
-      logger.error(dbError, "Database Error (supabase): " + dbError.message);
+      logger.error(dbError, 'Database Error (supabase): ' + dbError.message);
       return NextResponse.json(
         { data: null, error: dbError.message },
         { status: 500 },
@@ -101,7 +112,7 @@ export async function POST(
     if (metaError) {
       logger.error(
         metaError,
-        "Supabase metadata update error: " + metaError.message,
+        'Supabase metadata update error: ' + metaError.message,
       );
       return NextResponse.json(
         { data: null, error: metaError.message },
@@ -109,14 +120,11 @@ export async function POST(
       );
     }
 
-    return NextResponse.json(
-      { data: customer, error: null },
-      { status: 201 },
-    );
+    return NextResponse.json({ data: customer, error: null }, { status: 201 });
   } catch (error: unknown) {
-    logger.error(error, "Error creating customer: " + String(error));
+    logger.error(error, 'Error creating customer: ' + String(error));
     return NextResponse.json(
-      { data: null, error: error || "Internal Server Error" },
+      { data: null, error: error || 'Internal Server Error' },
       { status: 500 },
     );
   }

@@ -3,22 +3,22 @@
  * @author - @FL03
  * @file - auth-button.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { VariantProps } from "class-variance-authority";
-import { LogInIcon, LogOutIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import * as React from 'react';
+import { VariantProps } from 'class-variance-authority';
+import { LogInIcon, LogOutIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 // hooks
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from '@/hooks/use-auth';
 // project
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 // components
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from '@/components/ui/button';
 // local
-import { IconButton } from "@/components/common/button";
+import { IconButton } from '@/components/common/button';
 
 type WithButtonVariants<T = {}> = T & VariantProps<typeof buttonVariants>;
 
@@ -37,36 +37,23 @@ export const AuthButton: React.FC<
     onSignIn?(): void;
     onSignOut?(): void;
   }>
-> = ({
-  onSignIn,
-  onSignOut,
-  ...props
-}) => {
-  const { state: { isAuthenticated } } = useAuth();
+> = ({ onSignIn, onSignOut, ...props }) => {
+  const {
+    state: { isAuthenticated },
+  } = useAuth();
   if (isAuthenticated) {
-    return (
-      <LogoutButton
-        {...props}
-        onSignOut={onSignOut}
-      />
-    );
+    return <LogoutButton {...props} onSignOut={onSignOut} />;
   }
-  return (
-    <LoginButton
-      {...props}
-      onSignIn={onSignIn}
-    />
-  );
+  return <LoginButton {...props} onSignIn={onSignIn} />;
 };
-AuthButton.displayName = "AuthButton";
+AuthButton.displayName = 'AuthButton';
 
 // LoginButton
 export const LoginButton: React.FC<
-  & Omit<
+  Omit<
     React.ComponentPropsWithRef<typeof IconButton>,
-    "asChild" | "onClick" | "labelClassName" | "children"
-  >
-  & {
+    'asChild' | 'onClick' | 'labelClassName' | 'children'
+  > & {
     classNames?: ClassNames;
     onError?(error: unknown): void;
     onSignIn?(): void;
@@ -75,8 +62,8 @@ export const LoginButton: React.FC<
   ref,
   className,
   classNames,
-  size = "default",
-  variant = "outline",
+  size = 'default',
+  variant = 'outline',
   onError,
   onSignIn,
   ...props
@@ -86,7 +73,7 @@ export const LoginButton: React.FC<
     <IconButton
       {...props}
       ref={ref}
-      className={cn("transition-colors", className)}
+      className={cn('transition-colors', className)}
       classNames={{ labelClassName: classNames?.labelClassName }}
       size={size}
       variant={variant}
@@ -95,31 +82,31 @@ export const LoginButton: React.FC<
         event.preventDefault();
         event.stopPropagation();
         // trace the event
-        logger.trace("Handling the auth button click event...");
+        logger.trace('Handling the auth button click event...');
         try {
           // use the onSignIn callback before redirecting
           onSignIn?.();
-          router.push("/auth/login");
+          router.push('/auth/login');
         } catch (error) {
-          logger.error({ error }, "Error signing in...");
-          toast.error("Error", {
-            description: "An error occurred during the login",
+          logger.error({ error }, 'Error signing in...');
+          toast.error('Error', {
+            description: 'An error occurred during the login',
           });
           if (onError) onError(error);
           throw error;
         }
       }}
     >
-      <LogInIcon className={cn("size-4", classNames?.iconClassName)} />
+      <LogInIcon className={cn('size-4', classNames?.iconClassName)} />
     </IconButton>
   );
 };
-LoginButton.displayName = "LoginButton";
+LoginButton.displayName = 'LoginButton';
 
 export const LogoutButton: React.FC<
   Omit<
     React.ComponentPropsWithRef<typeof IconButton>,
-    "asChild" | "children" | "onClick" | "labelClassName"
+    'asChild' | 'children' | 'onClick' | 'labelClassName'
   > & {
     classNames?: ClassNames;
     onError?(error: unknown): void;
@@ -129,8 +116,8 @@ export const LogoutButton: React.FC<
   ref,
   className,
   classNames,
-  size = "default",
-  variant = "destructive",
+  size = 'default',
+  variant = 'destructive',
   onError,
   onSignOut,
   ...props
@@ -142,7 +129,7 @@ export const LogoutButton: React.FC<
     <IconButton
       {...props}
       ref={ref}
-      className={cn("transition-colors", className)}
+      className={cn('transition-colors', className)}
       classNames={{ labelClassName: classNames?.labelClassName }}
       size={size}
       variant={variant}
@@ -151,27 +138,27 @@ export const LogoutButton: React.FC<
         event.preventDefault();
         event.stopPropagation();
         // trace the event
-        logger.trace("Handling the auth button click event...");
+        logger.trace('Handling the auth button click event...');
         try {
           await signOut();
-          logger.info("User signed out successfully");
+          logger.info('User signed out successfully');
           if (onSignOut) onSignOut?.();
-          else router.push("/");
+          else router.push('/');
         } catch (error) {
-          logger.error({ error }, "Error signing in...");
-          toast.error("Error", {
-            description: "An error occurred during the login",
+          logger.error({ error }, 'Error signing in...');
+          toast.error('Error', {
+            description: 'An error occurred during the login',
           });
           if (onError) onError(error);
           throw error;
         }
       }}
-      label="Logout"
+      label='Logout'
     >
-      <LogOutIcon className={cn("size-4", classNames?.iconClassName)} />
+      <LogOutIcon className={cn('size-4', classNames?.iconClassName)} />
     </IconButton>
   );
 };
-LogoutButton.displayName = "LogoutButton";
+LogoutButton.displayName = 'LogoutButton';
 
 export default AuthButton;

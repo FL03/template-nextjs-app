@@ -4,13 +4,13 @@
  * @directory - src/app/api/billing
  * @file - route.ts
  */
-"use server";
+'use server';
 // imports
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 // project
-import { stripeServerClient } from "@/lib/stripe";
-import { ApiResponse } from "@/types";
+import { stripeServerClient } from '@/lib/stripe';
+import { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
@@ -26,9 +26,12 @@ export async function GET(
         },
       },
     });
-    return NextResponse.json({ data: portalConfig, error: null }, {
-      status: 200,
-    });
+    return NextResponse.json(
+      { data: portalConfig, error: null },
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     return NextResponse.json({ data: null, error }, { status: 500 });
   }

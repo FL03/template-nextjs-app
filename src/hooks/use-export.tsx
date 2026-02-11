@@ -5,7 +5,7 @@
  * @file - use-export.tsx
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 namespace UseExport {
   export type Props<TData extends string> = {
@@ -21,9 +21,11 @@ namespace UseExport {
   ) => Context<TData>;
 }
 
-export function useExport<TData extends string>(
-  { defaultValue, value, onValueChange }: UseExport.Props<TData> = {},
-): UseExport.Context<TData> {
+export function useExport<TData extends string>({
+  defaultValue,
+  value,
+  onValueChange,
+}: UseExport.Props<TData> = {}): UseExport.Context<TData> {
   const [_data, _setData] = useState<TData | null>(defaultValue ?? null);
 
   useEffect(() => {
@@ -43,21 +45,18 @@ export function useExport<TData extends string>(
     [onValueChange],
   );
 
-  const handleDownload = useCallback(
-    (data: Blob, filename: string) => {
-      if (typeof window === "undefined") return;
-      // create the download link
-      const url = window.URL.createObjectURL(data);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    },
-    [],
-  );
+  const handleDownload = useCallback((data: Blob, filename: string) => {
+    if (typeof window === 'undefined') return;
+    // create the download link
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, []);
 
   const exportData = useCallback(() => {
     return _data;

@@ -4,24 +4,24 @@
  * @directory - src/hooks
  * @file - use-shift.tsx
  */
-"use client";
+'use client';
 // imports
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
-} from "@supabase/supabase-js";
+} from '@supabase/supabase-js';
 // project
-import { deleteShift, getShift, ShiftData } from "@/features/shifts";
-import { logger } from "@/lib/logger";
-import { createBrowserClient } from "@/lib/supabase";
-import { Database } from "@/types/database.types";
+import { deleteShift, getShift, ShiftData } from '@/features/shifts';
+import { logger } from '@/lib/logger';
+import { createBrowserClient } from '@/lib/supabase';
+import { Database } from '@/types/database.types';
 
 namespace UseShift {
   export interface Props {
     shiftId?: string;
     username?: string;
-    supabase?: ReturnType<typeof createBrowserClient<Database, "rms">>;
+    supabase?: ReturnType<typeof createBrowserClient<Database, 'rms'>>;
     onError?: (error?: unknown) => void;
     onValueChange?: (data: ShiftData | null) => void;
     onDelete?: (id?: string) => void;
@@ -54,7 +54,7 @@ export const useShift = ({
   onError,
   onValueChange,
   onDelete,
-  supabase = createBrowserClient<Database, "rms">("rms"),
+  supabase = createBrowserClient<Database, 'rms'>('rms'),
 }: UseShift.Props = {}): UseShift.Context => {
   // initialize the shifts state
   const [_data, _setData] = useState<ShiftData | null>(null);
@@ -70,31 +70,40 @@ export const useShift = ({
     [username, _data?.assignee],
   );
 
-  const state = useMemo<UseShift.State>(() => ({
-    isError: Boolean(_error),
-    isDeleting,
-    isLoading,
-    isOwner,
-    isReloading,
-  }), [isDeleting, isLoading, isOwner, isReloading, _error]);
+  const state = useMemo<UseShift.State>(
+    () => ({
+      isError: Boolean(_error),
+      isDeleting,
+      isLoading,
+      isOwner,
+      isReloading,
+    }),
+    [isDeleting, isLoading, isOwner, isReloading, _error],
+  );
 
-  const _handleChange = useCallback((data: ShiftData | null) => {
-    _setData((prev) => {
-      if (prev == data) return prev;
-      if (onValueChange) onValueChange(data);
-      return data;
-    });
-  }, [onValueChange]);
+  const _handleChange = useCallback(
+    (data: ShiftData | null) => {
+      _setData((prev) => {
+        if (prev == data) return prev;
+        if (onValueChange) onValueChange(data);
+        return data;
+      });
+    },
+    [onValueChange],
+  );
   // handle any errors
-  const _handleError = useCallback((err: unknown) => {
-    _setError((prev) => {
-      const error = err instanceof Error ? err : new Error(String(err));
-      if (prev === err) return prev;
-      if (onError) onError(error.message);
-      logger.error(error, error.message);
-      return error;
-    });
-  }, [onError]);
+  const _handleError = useCallback(
+    (err: unknown) => {
+      _setError((prev) => {
+        const error = err instanceof Error ? err : new Error(String(err));
+        if (prev === err) return prev;
+        if (onError) onError(error.message);
+        logger.error(error, error.message);
+        return error;
+      });
+    },
+    [onError],
+  );
   // create a loader callback
   const _get = useCallback(
     async (id: string): Promise<void> => {
@@ -105,22 +114,23 @@ export const useShift = ({
   // create a delete callback
   const _delete = useCallback(async (): Promise<void> => {
     if (!shiftId) {
-      _handleError("No shift id provided");
-      return Promise.reject("No shift id provided");
+      _handleError('No shift id provided');
+      return Promise.reject('No shift id provided');
     }
     if (!isDeleting) setIsDeleting(true);
-    return await deleteShift(shiftId).then(() => {
-      logger.debug(`Deleted shift with id: ${shiftId}`);
-      _setData(null);
-    }).catch(
-      _handleError,
-    ).finally(() => setIsDeleting(false));
+    return await deleteShift(shiftId)
+      .then(() => {
+        logger.debug(`Deleted shift with id: ${shiftId}`);
+        _setData(null);
+      })
+      .catch(_handleError)
+      .finally(() => setIsDeleting(false));
   }, [shiftId, supabase, _handleError]);
   // define a manual reloader
   const _reload = useCallback(async (): Promise<void> => {
     if (!shiftId) {
-      _handleError("No shift id provided");
-      return Promise.reject("No shift id provided");
+      _handleError('No shift id provided');
+      return Promise.reject('No shift id provided');
     }
     if (!isReloading) setIsReloading(true);
     return await _get(shiftId)
@@ -143,34 +153,33 @@ export const useShift = ({
     });
     _channel.current
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "rms",
-          table: "shifts",
+          event: '*',
+          schema: 'rms',
+          table: 'shifts',
           filter: `id=eq.${shiftId}`,
         },
-        (
-          { eventType, new: newData }: RealtimePostgresChangesPayload<
-            ShiftData
-          >,
-        ) => {
-          logger.trace({ event: eventType }, "Received a profile change event");
-          if (["INSERT", "UPDATE"].includes(eventType)) {
+        ({
+          eventType,
+          new: newData,
+        }: RealtimePostgresChangesPayload<ShiftData>) => {
+          logger.trace({ event: eventType }, 'Received a profile change event');
+          if (['INSERT', 'UPDATE'].includes(eventType)) {
             _handleChange(newData as ShiftData);
-          } else if (eventType === "DELETE") {
+          } else if (eventType === 'DELETE') {
             _handleChange(null);
           }
         },
       )
       .subscribe((status) => {
-        if (status === "SUBSCRIBED") {
+        if (status === 'SUBSCRIBED') {
           logger.debug(`Subscribed to shifts changes for id: ${shiftId}`);
-        } else if (status === "TIMED_OUT") {
+        } else if (status === 'TIMED_OUT') {
           logger.warn(
             `Subscription to shifts changes timed out for id: ${shiftId}`,
           );
-        } else if (status === "CLOSED") {
+        } else if (status === 'CLOSED') {
           logger.warn(
             `Subscription to shifts changes closed for id: ${shiftId}`,
           );

@@ -4,5 +4,5 @@
  * @directory - src/components/common/fields
  * @file - index.ts
  */
-export * from "./date-field";
-export * from "./field-editor";
+export * from './date-field';
+export * from './field-editor';

@@ -3,10 +3,10 @@
  * @author - @FL03
  * @file - @leading/page.tsx
  */
-"use client";
-import { ShiftDashboardLeading } from "@/features/shifts";
+'use client';
+import { ShiftDashboardLeading } from '@/features/shifts';
 
 export default function Page() {
   return <ShiftDashboardLeading />;
 }
-Page.displayName = "ShiftDashboardLeadingView";
+Page.displayName = 'ShiftDashboardLeadingView';

@@ -4,4 +4,4 @@
  * @directory - src/features/platform/utils
  * @file - index.ts
  */
-export * from "./server";
+export * from './server';

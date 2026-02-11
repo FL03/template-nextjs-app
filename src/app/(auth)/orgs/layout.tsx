@@ -5,17 +5,15 @@
  * @file - layout.tsx
  */
 // imports
-import { OrganizationsProvider } from "@/features/orgs";
+import { OrganizationsProvider } from '@/features/orgs';
 
-export default function Layout(
-  { children }: Readonly<React.PropsWithChildren>,
-) {
+export default function Layout({
+  children,
+}: Readonly<React.PropsWithChildren>) {
   return (
     <OrganizationsProvider>
-      <div className="container mx-auto flex-1 h-full w-full">
-        {children}
-      </div>
+      <div className='container mx-auto flex-1 h-full w-full'>{children}</div>
     </OrganizationsProvider>
   );
 }
-Layout.displayName = "OrgsLayout";
+Layout.displayName = 'OrgsLayout';

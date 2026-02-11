@@ -4,6 +4,6 @@
  * @directory - src/features/billing/widgets/ext
  * @file - index.ts
  */
-export * from "./checkout-form";
-export * from "./express-checkout-button";
-export * from "./pricing-table";
+export * from './checkout-form';
+export * from './express-checkout-button';
+export * from './pricing-table';

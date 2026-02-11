@@ -1,8 +1,8 @@
 // message-card.tsx
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
 import {
   Card,
@@ -12,19 +12,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 /** A scaffold for a common card component often used to render text-based content.  */
 export const ContentCard: React.FC<
-  & React.PropsWithChildren<
-    Omit<React.ComponentPropsWithRef<"div">, "title" | "action">
-  >
-  & {
+  React.PropsWithChildren<
+    Omit<React.ComponentPropsWithRef<'div'>, 'title' | 'action'>
+  > & {
     action?: React.ReactNode;
     title?: React.ReactNode;
     description?: React.ReactNode;
     classNames?: ClassNames<
-      "action" | "content" | "description" | "header" | "title"
+      'action' | 'content' | 'description' | 'header' | 'title'
     >;
     hideTitle?: boolean;
     showDescription?: boolean;
@@ -44,17 +43,15 @@ export const ContentCard: React.FC<
   <Card
     {...props}
     ref={ref}
-    className={cn("flex flex-1 flex-col h-full w-full", className)}
+    className={cn('flex flex-1 flex-col h-full w-full', className)}
   >
-    <CardContent
-      className={cn("flex-1 h-full w-full")}
-    >
-      <CardHeader className={cn("w-full", classNames?.headerClassName)}>
+    <CardContent className={cn('flex-1 h-full w-full')}>
+      <CardHeader className={cn('w-full', classNames?.headerClassName)}>
         <CardTitle
           hidden={!title}
           className={cn(
-            "text-xl",
-            hideTitle ? "sr-only" : "not-sr-only",
+            'text-xl',
+            hideTitle ? 'sr-only' : 'not-sr-only',
             classNames?.titleClassName,
           )}
         >
@@ -63,7 +60,7 @@ export const ContentCard: React.FC<
         <CardDescription
           hidden={!description}
           className={cn(
-            showDescription ? "not-sr-only" : "sr-only",
+            showDescription ? 'not-sr-only' : 'sr-only',
             classNames?.descriptionClassName,
           )}
         >
@@ -78,7 +75,7 @@ export const ContentCard: React.FC<
       <CardFooter
         hidden={!children}
         className={cn(
-          "flex flex-1 items-center justify-center h-full w-full",
+          'flex flex-1 items-center justify-center h-full w-full',
           classNames?.contentClassName,
         )}
       >
@@ -87,4 +84,4 @@ export const ContentCard: React.FC<
     </CardContent>
   </Card>
 );
-ContentCard.displayName = "ContentCard";
+ContentCard.displayName = 'ContentCard';

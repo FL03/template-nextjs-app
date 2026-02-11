@@ -4,13 +4,13 @@
  * @directory - src/components/common
  * @file - details.tsx
  */
-"use client";
+'use client';
 //imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { BackButton } from "@/components/common/button";
+import { BackButton } from '@/components/common/button';
 import {
   Tile,
   TileContent,
@@ -18,49 +18,47 @@ import {
   TileLeading,
   TileTitle,
   TileTrailing,
-} from "@/components/common/tile";
+} from '@/components/common/tile';
 
 /** The `DetailScaffold` component renders a common layout for detail-oriented, single-item views. */
 export const DetailScaffold: React.FC<
-  & Omit<React.ComponentPropsWithRef<"div">, "title">
-  & React.PropsWithChildren<{
-    leading?: React.ReactNode;
-    trailing?: React.ReactNode;
-    description?: React.ReactNode;
-    title?: React.ReactNode;
-    withBack?: boolean;
-    showDescription?: boolean;
-    classNames?: {
-      contentClassName?: string;
-      descriptionClassName?: string;
-      titleClassName?: string;
-      trailingClassName?: string;
-    };
-  }>
-> = (
-  {
-    ref,
-    children,
-    className,
-    description,
-    leading,
-    title,
-    trailing,
-    withBack,
-    showDescription,
-    classNames = {},
-    ...props
-  },
-) => (
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> &
+    React.PropsWithChildren<{
+      leading?: React.ReactNode;
+      trailing?: React.ReactNode;
+      description?: React.ReactNode;
+      title?: React.ReactNode;
+      withBack?: boolean;
+      showDescription?: boolean;
+      classNames?: {
+        contentClassName?: string;
+        descriptionClassName?: string;
+        titleClassName?: string;
+        trailingClassName?: string;
+      };
+    }>
+> = ({
+  ref,
+  children,
+  className,
+  description,
+  leading,
+  title,
+  trailing,
+  withBack,
+  showDescription,
+  classNames = {},
+  ...props
+}) => (
   <div
     ref={ref}
     className={cn(
-      "relative z-auto flex flex-1 flex-col min-h-full w-full gap-4 lg:gap-6",
+      'relative z-auto flex flex-1 flex-col min-h-full w-full gap-4 lg:gap-6',
       className,
     )}
     {...props}
   >
-    <Tile className="order-first">
+    <Tile className='order-first'>
       <TileLeading>
         {withBack && <BackButton />}
         {leading}
@@ -68,16 +66,14 @@ export const DetailScaffold: React.FC<
       <TileContent>
         {title && (
           <TileTitle
-            className={cn("text-xl font-bold", classNames?.titleClassName)}
+            className={cn('text-xl font-bold', classNames?.titleClassName)}
           >
             {title}
           </TileTitle>
         )}
         {description && (
           <TileDescription
-            className={cn(
-              classNames?.descriptionClassName,
-            )}
+            className={cn(classNames?.descriptionClassName)}
             hidden={!showDescription}
           >
             {description}
@@ -92,7 +88,7 @@ export const DetailScaffold: React.FC<
     </Tile>
     <section
       className={cn(
-        "order-last flex flex-1 flex-col h-full w-full gap-4 lg:gap-6",
+        'order-last flex flex-1 flex-col h-full w-full gap-4 lg:gap-6',
         classNames?.contentClassName,
       )}
     >
@@ -100,4 +96,4 @@ export const DetailScaffold: React.FC<
     </section>
   </div>
 );
-DetailScaffold.displayName = "DetailScaffold";
+DetailScaffold.displayName = 'DetailScaffold';

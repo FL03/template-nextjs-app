@@ -4,26 +4,28 @@
  * @directory - src/features/shifts/views
  * @file - shift-details-page.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import dynamic from "next/dynamic";
+import * as React from 'react';
+import dynamic from 'next/dynamic';
 
 type ScreenProps = {
   shiftId?: string;
   username?: string;
-  defaultMode?: "read" | "update";
-  mode?: "read" | "update";
+  defaultMode?: 'read' | 'update';
+  mode?: 'read' | 'update';
 };
 
 /** A view responsible for rendering the details of a particular shift */
-export const ShiftDetailsView: React.FC<ScreenProps> = (
-  { shiftId, username, defaultMode = "read", mode },
-) => {
+export const ShiftDetailsView: React.FC<ScreenProps> = ({
+  shiftId,
+  username,
+  defaultMode = 'read',
+  mode,
+}) => {
   const ShiftDetails = dynamic(
-    async () => (
-      await import("../widgets/shift-details").then((mod) => mod.ShiftDetails)
-    ),
+    async () =>
+      await import('../widgets/shift-details').then((mod) => mod.ShiftDetails),
     {
       ssr: false,
     },
@@ -37,6 +39,6 @@ export const ShiftDetailsView: React.FC<ScreenProps> = (
     />
   );
 };
-ShiftDetailsView.displayName = "ShiftDetailsView";
+ShiftDetailsView.displayName = 'ShiftDetailsView';
 
 export default ShiftDetailsView;

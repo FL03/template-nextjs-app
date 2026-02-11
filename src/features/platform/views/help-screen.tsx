@@ -3,24 +3,24 @@
  * @author - @FL03
  * @file - sample-screen.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // components
-import { ArticleCard } from "@/components/common/articles";
-import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
+import { ArticleCard } from '@/components/common/articles';
+import { Item, ItemContent, ItemDescription } from '@/components/ui/item';
 
 export const HelpPage: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof ArticleCard>,
-    "author" | "description" | "title" | "children"
+    'author' | 'description' | 'title' | 'children'
   >
 > = ({ ...props }) => (
   <ArticleCard
     {...props}
     showDescription
-    title="Frequently Asked Questions (FAQ)"
-    description="Find answers to common questions about using the Puzzled app."
+    title='Frequently Asked Questions (FAQ)'
+    description='Find answers to common questions about using the Puzzled app.'
   >
     <Item>
       <ItemContent>
@@ -34,6 +34,6 @@ export const HelpPage: React.FC<
     </Item>
   </ArticleCard>
 );
-HelpPage.displayName = "HelpPage";
+HelpPage.displayName = 'HelpPage';
 
 export default HelpPage;

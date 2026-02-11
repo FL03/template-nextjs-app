@@ -4,20 +4,20 @@
  * @description - types for notification related features
  * @file - types.ts
  */
-import { Database } from "@/types/database.types";
+import { Database } from '@/types/database.types';
 
 export type NotificationData =
-  Database["account"]["Tables"]["notifications"]["Row"];
+  Database['account']['Tables']['notifications']['Row'];
 
 export type NotificationInsert =
-  Database["account"]["Tables"]["notifications"]["Insert"];
+  Database['account']['Tables']['notifications']['Insert'];
 
 export type NotificationUpdate =
-  Database["account"]["Tables"]["notifications"]["Update"];
+  Database['account']['Tables']['notifications']['Update'];
 
-  export type NotificationUpsert = Omit<Partial<NotificationData>, "id"> & {
-    id: string;
-  };
+export type NotificationUpsert = Omit<Partial<NotificationData>, 'id'> & {
+  id: string;
+};
 
 export type Notification =
   | NotificationData

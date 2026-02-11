@@ -4,11 +4,11 @@
  * @directory - src/components/common/calendar
  * @file - provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 type SelectedContext<TData> = {
   selected: TData;
@@ -22,13 +22,13 @@ const CalendarContext = React.createContext<CalendarContext | null>(null);
 export const useCalendar = () => {
   const context = React.useContext(CalendarContext);
   if (!context) {
-    throw new Error("useCalendar must be used within a CalendarProvider");
+    throw new Error('useCalendar must be used within a CalendarProvider');
   }
   return context;
 };
 
 export const CalendarProvider: React.FC<
-  React.PropsWithChildren<React.ComponentPropsWithRef<"div">>
+  React.PropsWithChildren<React.ComponentPropsWithRef<'div'>>
 > = ({ ref, className, ...props }) => {
   // initialize the selected state
   const [_selected, _setSelected] = React.useState<Date>(new Date());
@@ -44,10 +44,10 @@ export const CalendarProvider: React.FC<
     <CalendarContext.Provider value={ctx}>
       <div
         ref={ref}
-        className={cn("flex-1 h-full w-full", className)}
+        className={cn('flex-1 h-full w-full', className)}
         {...props}
       />
     </CalendarContext.Provider>
   );
 };
-CalendarProvider.displayName = "CalendarProvider";
+CalendarProvider.displayName = 'CalendarProvider';

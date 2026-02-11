@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - clock/index.ts
  */
-export * from "./clock-context-menu";
-export * from "./clock-view";
-export * from "./clock-provider";
-export * from "./types";
+export * from './clock-context-menu';
+export * from './clock-view';
+export * from './clock-provider';
+export * from './types';

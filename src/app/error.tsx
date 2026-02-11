@@ -3,14 +3,14 @@
  * @author - @FL03
  * @file - error/page.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import type { Metadata } from "next";
+import * as React from 'react';
+import type { Metadata } from 'next';
 // project
-import { ErrorCard } from "@/components/common/error";
-import { logger } from "@/lib/logger";
-import { BackButton } from "@/components/common/button";
+import { ErrorCard } from '@/components/common/error';
+import { logger } from '@/lib/logger';
+import { BackButton } from '@/components/common/button';
 
 export default function Error({
   error,
@@ -25,15 +25,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="container mx-auto flex flex-1 flex-col h-full w-full">
-      <section className="order-first flex flex-nowrap items-center gap-2">
+    <div className='container mx-auto flex flex-1 flex-col h-full w-full'>
+      <section className='order-first flex flex-nowrap items-center gap-2'>
         <BackButton />
       </section>
-      <section className="flex flex-1 flex-nowrap items-center justify-center">
-        <ErrorCard
-          status={error.digest || "500"}
-          reset={reset}
-        >
+      <section className='flex flex-1 flex-nowrap items-center justify-center'>
+        <ErrorCard status={error.digest || '500'} reset={reset}>
           {error.message}
         </ErrorCard>
       </section>
@@ -43,6 +40,6 @@ export default function Error({
 
 // page metadata
 export const metadata: Metadata = {
-  description: "Encountered an error while trying to load this page.",
-  title: "Error",
+  description: 'Encountered an error while trying to load this page.',
+  title: 'Error',
 };

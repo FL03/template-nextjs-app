@@ -4,9 +4,9 @@
  * @directory - src/features/auth/utils
  * @file - server.ts
  */
-"use server";
+'use server';
 // imports
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 import {
   AuthOtpResponse,
   AuthTokenResponsePassword,
@@ -17,11 +17,11 @@ import {
   SignInWithPasswordlessCredentials,
   SignUpWithPasswordCredentials,
   User,
-} from "@supabase/supabase-js";
+} from '@supabase/supabase-js';
 // project
-import { resolveOrigin } from "@/lib/utils";
-import { logger } from "@/lib/logger";
-import { createServerClient } from "@/lib/supabase";
+import { resolveOrigin } from '@/lib/utils';
+import { logger } from '@/lib/logger';
+import { createServerClient } from '@/lib/supabase';
 
 interface UserRegistrationData {
   email: string;
@@ -31,14 +31,14 @@ interface UserRegistrationData {
 }
 export const handleRegistration = async (
   { email, password, passwordConfirm, username }: UserRegistrationData,
-  options?: SignUpWithPasswordCredentials["options"],
+  options?: SignUpWithPasswordCredentials['options'],
 ): Promise<{
   error: string | null;
   user: User | null;
   session: Session | null;
 }> => {
   if (password !== passwordConfirm) {
-    throw new Error("Passwords do not match...");
+    throw new Error('Passwords do not match...');
   }
   const supabase = await createServerClient();
 
@@ -52,14 +52,14 @@ export const handleRegistration = async (
         ...options?.data,
         username,
       },
-      emailRedirectTo: new URL("/auth/callback", resolveOrigin()).toString(),
+      emailRedirectTo: new URL('/auth/callback', resolveOrigin()).toString(),
     },
   });
   if (error) {
     logger.error(error, error.message);
     throw { data, error: error.message };
   }
-  redirect("/auth/verify?email=true");
+  redirect('/auth/verify?email=true');
 };
 
 /**
@@ -69,14 +69,14 @@ export const handleRegistration = async (
  */
 export const loginWithEmailPassword = async (
   credentials: SignInWithPasswordCredentials,
-): Promise<AuthTokenResponsePassword["data"]> => {
+): Promise<AuthTokenResponsePassword['data']> => {
   // create a new supabase client
   const supabase = await createServerClient();
   // sign in with the email and password
   const { data, error } = await supabase.auth.signInWithPassword(credentials);
   // check for errors
   if (error) {
-    logger.error(error, "Failed to authenticate with email and password");
+    logger.error(error, 'Failed to authenticate with email and password');
     throw new Error(error.message);
   }
 
@@ -89,13 +89,13 @@ export const loginWithEmailPassword = async (
  */
 export const loginWithOAuth = async (
   values: SignInWithOAuthCredentials,
-): Promise<OAuthResponse["data"]> => {
+): Promise<OAuthResponse['data']> => {
   const supabase = await createServerClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth(values);
   // check for errors
   if (error) {
-    logger.error(error, "Error authenticating with OAuth provider");
+    logger.error(error, 'Error authenticating with OAuth provider');
     throw new Error(error.message);
   }
   return data;
@@ -106,7 +106,7 @@ export const loginWithOAuth = async (
  */
 export const loginWithoutPassword = async (
   values: SignInWithPasswordlessCredentials,
-): Promise<AuthOtpResponse["data"]> => {
+): Promise<AuthOtpResponse['data']> => {
   const supabase = await createServerClient();
 
   const { data, error } = await supabase.auth.signInWithOtp(values);
@@ -114,14 +114,14 @@ export const loginWithoutPassword = async (
   if (error) {
     logger.error(
       error,
-      "Error authenticating using the passwordless flow; please try again.",
+      'Error authenticating using the passwordless flow; please try again.',
     );
     throw new Error(error.message);
   }
   // check for data
   if (!data) {
-    logger.error("No data returned from passwordless sign in");
-    throw new Error("No data returned from passwordless sign in");
+    logger.error('No data returned from passwordless sign in');
+    throw new Error('No data returned from passwordless sign in');
   }
   return data;
 };

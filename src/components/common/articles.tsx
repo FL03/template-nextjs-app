@@ -4,12 +4,12 @@
  * @directory - src/components/common/cards
  * @file - content-card.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
 import {
   Card,
@@ -18,7 +18,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 export const ArticleCard: React.FC<
   React.ComponentPropsWithRef<typeof Card> & {
@@ -29,43 +29,41 @@ export const ArticleCard: React.FC<
     showDescription?: boolean;
     withFooter?: boolean;
     classNames?: ClassNames<
-      "content" | "description" | "header" | "footer" | "title"
+      'content' | 'description' | 'header' | 'footer' | 'title'
     >;
   }
-> = (
-  {
-    ref,
-    author,
-    children,
-    className,
-    classNames,
-    description,
-    footer,
-    title,
-    showDescription,
-    withFooter,
-    ...props
-  },
-) => (
+> = ({
+  ref,
+  author,
+  children,
+  className,
+  classNames,
+  description,
+  footer,
+  title,
+  showDescription,
+  withFooter,
+  ...props
+}) => (
   <Card
     ref={ref}
     className={cn(
-      "relative z-auto flex flex-1 flex-col h-full w-full",
+      'relative z-auto flex flex-1 flex-col h-full w-full',
       className,
     )}
     {...props}
   >
-    <CardHeader className={cn("pb-2", classNames?.headerClassName)}>
+    <CardHeader className={cn('pb-2', classNames?.headerClassName)}>
       <CardTitle
-        className={cn("text-lg font-semibold", classNames?.titleClassName)}
+        className={cn('text-lg font-semibold', classNames?.titleClassName)}
         hidden={!title}
       >
         {title}
       </CardTitle>
       <CardDescription
         className={cn(
-          "text-sm text-muted-foreground",
-          showDescription ? "not-sr-only" : "sr-only",
+          'text-sm text-muted-foreground',
+          showDescription ? 'not-sr-only' : 'sr-only',
           classNames?.descriptionClassName,
         )}
         hidden={!description}
@@ -75,7 +73,7 @@ export const ArticleCard: React.FC<
     </CardHeader>
     <CardContent
       className={cn(
-        "flex flex-1 flex-col h-full w-full gap-1",
+        'flex flex-1 flex-col h-full w-full gap-1',
         classNames?.contentClassName,
       )}
     >
@@ -85,18 +83,18 @@ export const ArticleCard: React.FC<
     {footer && (
       <CardFooter
         className={cn(
-          "order-last flex items-center w-full",
+          'order-last flex items-center w-full',
           classNames?.footerClassName,
         )}
       >
         {author && (
-          <div className="inline-flex flex-nowrap items-center justify-end gap-1 right-0">
-            <span className="text-muted-foreground">Author:</span>
-            <span className="font-semibold">{author}</span>
+          <div className='inline-flex flex-nowrap items-center justify-end gap-1 right-0'>
+            <span className='text-muted-foreground'>Author:</span>
+            <span className='font-semibold'>{author}</span>
           </div>
         )}
       </CardFooter>
     )}
   </Card>
 );
-ArticleCard.displayName = "ContentCard";
+ArticleCard.displayName = 'ContentCard';

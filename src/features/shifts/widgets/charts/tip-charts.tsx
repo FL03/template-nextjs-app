@@ -3,28 +3,25 @@
  * @author - @FL03
  * @file - tip-charts.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import dynamic from "next/dynamic";
+import * as React from 'react';
+import dynamic from 'next/dynamic';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoadingScaffold } from "@/components/common/loading";
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LoadingScaffold } from '@/components/common/loading';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 export const EarnedTipChartTabs: React.FC<
-  Omit<
-    React.ComponentPropsWithRef<typeof Tabs>,
-    "children"
-  > & {
+  Omit<React.ComponentPropsWithRef<typeof Tabs>, 'children'> & {
     ssr?: boolean;
   }
 > = ({
@@ -32,19 +29,21 @@ export const EarnedTipChartTabs: React.FC<
   className,
   value,
   onValueChange,
-  defaultValue = "daily",
+  defaultValue = 'daily',
   ssr = false,
   ...props
 }) => {
   const [tab, setTab] = React.useState<string>(defaultValue);
   // handle changes to the current tab
-  const handleTabChange = React.useCallback((nxt: string) => (
-    setTab((prev) => {
-      if (prev === nxt) return prev;
-      if (onValueChange) onValueChange(nxt);
-      return nxt;
-    })
-  ), [onValueChange]);
+  const handleTabChange = React.useCallback(
+    (nxt: string) =>
+      setTab((prev) => {
+        if (prev === nxt) return prev;
+        if (onValueChange) onValueChange(nxt);
+        return nxt;
+      }),
+    [onValueChange],
+  );
   // synchronize the local state with the external one
   React.useEffect(() => {
     if (value && value !== tab) {
@@ -52,54 +51,45 @@ export const EarnedTipChartTabs: React.FC<
     }
   }, [tab, value]);
 
-  const TipsByDayOfWeek = dynamic(
-    async () => await import("./tips-by-day"),
-    { ssr, loading: () => <LoadingScaffold /> },
-  );
+  const TipsByDayOfWeek = dynamic(async () => await import('./tips-by-day'), {
+    ssr,
+    loading: () => <LoadingScaffold />,
+  });
 
-  const TipsOverTime = dynamic(
-    async () => await import("./tips-over-time"),
-    { ssr, loading: () => <LoadingScaffold /> },
-  );
+  const TipsOverTime = dynamic(async () => await import('./tips-over-time'), {
+    ssr,
+    loading: () => <LoadingScaffold />,
+  });
 
   return (
     <Card
       className={cn(
-        "relative z-auto flex flex-1 flex-col h-full w-full",
+        'relative z-auto flex flex-1 flex-col h-full w-full',
         className,
       )}
     >
-      <CardContent className="flex flex-1 flex-col w-full px-0">
-        <Tabs
-          {...props}
-          ref={ref}
-          onValueChange={handleTabChange}
-          value={tab}
-        >
-          <CardHeader className="flex flex-nowrap items-center justify-center gap-4 px-6">
+      <CardContent className='flex flex-1 flex-col w-full px-0'>
+        <Tabs {...props} ref={ref} onValueChange={handleTabChange} value={tab}>
+          <CardHeader className='flex flex-nowrap items-center justify-center gap-4 px-6'>
             <TabsList
-              defaultValue="daily"
-              className="mx-auto justify-self-center"
+              defaultValue='daily'
+              className='mx-auto justify-self-center'
             >
-              <div className="flex flex-nowrap gap-2 w-full">
-                <TabsTrigger value="daily" asChild>
-                  <Button variant="ghost">
-                    By Day
-                  </Button>
+              <div className='flex flex-nowrap gap-2 w-full'>
+                <TabsTrigger value='daily' asChild>
+                  <Button variant='ghost'>By Day</Button>
                 </TabsTrigger>
-                <TabsTrigger asChild value="historical">
-                  <Button variant="ghost">
-                    Over Time
-                  </Button>
+                <TabsTrigger asChild value='historical'>
+                  <Button variant='ghost'>Over Time</Button>
                 </TabsTrigger>
               </div>
             </TabsList>
           </CardHeader>
-          <CardFooter className="p-0 flex flex-1 items-center h-full w-full">
-            <TabsContent value="daily">
+          <CardFooter className='p-0 flex flex-1 items-center h-full w-full'>
+            <TabsContent value='daily'>
               <TipsByDayOfWeek showDescription />
             </TabsContent>
-            <TabsContent value="historical">
+            <TabsContent value='historical'>
               <TipsOverTime showDescription />
             </TabsContent>
           </CardFooter>
@@ -108,4 +98,4 @@ export const EarnedTipChartTabs: React.FC<
     </Card>
   );
 };
-EarnedTipChartTabs.displayName = "EarnedTipChartTabs";
+EarnedTipChartTabs.displayName = 'EarnedTipChartTabs';

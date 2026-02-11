@@ -4,4 +4,4 @@
  * @directory - src/components/common/data-list
  * @file - index.ts
  */
-export * from "./data-list";
+export * from './data-list';

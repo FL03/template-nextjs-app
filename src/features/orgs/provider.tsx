@@ -4,11 +4,11 @@
  * @directory - src/features/orgs/providers
  * @file - orgs-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // hooks
-import { useOrgs } from "@/hooks/use-orgs";
+import { useOrgs } from '@/hooks/use-orgs';
 // local
 
 type OrganizationsContext = {} & ReturnType<typeof useOrgs>;
@@ -25,15 +25,15 @@ export const useOrganizations = (): OrganizationsContext => {
   const context = React.useContext(OrganizationsContext);
   if (!context) {
     throw new Error(
-      "The `useOrganizations` hook must be used within the bounds of an OrganizationsProvider.",
+      'The `useOrganizations` hook must be used within the bounds of an OrganizationsProvider.',
     );
   }
   return context;
 };
 
-export const OrganizationsProvider: React.FC<React.PropsWithChildren> = (
-  { children },
-) => {
+export const OrganizationsProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const { data, ...hook } = useOrgs({});
   // memoize the context
   const ctx = React.useMemo(

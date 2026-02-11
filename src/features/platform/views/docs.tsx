@@ -4,34 +4,28 @@
  * @directory - src/features/platform/views
  * @file - docs.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // local
-import Docs from "@/content/docs.mdx";
+import Docs from '@/content/docs.mdx';
 // components
-import { ArticleCard } from "@/components/common/articles";
+import { ArticleCard } from '@/components/common/articles';
 
 export const DocsScreen: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof ArticleCard>,
-    "author" | "children"
+    'author' | 'children'
   >
-> = (
-  {
-    description = "A little bit Docs the software and its capabilities.",
-    title = "Docs",
-    ...props
-  },
-) => (
-  <ArticleCard
-    {...props}
-    description={description}
-    title={title}
-  >
+> = ({
+  description = 'A little bit Docs the software and its capabilities.',
+  title = 'Docs',
+  ...props
+}) => (
+  <ArticleCard {...props} description={description} title={title}>
     <Docs />
   </ArticleCard>
 );
-DocsScreen.displayName = "DocsScreen";
+DocsScreen.displayName = 'DocsScreen';
 
 export default DocsScreen;

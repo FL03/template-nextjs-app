@@ -4,23 +4,23 @@
  * @directory - src/hooks
  * @file - use-organizations.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 import {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
-} from "@supabase/supabase-js";
+} from '@supabase/supabase-js';
 // project
-import { logger } from "@/lib/logger";
-import { createBrowserClient } from "@/lib/supabase";
-import { OrgsDatabase } from "@/types/database.types";
+import { logger } from '@/lib/logger';
+import { createBrowserClient } from '@/lib/supabase';
+import { OrgsDatabase } from '@/types/database.types';
 // feature
 import {
   deleteOrganization,
   fetchOrganizations,
   OrganizationData,
-} from "@/features/orgs";
+} from '@/features/orgs';
 
 namespace UseOrgs {
   export interface State {
@@ -39,7 +39,7 @@ namespace UseOrgs {
   }
 
   export type Props = {
-    supabase?: ReturnType<typeof createBrowserClient<OrgsDatabase, "orgs">>;
+    supabase?: ReturnType<typeof createBrowserClient<OrgsDatabase, 'orgs'>>;
     userId?: string;
     onError?(error: Error): void;
     onDataChange?(data: OrganizationData[] | null): void;
@@ -51,14 +51,12 @@ namespace UseOrgs {
  * The `useOrgs` hook works to materialize the `orgs.organizations` table locally. The hook provides access to the
  * organizations the user is _entitled_ to see, as well as methods to delete and reload the organizations.
  */
-export const useOrgs: UseOrgs.Callback = (
-  {
-    supabase = createBrowserClient<OrgsDatabase, "orgs">("orgs"),
-    userId,
-    onError,
-    onDataChange,
-  } = {},
-) => {
+export const useOrgs: UseOrgs.Callback = ({
+  supabase = createBrowserClient<OrgsDatabase, 'orgs'>('orgs'),
+  userId,
+  onError,
+  onDataChange,
+} = {}) => {
   // declare state
   const [_data, _setData] = React.useState<OrganizationData[]>([]);
   const [_error, _setError] = React.useState<Error | null>(null);
@@ -69,13 +67,16 @@ export const useOrgs: UseOrgs.Callback = (
   const [isReloading, setIsReloading] = React.useState<boolean>(false);
   const [isUpdating] = React.useState<boolean>(false);
 
-  const state = React.useMemo<UseOrgs.State>(() => ({
-    isError: Boolean(_error),
-    isDeleting,
-    isLoading,
-    isReloading,
-    isUpdating,
-  }), [_error, isDeleting, isLoading, isReloading, isUpdating]);
+  const state = React.useMemo<UseOrgs.State>(
+    () => ({
+      isError: Boolean(_error),
+      isDeleting,
+      isLoading,
+      isReloading,
+      isUpdating,
+    }),
+    [_error, isDeleting, isLoading, isReloading, isUpdating],
+  );
 
   const _handleChange = React.useCallback(
     (value?: OrganizationData[] | null): void => {
@@ -90,50 +91,41 @@ export const useOrgs: UseOrgs.Callback = (
   );
 
   const _handleError = React.useCallback(
-    (err: unknown = "An unknown error occurred.") => (
+    (err: unknown = 'An unknown error occurred.') =>
       _setError((prev) => {
         const error = err instanceof Error ? err : new Error(String(err));
         if (prev === error) return prev;
         onError?.(error);
         return error;
-      })
-    ),
+      }),
     [onError],
   );
 
   const _get = React.useCallback(
-    async (
-      query?: { filterBy?: string; limit?: number; orderBy?: string },
-    ): Promise<void> => (
-      await fetchOrganizations(query).then(_handleChange).catch(
-        _handleError,
-      )
-    ),
-    [
-      _handleChange,
-      _handleError,
-    ],
+    async (query?: {
+      filterBy?: string;
+      limit?: number;
+      orderBy?: string;
+    }): Promise<void> =>
+      await fetchOrganizations(query).then(_handleChange).catch(_handleError),
+    [_handleChange, _handleError],
   );
 
   const _delete = React.useCallback(
-    async (
-      id: string,
-    ): Promise<void> => {
+    async (id: string): Promise<void> => {
       if (!isDeleting) setIsDeleting(true);
-      logger.trace({ id }, "Deleting organization...");
-      return await deleteOrganization(id).then(() => (
-        _setData((prev) => prev.filter((item) => item.id !== id))
-      )).catch(_handleError).finally(() => setIsDeleting(false));
+      logger.trace({ id }, 'Deleting organization...');
+      return await deleteOrganization(id)
+        .then(() => _setData((prev) => prev.filter((item) => item.id !== id)))
+        .catch(_handleError)
+        .finally(() => setIsDeleting(false));
     },
-    [
-      isDeleting,
-      _handleError,
-    ],
+    [isDeleting, _handleError],
   );
 
   const reload = React.useCallback(async (): Promise<void> => {
     if (isLoading) {
-      logger.warn("Already loading the organizations; skipping reload.");
+      logger.warn('Already loading the organizations; skipping reload.');
       return;
     }
     if (!isReloading) setIsReloading(true);
@@ -141,52 +133,49 @@ export const useOrgs: UseOrgs.Callback = (
   }, [_get, isLoading, isReloading]);
 
   const _initChannel = React.useCallback(
-    (
-      { key = "created_by", value }: Partial<
-        { key: keyof OrganizationData; value: string }
-      > = {},
-    ) => (
-      supabase.realtime.channel(`orgs_${key}=${value}`, {
-        config: { private: false },
-      }).on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "orgs",
-          table: "organizations",
-          filter: `${key}=eq.${value}`,
-        },
-        (
-          { eventType, ...payload }: RealtimePostgresChangesPayload<
-            OrganizationData
-          >,
-        ) => {
-          logger.trace(
-            { event: eventType },
-            "Detected changes within the orgs.organizations table...",
-          );
-          const newData = payload.new as OrganizationData;
-          if (eventType === "DELETE") {
+    ({
+      key = 'created_by',
+      value,
+    }: Partial<{ key: keyof OrganizationData; value: string }> = {}) =>
+      supabase.realtime
+        .channel(`orgs_${key}=${value}`, {
+          config: { private: false },
+        })
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'orgs',
+            table: 'organizations',
+            filter: `${key}=eq.${value}`,
+          },
+          ({
+            eventType,
+            ...payload
+          }: RealtimePostgresChangesPayload<OrganizationData>) => {
             logger.trace(
-              "Removing deleted organization from the local state...",
+              { event: eventType },
+              'Detected changes within the orgs.organizations table...',
             );
-            _setData((prev) => (
-              !prev ? prev : prev.filter((item) => item.id !== newData.id)
-            ));
-          }
-          if (eventType === "INSERT") {
-            _setData((prev) => [newData, ...prev]);
-          }
-          if (eventType === "UPDATE") {
-            _setData((prev) => (
-              prev.map((item) => (
-                item.id === newData.id ? newData : item
-              ))
-            ));
-          }
-        },
-      )
-    ),
+            const newData = payload.new as OrganizationData;
+            if (eventType === 'DELETE') {
+              logger.trace(
+                'Removing deleted organization from the local state...',
+              );
+              _setData((prev) =>
+                !prev ? prev : prev.filter((item) => item.id !== newData.id),
+              );
+            }
+            if (eventType === 'INSERT') {
+              _setData((prev) => [newData, ...prev]);
+            }
+            if (eventType === 'UPDATE') {
+              _setData((prev) =>
+                prev.map((item) => (item.id === newData.id ? newData : item)),
+              );
+            }
+          },
+        ),
     [supabase.realtime, _channel],
   );
 
@@ -201,22 +190,22 @@ export const useOrgs: UseOrgs.Callback = (
 
   React.useEffect(() => {
     if (userId && !_channel.current) {
-      _channel.current = _initChannel({ key: "created_by", value: userId });
+      _channel.current = _initChannel({ key: 'created_by', value: userId });
     }
     _channel.current?.subscribe(async (status) => {
-      logger.debug({ status }, "Channel subscription status");
-      if (status === "SUBSCRIBED") {
+      logger.debug({ status }, 'Channel subscription status');
+      if (status === 'SUBSCRIBED') {
         // refetch the organizations
         await reload();
-      } else if (status === "TIMED_OUT") {
+      } else if (status === 'TIMED_OUT') {
         logger.warn(
-          "Channel subscription timed out. Attempting to resubscribe...",
+          'Channel subscription timed out. Attempting to resubscribe...',
         );
         _channel.current?.unsubscribe();
-        _channel.current = _initChannel({ key: "created_by", value: userId });
+        _channel.current = _initChannel({ key: 'created_by', value: userId });
         _channel.current?.subscribe();
-      } else if (status === "CLOSED") {
-        logger.warn("Channel subscription closed. Cleaning up...");
+      } else if (status === 'CLOSED') {
+        logger.warn('Channel subscription closed. Cleaning up...');
         _channel.current = null;
       }
     });
@@ -228,11 +217,14 @@ export const useOrgs: UseOrgs.Callback = (
     };
   }, [supabase.realtime, _channel]);
 
-  return React.useMemo(() => ({
-    data: _data ?? [],
-    error: _error,
-    state,
-    reload,
-    deleteOrg: _delete,
-  }), [_data, _error, state, reload, _delete]);
+  return React.useMemo(
+    () => ({
+      data: _data ?? [],
+      error: _error,
+      state,
+      reload,
+      deleteOrg: _delete,
+    }),
+    [_data, _error, state, reload, _delete],
+  );
 };

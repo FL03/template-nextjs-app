@@ -3,8 +3,8 @@
  * @author - @FL03
  * @file - types/index.ts
  */
-export * from "./api";
-export * from "./queries";
-export * from "./hooks";
-export * from "./net";
-export * from "./widgets";
+export * from './api';
+export * from './queries';
+export * from './hooks';
+export * from './net';
+export * from './widgets';

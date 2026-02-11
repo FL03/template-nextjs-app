@@ -4,12 +4,12 @@
  * @directory - src/app/(platform)/[username]/orgs
  * @file - page.tsx
  */
-import { OrgsListView } from "@/features/orgs";
-import { Metadata } from "next";
+import { OrgsListView } from '@/features/orgs';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Organizations - Platform",
-  description: "View and manage your organizations on the platform.",
+  title: 'Organizations - Platform',
+  description: 'View and manage your organizations on the platform.',
 };
 
 export default function Page() {

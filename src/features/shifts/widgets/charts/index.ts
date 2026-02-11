@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - charts/index.ts
  */
-export * from "./tip-charts";
+export * from './tip-charts';
 
-export * from "./tips-by-day";
-export * from "./tips-over-time";
+export * from './tips-by-day';
+export * from './tips-over-time';

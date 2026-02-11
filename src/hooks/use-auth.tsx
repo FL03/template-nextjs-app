@@ -4,30 +4,30 @@
  * @description - useAuth hook for managing authentication state and user information.
  * @file - use-auth.tsx
  */
-"use client";
+'use client';
 // imports
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AuthChangeEvent,
   Session,
   Subscription,
   User,
   UserAttributes,
-} from "@supabase/supabase-js";
+} from '@supabase/supabase-js';
 // project
-import { CACHE_KEY_USER_ID } from "@/lib/config";
-import { logger } from "@/lib/logger";
-import { createBrowserClient } from "@/lib/supabase";
+import { CACHE_KEY_USER_ID } from '@/lib/config';
+import { logger } from '@/lib/logger';
+import { createBrowserClient } from '@/lib/supabase';
 
 namespace UseAuth {
   export type Callback = (options?: Props) => AuthContext;
 
-  export type Status = "unauthenticated" | "authenticated" | "guest";
+  export type Status = 'unauthenticated' | 'authenticated' | 'guest';
 
-  export type LoadingState = "session" | "user" | null;
+  export type LoadingState = 'session' | 'user' | null;
 
   export interface Props {
-    supabase?: ReturnType<typeof createBrowserClient<any, "public">>;
+    supabase?: ReturnType<typeof createBrowserClient<any, 'public'>>;
     onAuthStateChange?(event: AuthChangeEvent, session: Session | null): void;
     onError?(error?: unknown): void;
     onUserChange?(user?: User | null): void;
@@ -65,30 +65,28 @@ namespace UseAuth {
  * The `useAuth` hook is a custom wrapper around the Supabase authentication client, providing a way to manage user authentication state and actions.
  * It handles user session management, state changes, and provides methods for signing out and retrieving user information.
  */
-export const useAuth: UseAuth.Callback = (
-  {
-    onAuthStateChange,
-    onError,
-    onUserChange,
-    supabase = createBrowserClient(),
-  } = {},
-) => {
+export const useAuth: UseAuth.Callback = ({
+  onAuthStateChange,
+  onError,
+  onUserChange,
+  supabase = createBrowserClient(),
+} = {}) => {
   const authSubRef = useRef<Subscription | null>(null);
   const [_session, _setSession] = useState<Session | null>(null);
   const [_user, _setUser] = useState<User | null>(null);
   const [_error, _setError] = useState<Error | null>(null);
 
-  const [isLoading, setIsLoading] = useState<UseAuth.LoadingState>("session");
+  const [isLoading, setIsLoading] = useState<UseAuth.LoadingState>('session');
   // Auth status
   const _status = useMemo<UseAuth.Status>(() => {
-    if (_session?.user) return "authenticated";
-    if (_session) return "guest";
-    return "unauthenticated";
+    if (_session?.user) return 'authenticated';
+    if (_session) return 'guest';
+    return 'unauthenticated';
   }, [_session]);
 
   const _state = useMemo(
     () => ({
-      isAuthenticated: _status === "authenticated",
+      isAuthenticated: _status === 'authenticated',
       isError: Boolean(_error),
       isLoading,
     }),
@@ -98,9 +96,10 @@ export const useAuth: UseAuth.Callback = (
   // Error handler
   const handleError = useCallback(
     (err: unknown) => {
-      const error = err instanceof Error
-        ? err
-        : new Error(String(err ?? "An unknown error occurred."));
+      const error =
+        err instanceof Error
+          ? err
+          : new Error(String(err ?? 'An unknown error occurred.'));
       _setError((prev) => {
         if (prev?.message === error.message) return prev;
         onError?.(error);
@@ -112,12 +111,12 @@ export const useAuth: UseAuth.Callback = (
 
   // Cache helpers
   const clearCache = useCallback(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     try {
       const cached = window.localStorage.getItem(CACHE_KEY_USER_ID);
       if (cached !== null) {
         window.localStorage.removeItem(CACHE_KEY_USER_ID);
-        logger.info("Cleared cached userId.");
+        logger.info('Cleared cached userId.');
       }
     } catch (e) {
       handleError(e);
@@ -126,12 +125,12 @@ export const useAuth: UseAuth.Callback = (
 
   const cache = useCallback(
     (userId?: string | null) => {
-      if (!userId || typeof window === "undefined") return;
+      if (!userId || typeof window === 'undefined') return;
       try {
         const cached = window.localStorage.getItem(CACHE_KEY_USER_ID);
         if (cached !== userId) {
           window.localStorage.setItem(CACHE_KEY_USER_ID, userId);
-          logger.info({ userId }, "Cached userId updated.");
+          logger.info({ userId }, 'Cached userId updated.');
         }
       } catch (e) {
         handleError(e);
@@ -142,7 +141,7 @@ export const useAuth: UseAuth.Callback = (
 
   // User change handler
   const _onUserChange = useCallback(
-    (next?: User | null) => (
+    (next?: User | null) =>
       _setUser((prev) => {
         if (prev?.id === next?.id) return prev;
         if (onUserChange) onUserChange(next);
@@ -153,33 +152,32 @@ export const useAuth: UseAuth.Callback = (
           clearCache();
           return null;
         }
-      })
-    ),
+      }),
     [cache, clearCache, onUserChange],
   );
 
   // Auth subscription
   const setupAuthSubscription = useCallback(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        logger.trace(
-          { event, id: session?.user?.id },
-          "Detected a change of auth state...",
-        );
-        onAuthStateChange?.(event, session);
-        _setSession(session);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      logger.trace(
+        { event, id: session?.user?.id },
+        'Detected a change of auth state...',
+      );
+      onAuthStateChange?.(event, session);
+      _setSession(session);
 
-        if (event === "SIGNED_OUT") {
-          logger.info("Signing out the current user...");
-          clearCache();
-          _setUser(null);
-        } else if (session?.user) {
-          logger.info("Setting the current user...");
-          _setUser(session.user);
-          cache(session.user.id);
-        }
-      },
-    );
+      if (event === 'SIGNED_OUT') {
+        logger.info('Signing out the current user...');
+        clearCache();
+        _setUser(null);
+      } else if (session?.user) {
+        logger.info('Setting the current user...');
+        _setUser(session.user);
+        cache(session.user.id);
+      }
+    });
     return subscription;
   }, [supabase.auth, cache, onAuthStateChange, clearCache]);
 
@@ -197,20 +195,21 @@ export const useAuth: UseAuth.Callback = (
   // Load user
   const _loadUser = useCallback(async (): Promise<User | null> => {
     // prevent the user loading while session is loading
-    if (isLoading === "session") {
-      logger.warn(
-        "Session is still loading, cannot fetch user at this time.",
-      );
+    if (isLoading === 'session') {
+      logger.warn('Session is still loading, cannot fetch user at this time.');
       return null;
     }
-    if (isLoading === null) setIsLoading("user");
+    if (isLoading === null) setIsLoading('user');
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error) {
         throw new Error(error.message);
       }
       if (!user) {
-        logger.warn({ scope: "useAuth" }, "No user found...");
+        logger.warn({ scope: 'useAuth' }, 'No user found...');
       }
       _onUserChange(user);
       return user;
@@ -224,34 +223,40 @@ export const useAuth: UseAuth.Callback = (
 
   const updateUser = useCallback(
     async (values: UserAttributes) => {
-      await supabase.auth.updateUser(values).then(({ data, error }) => {
-        if (error) {
-          throw new Error(error.message);
-        }
-        _onUserChange(data.user);
-      }).catch(handleError);
+      await supabase.auth
+        .updateUser(values)
+        .then(({ data, error }) => {
+          if (error) {
+            throw new Error(error.message);
+          }
+          _onUserChange(data.user);
+        })
+        .catch(handleError);
     },
     [supabase.auth, _onUserChange, handleError],
   );
 
   // Logout
   const logout = useCallback(async (): Promise<void> => {
-    await supabase.auth.signOut().then(({ error }) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-      logger.info("Successfully signed out the user...");
-      _setSession(null);
-      _onUserChange(null);
-    }).catch(handleError);
+    await supabase.auth
+      .signOut()
+      .then(({ error }) => {
+        if (error) {
+          throw new Error(error.message);
+        }
+        logger.info('Successfully signed out the user...');
+        _setSession(null);
+        _onUserChange(null);
+      })
+      .catch(handleError);
   }, [supabase.auth, _onUserChange, handleError]);
 
   // Effects
   useEffect(() => {
-    if (isLoading === "session") {
+    if (isLoading === 'session') {
       _getSession().finally(() => setIsLoading(null));
     }
-    if (isLoading === "user") {
+    if (isLoading === 'user') {
       _loadUser().finally(() => setIsLoading(null));
     }
     return () => setIsLoading(null);

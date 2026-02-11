@@ -4,16 +4,16 @@
  * @directory - src/app/(platform)/shifts
  * @file - page.tsx
  */
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 // project
-import { ShiftTableView } from "@/features/shifts";
+import { ShiftTableView } from '@/features/shifts';
 
 export const metadata: Metadata = {
-  title: "Shifts",
-  description: "A table for viewing all your shifts",
+  title: 'Shifts',
+  description: 'A table for viewing all your shifts',
 };
 
 export default function Page() {
   return <ShiftTableView />;
 }
-Page.displayName = "ShiftTablePage";
+Page.displayName = 'ShiftTablePage';

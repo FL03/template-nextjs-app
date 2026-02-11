@@ -4,8 +4,8 @@
  * @file - loading.tsx
  */
 // imports
-import { cn } from "@/lib/utils";
-import { LoadingIndicator } from "@/components/common/loading";
+import { cn } from '@/lib/utils';
+import { LoadingIndicator } from '@/components/common/loading';
 
 /**
  * The `Loading` page for the platform.
@@ -16,18 +16,18 @@ export default function Loading() {
   return (
     <div
       className={cn(
-        "relative z-99 flex flex-1 items-center justify-center h-screen w-full",
-        "backdrop-blur-2xl bg-background/50 text-foreground",
+        'relative z-99 flex flex-1 items-center justify-center h-screen w-full',
+        'backdrop-blur-2xl bg-background/50 text-foreground',
       )}
     >
       <LoadingIndicator
         showLabel
         classNames={{
-          iconClassName: "size-10 text-primary",
-          labelClassName: "text-2xl font-bold text-primary",
+          iconClassName: 'size-10 text-primary',
+          labelClassName: 'text-2xl font-bold text-primary',
         }}
       />
     </div>
   );
 }
-Loading.displayName = "LoadingPage";
+Loading.displayName = 'LoadingPage';

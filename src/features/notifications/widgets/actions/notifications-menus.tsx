@@ -4,17 +4,17 @@
  * @directory - src/features/notifications/widgets
  * @file - notification-menus.tsx
  */
-"use client";
-import * as React from "react";
-import { MoreHorizontalIcon } from "lucide-react";
-import { ClassNames } from "@pzzld/core";
+'use client';
+import * as React from 'react';
+import { MoreHorizontalIcon } from 'lucide-react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import { useNotifications } from "../../provider";
+import { useNotifications } from '../../provider';
 // components
-import { IconButton } from "@/components/common/button";
-import { Button } from "@/components/ui/button";
+import { IconButton } from '@/components/common/button';
+import { Button } from '@/components/ui/button';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -23,7 +23,7 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from '@/components/ui/context-menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,22 +32,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 export const NotificationsContextMenu: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof ContextMenu>, "children"> & {
-    classNames?: ClassNames<"content" | "icon" | "label" | "trigger">;
-    triggerSize?: React.ComponentProps<typeof Button>["size"];
-    triggerVariant?: React.ComponentProps<typeof Button>["variant"];
+  Omit<React.ComponentPropsWithoutRef<typeof ContextMenu>, 'children'> & {
+    classNames?: ClassNames<'content' | 'icon' | 'label' | 'trigger'>;
+    triggerSize?: React.ComponentProps<typeof Button>['size'];
+    triggerVariant?: React.ComponentProps<typeof Button>['variant'];
   }
-> = (
-  {
-    classNames,
-    triggerSize = "icon",
-    triggerVariant = "outline",
-    ...props
-  },
-) => {
+> = ({
+  classNames,
+  triggerSize = 'icon',
+  triggerVariant = 'outline',
+  ...props
+}) => {
   const { markAsRead } = useNotifications();
   return (
     <ContextMenu {...props}>
@@ -57,13 +55,13 @@ export const NotificationsContextMenu: React.FC<
           classNames={{ labelClassName: classNames?.labelClassName }}
         >
           <MoreHorizontalIcon
-            className={cn("size-4", classNames?.iconClassName)}
+            className={cn('size-4', classNames?.iconClassName)}
           />
         </IconButton>
       </ContextMenuTrigger>
-      <ContextMenuContent className={cn("", classNames?.contentClassName)}>
+      <ContextMenuContent className={cn('', classNames?.contentClassName)}>
         <ContextMenuGroup>
-          <ContextMenuLabel className="sr-only">Actions</ContextMenuLabel>
+          <ContextMenuLabel className='sr-only'>Actions</ContextMenuLabel>
           <ContextMenuSeparator />
           <ContextMenuItem
             onClick={(event) => {
@@ -81,23 +79,21 @@ export const NotificationsContextMenu: React.FC<
 };
 
 export const NotificationsDropdownMenu: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof DropdownMenu>, "children"> & {
-    classNames?: ClassNames<"content" | "icon" | "label" | "trigger">;
-    alignContent?: React.ComponentProps<typeof DropdownMenuContent>["align"];
-    contentSide?: React.ComponentProps<typeof DropdownMenuContent>["side"];
-    triggerSize?: React.ComponentProps<typeof Button>["size"];
-    triggerVariant?: React.ComponentProps<typeof Button>["variant"];
+  Omit<React.ComponentPropsWithoutRef<typeof DropdownMenu>, 'children'> & {
+    classNames?: ClassNames<'content' | 'icon' | 'label' | 'trigger'>;
+    alignContent?: React.ComponentProps<typeof DropdownMenuContent>['align'];
+    contentSide?: React.ComponentProps<typeof DropdownMenuContent>['side'];
+    triggerSize?: React.ComponentProps<typeof Button>['size'];
+    triggerVariant?: React.ComponentProps<typeof Button>['variant'];
   }
-> = (
-  {
-    classNames,
-    alignContent = "end",
-    contentSide = "left",
-    triggerSize = "icon",
-    triggerVariant = "outline",
-    ...props
-  },
-) => {
+> = ({
+  classNames,
+  alignContent = 'end',
+  contentSide = 'left',
+  triggerSize = 'icon',
+  triggerVariant = 'outline',
+  ...props
+}) => {
   const {} = useNotifications();
   return (
     <DropdownMenu {...props}>
@@ -109,17 +105,17 @@ export const NotificationsDropdownMenu: React.FC<
           variant={triggerVariant}
         >
           <MoreHorizontalIcon
-            className={cn("size-4", classNames?.iconClassName)}
+            className={cn('size-4', classNames?.iconClassName)}
           />
         </IconButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={alignContent}
         side={contentSide}
-        className={cn("w-xs", classNames?.contentClassName)}
+        className={cn('w-xs', classNames?.contentClassName)}
       >
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="sr-only">Actions</DropdownMenuLabel>
+          <DropdownMenuLabel className='sr-only'>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={(event) => {
@@ -128,9 +124,7 @@ export const NotificationsDropdownMenu: React.FC<
               event.stopPropagation();
             }}
           >
-            <span>
-              Mark all as Read
-            </span>
+            <span>Mark all as Read</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

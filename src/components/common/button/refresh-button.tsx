@@ -4,26 +4,26 @@
  * @description: a refresh button component that can be used to refresh the page or a specific component.
  * @file: refresh-button.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { RefreshCwIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { RefreshCwIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ClassNames } from '@pzzld/core';
 // project
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 type ButtonProps = {
-  classNames?: ClassNames<"icon" | "label">;
+  classNames?: ClassNames<'icon' | 'label'>;
   description?: React.ReactNode;
   disabled?: boolean;
   isRefreshing?: boolean;
@@ -32,14 +32,13 @@ type ButtonProps = {
 };
 
 export const RefreshButton: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Button>, "children">
-  & ButtonProps
+  Omit<React.ComponentPropsWithRef<typeof Button>, 'children'> & ButtonProps
 > = ({
   ref,
   classNames,
-  description = "Refresh the content",
-  size = "icon",
-  variant = "ghost",
+  description = 'Refresh the content',
+  size = 'icon',
+  variant = 'ghost',
   disabled,
   isRefreshing,
   onClick,
@@ -53,7 +52,7 @@ export const RefreshButton: React.FC<
   const router = useRouter();
   if (onClick && onRefresh) {
     logger.warn(
-      "RefreshButton: both onClick and onRefresh props are provided, onClick will be ignored",
+      'RefreshButton: both onClick and onRefresh props are provided, onClick will be ignored',
     );
   }
 
@@ -74,7 +73,7 @@ export const RefreshButton: React.FC<
       event.preventDefault();
       event.stopPropagation();
       // log the event
-      logger.trace(event, "Refreshing...");
+      logger.trace(event, 'Refreshing...');
       try {
         if (onRefresh) onRefresh();
         else if (onClick) onClick(event);
@@ -100,7 +99,7 @@ export const RefreshButton: React.FC<
           <Button
             {...props}
             ref={ref}
-            data-slot="refresh-button"
+            data-slot='refresh-button'
             disabled={disabled || isRefreshing}
             onClick={handleOnClick()}
             size={size}
@@ -108,19 +107,19 @@ export const RefreshButton: React.FC<
           >
             <RefreshCwIcon
               className={cn(
-                "size-4",
-                reloading && "animate-spin",
+                'size-4',
+                reloading && 'animate-spin',
                 classNames?.iconClassName,
               )}
             />
             <span
               className={cn(
-                size?.startsWith("icon") ? "sr-only" : "not-sr-only",
+                size?.startsWith('icon') ? 'sr-only' : 'not-sr-only',
                 classNames?.labelClassName,
-                reloading && "animate-pulse",
+                reloading && 'animate-pulse',
               )}
             >
-              {reloading ? "Refreshing" : "Refresh"}
+              {reloading ? 'Refreshing' : 'Refresh'}
             </span>
           </Button>
         </TooltipTrigger>
@@ -129,4 +128,4 @@ export const RefreshButton: React.FC<
     </TooltipProvider>
   );
 };
-RefreshButton.displayName = "RefreshButton";
+RefreshButton.displayName = 'RefreshButton';

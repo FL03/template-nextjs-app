@@ -3,8 +3,8 @@
  * @author - @FL03
  * @file - server.ts
  */
-import { Stripe } from "stripe";
-import { stripeSecretKey } from "./config";
+import { Stripe } from 'stripe';
+import { stripeSecretKey } from './config';
 
 let stripeInstance: Stripe | null = null;
 
@@ -23,9 +23,7 @@ export const stripeServerClient = (
 
 export const initCheckoutSession = async (
   options?: Stripe.Checkout.SessionCreateParams,
-): Promise<
-  Stripe.Checkout.Session
-> => {
+): Promise<Stripe.Checkout.Session> => {
   const stripe = stripeServerClient();
   return await stripe.checkout.sessions.create(options);
 };

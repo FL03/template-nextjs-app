@@ -13,25 +13,18 @@ export function formatFileName<Name extends string, Ext extends string>(
   return `${name}.${ext}`;
 }
 /** A utility function for testing regex patterns. */
-export const matches = <V extends string>(
-  value: V,
-  pattern: RegExp,
-): boolean => pattern.test(value);
+export const matches = <V extends string>(value: V, pattern: RegExp): boolean =>
+  pattern.test(value);
 
 /** Use regex to validate a given email address */
-export const verifyEmailFormat = (email: string) => (
-  new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/).test(email)
-);
+export const verifyEmailFormat = (email: string) =>
+  new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/).test(email);
 
+export const matchesUpdate = <V extends string>(value: V): boolean =>
+  matches(value, /^(:?update|edit)$/gim);
 
-export const matchesUpdate = <V extends string>(value: V): boolean => (
-  matches(value, /^(:?update|edit)$/gmi)
-);
+export const matchesDelete = <V extends string>(value: V): boolean =>
+  matches(value, /^(:?del|delete|remove)$/gim);
 
-export const matchesDelete = <V extends string>(value: V): boolean => (
-  matches(value, /^(:?del|delete|remove)$/gmi)
-);
-
-export const matchesRead = <V extends string>(value: V): boolean => (
-  matches(value, /^(:?read|view)$/gmi)
-);
+export const matchesRead = <V extends string>(value: V): boolean =>
+  matches(value, /^(:?read|view)$/gim);

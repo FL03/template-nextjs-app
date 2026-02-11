@@ -7,20 +7,20 @@
 
 /** An enum defining the allowed operations within the filter string. */
 type QueryOperator =
-  | "eq"
-  | "neq"
-  | "gt"
-  | "lt"
-  | "gte"
-  | "lte"
-  | "like"
-  | "ilike"
-  | "in"
-  | "is"
-  | "fts"
-  | "plfts"
-  | "phfts"
-  | "wfts";
+  | 'eq'
+  | 'neq'
+  | 'gt'
+  | 'lt'
+  | 'gte'
+  | 'lte'
+  | 'like'
+  | 'ilike'
+  | 'in'
+  | 'is'
+  | 'fts'
+  | 'plfts'
+  | 'phfts'
+  | 'wfts';
 /** The type of _key_ expected by the filter. */
 type FilterKey<TData> = string & keyof TData;
 /** A string object defining the format of a valid database query string. */
@@ -32,13 +32,15 @@ export type QueryFilter<TData> = {
   operator?: QueryOperator;
 };
 /** The filter object combines the string and structured representations into a single entity. */
-export class DatabaseFilter<TData> extends Object
-  implements QueryFilter<TData> {
+export class DatabaseFilter<TData>
+  extends Object
+  implements QueryFilter<TData>
+{
   private _key: FilterKey<TData>;
   private _operator: QueryOperator;
   private _value: string;
 
-  constructor({ key, value, operator = "eq" }: QueryFilter<TData>) {
+  constructor({ key, value, operator = 'eq' }: QueryFilter<TData>) {
     super();
     this._key = key;
     this._value = value;

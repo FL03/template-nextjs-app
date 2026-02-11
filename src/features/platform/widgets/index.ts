@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - platform/index.ts
  */
-export * from "./platform-appbar";
-export * from "./platform-scaffold";
-export * from "./platform-sidebar";
-export * from "./platform-settings";
+export * from './platform-appbar';
+export * from './platform-scaffold';
+export * from './platform-sidebar';
+export * from './platform-settings';

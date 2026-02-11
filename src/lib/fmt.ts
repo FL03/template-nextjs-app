@@ -8,22 +8,22 @@
 type Numeric = number | Number;
 
 type CurrencySymbol =
-  | "$"
-  | "€"
-  | "£"
-  | "¥"
-  | "₹"
-  | "₩"
-  | "₽"
-  | "₺"
-  | "₪"
-  | "₫"
-  | "₴"
-  | "₦"
-  | "₲"
-  | "₵"
-  | "₡"
-  | "₸";
+  | '$'
+  | '€'
+  | '£'
+  | '¥'
+  | '₹'
+  | '₩'
+  | '₽'
+  | '₺'
+  | '₪'
+  | '₫'
+  | '₴'
+  | '₦'
+  | '₲'
+  | '₵'
+  | '₡'
+  | '₸';
 
 type CurrencyLiteral<Sym extends string> = `${Sym}${number}`;
 
@@ -35,9 +35,9 @@ export class Currency<T extends CurrencyLike> extends Number {
   }
 
   format(
-    locale: Intl.LocalesArgument = "en-us",
-    options: Omit<Intl.NumberFormatOptions, "style"> = {
-      currency: "USD",
+    locale: Intl.LocalesArgument = 'en-us',
+    options: Omit<Intl.NumberFormatOptions, 'style'> = {
+      currency: 'USD',
       maximumFractionDigits: 2,
     },
   ) {

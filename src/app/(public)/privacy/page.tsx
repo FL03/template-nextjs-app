@@ -4,15 +4,15 @@
  * @file - privacy/page.tsx
  */
 // features
-import { PrivacyScreen } from "@/features/platform";
+import { PrivacyScreen } from '@/features/platform';
 
 export default function Page() {
   // render the page
   return <PrivacyScreen />;
 }
-Page.displayName = "PrivacyPage";
+Page.displayName = 'PrivacyPage';
 
 // page metadata
-export const metadata: import("next").Metadata = {
-  title: "Privacy Policy",
+export const metadata: import('next').Metadata = {
+  title: 'Privacy Policy',
 };

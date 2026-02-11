@@ -4,15 +4,15 @@
  * @route - /api/stripe/checkout/session
  * @file - route.ts
  */
-"use server";
+'use server';
 // imports
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 // project
-import { logger } from "@/lib/logger";
-import { stripeServerClient } from "@/lib/stripe";
+import { logger } from '@/lib/logger';
+import { stripeServerClient } from '@/lib/stripe';
 // types
-import type Stripe from "stripe";
-import { ApiResponse } from "@/types";
+import type Stripe from 'stripe';
+import { ApiResponse } from '@/types';
 
 type CheckoutFormData = {
   customerEmail?: string;
@@ -64,11 +64,14 @@ export async function POST(
     }
 
     if (!customerId) {
-      logger.error("Failed to find or create a customer for checkout.");
-      return NextResponse.json({
-        data: null,
-        error: "Failed to find or create a customer for checkout.",
-      }, { status: 500 });
+      logger.error('Failed to find or create a customer for checkout.');
+      return NextResponse.json(
+        {
+          data: null,
+          error: 'Failed to find or create a customer for checkout.',
+        },
+        { status: 500 },
+      );
     }
   }
 
@@ -76,12 +79,12 @@ export async function POST(
     // create a new checkout session
     const session = await stripe.checkout.sessions.create({
       automatic_tax: { enabled: true },
-      billing_address_collection: "auto",
-      currency: "usd",
+      billing_address_collection: 'auto',
+      currency: 'usd',
       customer: customerId,
-      customer_update: { address: "auto" },
-      mode: "subscription",
-      ui_mode: "hosted",
+      customer_update: { address: 'auto' },
+      mode: 'subscription',
+      ui_mode: 'hosted',
       cancel_url: `${returnUrl}/?canceled=true`,
       success_url: `${returnUrl}/?success=true`,
       line_items: [
@@ -96,18 +99,24 @@ export async function POST(
       },
     });
     if (!session) {
-      return NextResponse.json({
-        data: session,
-        error: "Unable to create stripe checkout session.",
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          data: session,
+          error: 'Unable to create stripe checkout session.',
+        },
+        { status: 500 },
+      );
     }
     return NextResponse.json({ data: session, error: null }, { status: 200 });
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
     logger.error(error, error.message);
-    return NextResponse.json({
-      data: null,
-      error: error.message,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        data: null,
+        error: error.message,
+      },
+      { status: 500 },
+    );
   }
 }

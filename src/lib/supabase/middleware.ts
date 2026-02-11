@@ -3,15 +3,15 @@
  * @author - @FL03
  * @file - middleware.ts
  */
-"use server";
+'use server';
 // imports
-import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 // feature-specific
-import { supabaseCreds } from "./helpers";
+import { supabaseCreds } from './helpers';
 
-const authenticationEndpoint = "/auth";
-const pricingEndpoint = "/pricing";
+const authenticationEndpoint = '/auth';
+const pricingEndpoint = '/pricing';
 
 /**
  * The middleware for integrate the application with supabase;
@@ -33,13 +33,13 @@ export const supabaseUserSessionProxy = async (
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
+          request.cookies.set(name, value),
         );
         supabaseResponse = NextResponse.next({
           request,
         });
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
+          supabaseResponse.cookies.set(name, value, options),
         );
       },
     },
@@ -49,7 +49,9 @@ export const supabaseUserSessionProxy = async (
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user && !request.nextUrl.pathname.startsWith(authenticationEndpoint)) {
     const url = request.nextUrl.clone();
@@ -60,7 +62,7 @@ export const supabaseUserSessionProxy = async (
   // Subscription check for authenticated users
   if (
     user &&
-    user.user_metadata?.subscription_status !== "active" &&
+    user.user_metadata?.subscription_status !== 'active' &&
     !request.nextUrl.pathname.startsWith(pricingEndpoint)
   ) {
     const url = request.nextUrl.clone();

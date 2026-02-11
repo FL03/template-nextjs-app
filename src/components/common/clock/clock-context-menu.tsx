@@ -3,11 +3,11 @@
  * @author - @FL03
  * @file - clock-context-menu.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
 import {
   ContextMenu,
@@ -16,9 +16,9 @@ import {
   ContextMenuItem,
   ContextMenuLabel,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from '@/components/ui/context-menu';
 // local
-import { useClock } from "./clock-provider";
+import { useClock } from './clock-provider';
 import {
   Select,
   SelectContent,
@@ -27,8 +27,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {} from "@radix-ui/react-select";
+} from '@/components/ui/select';
+import {} from '@radix-ui/react-select';
 
 type SelectItemData = {
   key: string;
@@ -38,7 +38,7 @@ type SelectItemData = {
 const SelectTimeZone: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof Select>,
-    "children" | "value" | "onValueChange"
+    'children' | 'value' | 'onValueChange'
   > & {
     className?: string;
   }
@@ -59,11 +59,11 @@ const SelectTimeZone: React.FC<
       }}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Select Timezone" />
+        <SelectValue placeholder='Select Timezone' />
       </SelectTrigger>
       <SelectContent
         defaultValue={defaultValue}
-        className={cn("inline-flex flex-col w-fit min-w-24", className)}
+        className={cn('inline-flex flex-col w-fit min-w-24', className)}
       >
         <SelectGroup>
           <SelectLabel>Timezones</SelectLabel>
@@ -92,10 +92,10 @@ export const ClockContextMenu: React.FC<
 
   return (
     <ContextMenu {...props}>
-      <ContextMenuTrigger className={cn("h-fit w-fit", className)}>
+      <ContextMenuTrigger className={cn('h-fit w-fit', className)}>
         {children}
       </ContextMenuTrigger>
-      <ContextMenuContent className="w-48">
+      <ContextMenuContent className='w-48'>
         <ContextMenuGroup>
           <ContextMenuLabel>Controls</ContextMenuLabel>
           <ContextMenuItem>
@@ -106,6 +106,6 @@ export const ClockContextMenu: React.FC<
     </ContextMenu>
   );
 };
-ClockContextMenu.displayName = "ClockContextMenu";
+ClockContextMenu.displayName = 'ClockContextMenu';
 
 export default ClockContextMenu;

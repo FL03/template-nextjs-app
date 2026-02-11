@@ -4,17 +4,17 @@
  * @directory - src/features/notifications/widgets
  * @file - notification-list.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { CheckedState } from "@radix-ui/react-checkbox";
+import * as React from 'react';
+import { CheckedState } from '@radix-ui/react-checkbox';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // feature-specific
-import type { NotificationData } from "../types";
-import { NotificationItemDropdownMenu } from "./actions";
+import type { NotificationData } from '../types';
+import { NotificationItemDropdownMenu } from './actions';
 // components
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Item,
   ItemActions,
@@ -23,14 +23,14 @@ import {
   ItemGroup,
   ItemMedia,
   ItemTitle,
-} from "@/components/ui/item";
-import { NotificationStatusBadge } from "./notification-status";
+} from '@/components/ui/item';
+import { NotificationStatusBadge } from './notification-status';
 
 // NotificationItem
 export const NotificationItem: React.FC<
   Omit<
     React.ComponentPropsWithRef<typeof Item>,
-    "asChild" | "onClick" | "children"
+    'asChild' | 'onClick' | 'children'
   > & {
     value: NotificationData;
     onClick?(item: NotificationData): void;
@@ -58,12 +58,12 @@ export const NotificationItem: React.FC<
       ref={ref}
       key={value?.id}
       onClick={handleOnClick(value)}
-      className={cn("flex-nowrap justify-stretch", className)}
+      className={cn('flex-nowrap justify-stretch', className)}
       {...props}
     >
-      <ItemMedia variant="icon">
+      <ItemMedia variant='icon'>
         <Checkbox
-          className="m-auto"
+          className='m-auto'
           checked={checked}
           onCheckedChange={setChecked}
           onClick={toggleSelected}
@@ -73,8 +73,12 @@ export const NotificationItem: React.FC<
         <ItemTitle>{value?.message}</ItemTitle>
         <ItemDescription>{value?.sender}</ItemDescription>
       </ItemContent>
-      <ItemContent className="items-center">
-        <NotificationStatusBadge hideLabel status={value?.status} variant="outline"/>
+      <ItemContent className='items-center'>
+        <NotificationStatusBadge
+          hideLabel
+          status={value?.status}
+          variant='outline'
+        />
       </ItemContent>
       <ItemActions>
         <NotificationItemDropdownMenu value={value} />
@@ -86,28 +90,23 @@ export const NotificationItem: React.FC<
 export const NotificationList: React.FC<
   React.ComponentPropsWithRef<typeof ItemGroup> & {
     items?: NotificationData[];
-    itemSize?: React.ComponentProps<typeof NotificationItem>["size"];
-    itemVariant?: React.ComponentProps<typeof NotificationItem>["variant"];
+    itemSize?: React.ComponentProps<typeof NotificationItem>['size'];
+    itemVariant?: React.ComponentProps<typeof NotificationItem>['variant'];
     onItemClick?(item: NotificationData): void;
   }
-> = (
-  {
-    ref,
-    className,
-    items,
-    itemSize = "sm",
-    itemVariant = "outline",
-    onItemClick,
-    ...props
-  },
-) => (
+> = ({
+  ref,
+  className,
+  items,
+  itemSize = 'sm',
+  itemVariant = 'outline',
+  onItemClick,
+  ...props
+}) => (
   <ItemGroup
     {...props}
     ref={ref}
-    className={cn(
-      "flex-1 w-full h-full gap-1",
-      className,
-    )}
+    className={cn('flex-1 w-full h-full gap-1', className)}
   >
     {items?.map((item) => (
       <NotificationItem

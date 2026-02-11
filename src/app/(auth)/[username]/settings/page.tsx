@@ -4,8 +4,8 @@
  * @directory - src/app/(platform)/[username]/settings
  * @file - page.tsx
  */
-import { ProfileSettings } from "@/features/profiles";
-import { ResolvingMetadata } from "next";
+import { ProfileSettings } from '@/features/profiles';
+import { ResolvingMetadata } from 'next';
 
 type RoutePropsT = {
   params: Promise<{ username: string }>;
@@ -14,12 +14,12 @@ type RoutePropsT = {
 export default async function Page({ params }: RoutePropsT) {
   const { username } = await params;
   return (
-    <div className="container mx-auto flex-1 h-full w-full">
+    <div className='container mx-auto flex-1 h-full w-full'>
       <ProfileSettings username={username} />
     </div>
   );
 }
-Page.displayName = "ProfileSettingsPage";
+Page.displayName = 'ProfileSettingsPage';
 
 export async function generateMetadata(
   { params }: RoutePropsT,
@@ -33,6 +33,6 @@ export async function generateMetadata(
     description: [
       `Manage settings and preferences for the user ${username} on Pzzld Org Tips.`,
       parentMeta.description,
-    ].join(" "),
+    ].join(' '),
   };
 }

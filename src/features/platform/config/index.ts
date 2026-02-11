@@ -4,5 +4,5 @@
  * @directory - src/features/platform/config
  * @file - index.ts
  */
-export * from "./endpoints";
-export * from "./paths";
+export * from './endpoints';
+export * from './paths';

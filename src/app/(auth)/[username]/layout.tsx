@@ -3,9 +3,9 @@
  * @author - @FL03
  * @file - [username]/layout.tsx
  */
-"use server";
+'use server';
 // components
-import { UserProfileProvider } from "@/features/profiles";
+import { UserProfileProvider } from '@/features/profiles';
 
 /**
  * The layout for user-specific pages
@@ -14,17 +14,16 @@ import { UserProfileProvider } from "@/features/profiles";
  * @param {Readonly<React.PropsWithChildren>} props - the props for the template; note that children
  * are readonly and required.
  */
-export default async function Layout(
-  { children, params }: {
-    children: React.ReactNode;
-    params: Promise<{ username: string }>;
-  },
-) {
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ username: string }>;
+}) {
   const { username } = await params;
   return (
-    <UserProfileProvider username={username}>
-      {children}
-    </UserProfileProvider>
+    <UserProfileProvider username={username}>{children}</UserProfileProvider>
   );
 }
-Layout.displayName = "UserLayout";
+Layout.displayName = 'UserLayout';

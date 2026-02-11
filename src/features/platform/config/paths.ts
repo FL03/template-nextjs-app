@@ -1,4 +1,3 @@
-
-export const PATHS = {}
+export const PATHS = {};
 
 export default PATHS;

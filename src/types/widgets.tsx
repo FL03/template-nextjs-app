@@ -4,43 +4,41 @@
  * @directory - src/types
  * @file - widgets.tsx
  */
-import { ReactNode } from "react";
-import { ClassNames } from "@pzzld/core";
+import { ReactNode } from 'react';
+import { ClassNames } from '@pzzld/core';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 /** A type defining binary string variants of `left` or `right`. */
-export type SideX = "left" | "right";
+export type SideX = 'left' | 'right';
 /** A type defining binary string variants of `top` or `bottom`. */
-export type SideY = "top" | "bottom";
+export type SideY = 'top' | 'bottom';
 /** A simple type literal for the four sides of a 2-dimensional surface; i.e. left, right, top, bottom. */
 export type LRTB = SideX | SideY;
 
 /** A composable type for extending the inner type with an optional `asChild` boolean field. */
 export type PropsAsChild<TInner = {}> = TInner & { asChild?: boolean };
 
-export type PropsWithNamedChildren<T = {}, TKeys extends string = "children"> =
-  & T
-  & { [K in TKeys]?: ReactNode };
+export type PropsWithNamedChildren<
+  T = {},
+  TKeys extends string = 'children',
+> = T & { [K in TKeys]?: ReactNode };
 
 /** A type wrapper injecting the current context with an optional description field. */
-export type PropsWithDescription<T = {}> =
-  & T
-  & PropsWithNamedChildren<{ showDescription?: boolean }, "description">;
+export type PropsWithDescription<T = {}> = T &
+  PropsWithNamedChildren<{ showDescription?: boolean }, 'description'>;
 /** A type wrapper injecting the current context with an optional `title` child. */
-export type PropsWithTitle<T = {}> = PropsWithNamedChildren<T, "title">;
+export type PropsWithTitle<T = {}> = PropsWithNamedChildren<T, 'title'>;
 
 export type PropsWithSide<T> = T & {
   side?: LRTB;
 };
 
-export type ComponentPropsWithHeader<T = {}> =
-  & T
-  & {
-    description?: ReactNode;
-    title?: ReactNode;
-    classNames?: ClassNames<"header" | "title" | "description">;
-  };
+export type ComponentPropsWithHeader<T = {}> = T & {
+  description?: ReactNode;
+  title?: ReactNode;
+  classNames?: ClassNames<'header' | 'title' | 'description'>;
+};
 
 export type PropsWithValue<T = {}, TValue = string> = T & {
   defaultValue?: TValue;
@@ -69,9 +67,10 @@ export type PropsWithForm<T, TData> = T & RawFormProps<TData>;
  */
 export type FormProps<TData, T = {}> = PropsWithForm<
   Omit<
-    React.ComponentPropsWithRef<"form">,
-    "action" | "children" | "id" | "method" | "onSubmit" | "title"
-  > & T,
+    React.ComponentPropsWithRef<'form'>,
+    'action' | 'children' | 'id' | 'method' | 'onSubmit' | 'title'
+  > &
+    T,
   TData
 >;
 
@@ -84,9 +83,9 @@ export type PropsWithModal<T = {}> = T & {
 export type PropsWithTrigger<T = {}> = T & {
   showLabel?: boolean;
   triggerLabel?: string;
-  triggerSize?: React.ComponentProps<typeof Button>["size"];
-  triggerVariant?: React.ComponentProps<typeof Button>["variant"];
-  classNames?: ClassNames<"triggerLabel" | "triggerIcon" | "trigger">;
+  triggerSize?: React.ComponentProps<typeof Button>['size'];
+  triggerVariant?: React.ComponentProps<typeof Button>['variant'];
+  classNames?: ClassNames<'triggerLabel' | 'triggerIcon' | 'trigger'>;
 };
 
 export type ModalPropsWithSide<T = {}> = PropsWithSide<PropsWithModal<T>>;
@@ -96,18 +95,10 @@ export type ModalPropsWithSide<T = {}> = PropsWithSide<PropsWithModal<T>>;
  * granular external control over the form and its behaviours.
  */
 export type ModalFormProps<T = {}, TFormData = any> = PropsWithModal<
-  PropsWithForm<
-    T,
-    TFormData
-  >
+  PropsWithForm<T, TFormData>
 >;
 
-export type ModalFormPropsWithTrigger<T = {}, TFormData = unknown> =
-  PropsWithTrigger<
-    PropsWithModal<
-      PropsWithForm<
-        T,
-        TFormData
-      >
-    >
-  >;
+export type ModalFormPropsWithTrigger<
+  T = {},
+  TFormData = unknown,
+> = PropsWithTrigger<PropsWithModal<PropsWithForm<T, TFormData>>>;

@@ -5,8 +5,8 @@
  * @file - page.tsx
  */
 // project
-import { Section } from "@/components/common/section";
-import { SystemSettingsForm } from "@/features/platform";
+import { Section } from '@/components/common/section';
+import { SystemSettingsForm } from '@/features/platform';
 
 type RoutePropsT = {
   searchParams: Promise<{
@@ -17,9 +17,9 @@ type RoutePropsT = {
 export default async function Page({}: RoutePropsT) {
   // render the settings screen
   return (
-    <Section variant="container">
+    <Section variant='container'>
       <SystemSettingsForm />
     </Section>
   );
 }
-Page.displayName = "SettingsPage";
+Page.displayName = 'SettingsPage';

@@ -4,9 +4,9 @@
  * @description - supabase primitives and utilities for integrating with their systems
  * @file - supabase/index.ts
  */
-export * from "./client";
-export * from "./helpers";
-export * from "./middleware";
-export * from "./queries";
-export * from "./server";
-export * from "./types";
+export * from './client';
+export * from './helpers';
+export * from './middleware';
+export * from './queries';
+export * from './server';
+export * from './types';

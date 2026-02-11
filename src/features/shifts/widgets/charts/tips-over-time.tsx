@@ -4,10 +4,10 @@
  * @directory - src/features/shifts/widgets/charts
  * @file - tips-over-time.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { compareAsc } from "date-fns";
+import * as React from 'react';
+import { compareAsc } from 'date-fns';
 import {
   Brush,
   ComposedChart,
@@ -18,19 +18,19 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { ClassNames, formatAsCurrency } from "@pzzld/core";
+} from 'recharts';
+import { ClassNames, formatAsCurrency } from '@pzzld/core';
 // local
-import { useWorkSchedule } from "../../providers";
-import { ShiftData } from "../../types";
+import { useWorkSchedule } from '../../providers';
+import { ShiftData } from '../../types';
 // components
-import { ChartDisplay, ChartTooltip } from "@/components/common/charts";
-import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
+import { ChartDisplay, ChartTooltip } from '@/components/common/charts';
+import { Item, ItemContent, ItemGroup, ItemTitle } from '@/components/ui/item';
 
 export const TipsOverTimeChart: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof ResponsiveContainer>,
-    "children" | "data" | "defaultValue" | "value"
+    'children' | 'data' | 'defaultValue' | 'value'
   > & {
     data?: ShiftData[];
     locale?: Intl.LocalesArgument;
@@ -38,28 +38,24 @@ export const TipsOverTimeChart: React.FC<
   }
 > = ({
   data = [],
-  dateFormatOptions = { timeZone: "UTC" },
-  locale = "en-us",
+  dateFormatOptions = { timeZone: 'UTC' },
+  locale = 'en-us',
   aspect = 1.618,
   debounce = 1,
   maxHeight = 500,
-  width = "100%",
+  width = '100%',
   ...props
 }) => {
-  const handleData = ({
-    date,
-    tips_cash = 0,
-    tips_credit = 0,
-  }: ShiftData) => ({
+  const handleData = ({ date, tips_cash = 0, tips_credit = 0 }: ShiftData) => ({
     date: new Date(date),
     tips_cash,
     tips_credit,
     total_tips: tips_cash + tips_credit,
   });
 
-  const chartData = data.map(handleData).sort((a, b) => (
-    compareAsc(a.date, b.date)
-  ));
+  const chartData = data
+    .map(handleData)
+    .sort((a, b) => compareAsc(a.date, b.date));
   return (
     <ResponsiveContainer
       aspect={aspect}
@@ -68,72 +64,66 @@ export const TipsOverTimeChart: React.FC<
       width={width}
       {...props}
     >
-      <ComposedChart
-        accessibilityLayer
-        data={chartData}
-        title="Earned Tips"
-      >
+      <ComposedChart accessibilityLayer data={chartData} title='Earned Tips'>
         {/* plots */}
         <Line
-          name="Cash"
-          dataKey="tips_cash"
-          yAxisId="tips"
+          name='Cash'
+          dataKey='tips_cash'
+          yAxisId='tips'
           activeDot={false}
           dot={false}
-          fill="var(--color-chart-1)"
-          stroke="var(--color-chart-1)"
-          type="monotone"
+          fill='var(--color-chart-1)'
+          stroke='var(--color-chart-1)'
+          type='monotone'
         />
         <Line
-          name="Credit"
-          dataKey="tips_credit"
-          yAxisId="tips"
+          name='Credit'
+          dataKey='tips_credit'
+          yAxisId='tips'
           activeDot={false}
           dot={false}
-          fill="var(--color-chart-2)"
-          stroke="var(--color-chart-2)"
+          fill='var(--color-chart-2)'
+          stroke='var(--color-chart-2)'
           strokeWidth={2}
-          type="monotone"
+          type='monotone'
         />
         {/* chart */}
         <XAxis
-          dataKey="date"
-          xAxisId="date"
-          name="Date"
-          textAnchor="middle"
-          tickFormatter={(tick) => (
+          dataKey='date'
+          xAxisId='date'
+          name='Date'
+          textAnchor='middle'
+          tickFormatter={(tick) =>
             new Date(tick).toLocaleDateString(locale, dateFormatOptions)
-          )}
+          }
           tickMargin={2}
-          type="category"
+          type='category'
         />
         <YAxis
           allowDecimals
-          yAxisId="tips"
-          name="Earned Tips"
-          type="number"
-          width="auto"
+          yAxisId='tips'
+          name='Earned Tips'
+          type='number'
+          width='auto'
           label={{
-            value: "Earned Tips",
+            value: 'Earned Tips',
             angle: -90,
-            position: "insideLeft",
-            className: "text-sm font-bold sr-only md:not-sr-only",
+            position: 'insideLeft',
+            className: 'text-sm font-bold sr-only md:not-sr-only',
           }}
           tickMargin={2}
-          tickFormatter={(tick) => (
-            formatAsCurrency(Number(tick))
-          )}
+          tickFormatter={(tick) => formatAsCurrency(Number(tick))}
         />
-        <Legend name="Legend" />
+        <Legend name='Legend' />
         <Brush
-          dataKey="date"
+          dataKey='date'
           height={30}
-          stroke="var(--color-primary)"
-          tickFormatter={(value) => (
+          stroke='var(--color-primary)'
+          tickFormatter={(value) =>
             new Date(value).toLocaleDateString(locale, dateFormatOptions)
-          )}
+          }
         />
-        <ReferenceLine y={0} stroke="--var(--color-primary)" />
+        <ReferenceLine y={0} stroke='--var(--color-primary)' />
         <Tooltip
           content={({ active, payload }) => {
             if (!active || !payload || payload?.length === 0) {
@@ -144,20 +134,16 @@ export const TipsOverTimeChart: React.FC<
               <ChartTooltip
                 title={date.toLocaleDateString(locale, dateFormatOptions)}
               >
-                <ItemGroup className="w-full">
+                <ItemGroup className='w-full'>
                   {payload.map((item, index) => (
-                    <Item
-                      key={index}
-                      className="flex-nowrap w-full"
-                      size="sm"
-                    >
-                      <ItemContent className="flex-1">
-                        <ItemTitle className="text-nowrap font-semibold">
+                    <Item key={index} className='flex-nowrap w-full' size='sm'>
+                      <ItemContent className='flex-1'>
+                        <ItemTitle className='text-nowrap font-semibold'>
                           {item.name}
                         </ItemTitle>
                       </ItemContent>
-                      <ItemContent className="justify-end">
-                        <span className="font-mono">
+                      <ItemContent className='justify-end'>
+                        <span className='font-mono'>
                           {formatAsCurrency(Number(item.value))}
                         </span>
                       </ItemContent>
@@ -172,18 +158,18 @@ export const TipsOverTimeChart: React.FC<
     </ResponsiveContainer>
   );
 };
-TipsOverTimeChart.displayName = "TipsOverTimeChart";
+TipsOverTimeChart.displayName = 'TipsOverTimeChart';
 
 export const TipsOverTime: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof ChartDisplay>, "children"> & {
+  Omit<React.ComponentPropsWithRef<typeof ChartDisplay>, 'children'> & {
     classNames?: ClassNames<
-      | "action"
-      | "chart"
-      | "content"
-      | "description"
-      | "header"
-      | "footer"
-      | "title"
+      | 'action'
+      | 'chart'
+      | 'content'
+      | 'description'
+      | 'header'
+      | 'footer'
+      | 'title'
     >;
     chartHeight?: number | `${number}%`;
     chartWidth?: number | `${number}%`;
@@ -192,23 +178,21 @@ export const TipsOverTime: React.FC<
     locale?: Intl.LocalesArgument;
     dateFormatOptions?: Intl.DateTimeFormatOptions;
   }
-> = (
-  {
-    ref,
-    className,
-    classNames,
-    locale,
-    dateFormatOptions,
-    chartHeight,
-    chartWidth,
-    initialDimension,
-    hideTitle,
-    showDescription,
-    description = "Visualize your earned tips over time!",
-    title = "Tips Over Time",
-    ...props
-  },
-) => {
+> = ({
+  ref,
+  className,
+  classNames,
+  locale,
+  dateFormatOptions,
+  chartHeight,
+  chartWidth,
+  initialDimension,
+  hideTitle,
+  showDescription,
+  description = 'Visualize your earned tips over time!',
+  title = 'Tips Over Time',
+  ...props
+}) => {
   const { data } = useWorkSchedule();
   return (
     <ChartDisplay
@@ -230,6 +214,6 @@ export const TipsOverTime: React.FC<
     </ChartDisplay>
   );
 };
-TipsOverTime.displayName = "TipsOverTime";
+TipsOverTime.displayName = 'TipsOverTime';
 
 export default TipsOverTime;

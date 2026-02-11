@@ -4,9 +4,7 @@
  * @url https://tailwindcss.com/docs/installation#post-css
  */
 const config = {
-  plugins: [
-    "@tailwindcss/postcss",
-  ],
+  plugins: ['@tailwindcss/postcss'],
 };
 
 export default config;

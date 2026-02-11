@@ -4,27 +4,25 @@
  * @directory - src/features/billing/widgets
  * @file - checkout-button.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ExpressCheckoutElement } from "@stripe/react-stripe-js";
-import { StripeExpressCheckoutElementConfirmEvent } from "@stripe/stripe-js";
+import * as React from 'react';
+import { ExpressCheckoutElement } from '@stripe/react-stripe-js';
+import { StripeExpressCheckoutElementConfirmEvent } from '@stripe/stripe-js';
 // project
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 type CheckoutButtonProps = {
   buttonHeight?: number;
 };
 
-export const ExpressCheckoutButton: React.FC<CheckoutButtonProps> = (
-  { buttonHeight = 40 },
-) => {
+export const ExpressCheckoutButton: React.FC<CheckoutButtonProps> = ({
+  buttonHeight = 40,
+}) => {
   if (buttonHeight < 40 || buttonHeight > 55) {
-    throw new Error("The `buttonHeight` must be between 40 and 55");
+    throw new Error('The `buttonHeight` must be between 40 and 55');
   }
-  function handleOnConfirm(
-    payload: StripeExpressCheckoutElementConfirmEvent,
-  ) {
+  function handleOnConfirm(payload: StripeExpressCheckoutElementConfirmEvent) {
     logger.trace(JSON.stringify(payload));
   }
   return (
@@ -33,14 +31,14 @@ export const ExpressCheckoutButton: React.FC<CheckoutButtonProps> = (
       options={{
         buttonHeight,
         buttonTheme: {
-          applePay: "white",
-          googlePay: "white",
-          paypal: "white",
+          applePay: 'white',
+          googlePay: 'white',
+          paypal: 'white',
         },
         buttonType: {
-          applePay: "buy",
-          googlePay: "buy",
-          paypal: "pay",
+          applePay: 'buy',
+          googlePay: 'buy',
+          paypal: 'pay',
         },
       }}
     />

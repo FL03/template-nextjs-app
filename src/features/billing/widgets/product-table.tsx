@@ -4,14 +4,14 @@
  * @directory - src/features/billing/widgets
  * @file - product-table.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { useStripeProduct } from "@/hooks/use-product";
-import { cn } from "@/lib/utils";
+import { useStripeProduct } from '@/hooks/use-product';
+import { cn } from '@/lib/utils';
 // local
-import { ProductPrice } from "./price-card";
+import { ProductPrice } from './price-card';
 // components
 import {
   Card,
@@ -19,12 +19,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-
+} from '@/components/ui/card';
 
 /** The `PriceCard` component renders an actionable product item using a payment link id to engage the `stripe` api. */
 export const ProductTable: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof Card>, "title" | "children"> & {
+  Omit<React.ComponentPropsWithoutRef<typeof Card>, 'title' | 'children'> & {
     priceId?: string;
     lookupKey?: string;
     title?: React.ReactNode;
@@ -39,38 +38,35 @@ export const ProductTable: React.FC<
       footerClassName?: string;
     };
   }
-> = (
-  {
-    className,
-    lookupKey = "pzzld_org_tips_monthly",
-    priceId: productId,
-    showDescription,
-    classNames = {},
-    description =
-      "A tip tracker equipped with various analytical tools to help you manage your tips and earnings.",
-    title = "Tip Tracker",
-    ...props
-  },
-) => {
+> = ({
+  className,
+  lookupKey = 'pzzld_org_tips_monthly',
+  priceId: productId,
+  showDescription,
+  classNames = {},
+  description = 'A tip tracker equipped with various analytical tools to help you manage your tips and earnings.',
+  title = 'Tip Tracker',
+  ...props
+}) => {
   const { data, prices } = useStripeProduct({ productId });
   return (
     <Card
       className={cn(
-        "flex flex-1 flex-col w-full gap-2 max-w-sm relative z-auto",
+        'flex flex-1 flex-col w-full gap-2 max-w-sm relative z-auto',
         className,
       )}
       {...props}
     >
       <CardHeader className={classNames?.headerClassName}>
         <CardTitle
-          className={cn("text-2xl text-nowrap", classNames?.titleClassName)}
+          className={cn('text-2xl text-nowrap', classNames?.titleClassName)}
         >
           {title}
         </CardTitle>
         {description && (
           <CardDescription
             className={cn(
-              showDescription ? "not-sr-only" : "sr-only",
+              showDescription ? 'not-sr-only' : 'sr-only',
               classNames?.descriptionClassName,
             )}
           >
@@ -79,12 +75,9 @@ export const ProductTable: React.FC<
         )}
       </CardHeader>
       <CardContent
-        className={cn(
-          "flex-1 h-full w-full",
-          classNames?.contentClassName,
-        )}
+        className={cn('flex-1 h-full w-full', classNames?.contentClassName)}
       >
-        <ul className="flex flex-1 flex-nowrap gap-4 lg:gap-6 h-full w-full">
+        <ul className='flex flex-1 flex-nowrap gap-4 lg:gap-6 h-full w-full'>
           {prices?.map(({ id, currency, recurring, unit_amount }) => {
             const cost = unit_amount ? unit_amount / 1000 : 0;
             return (
@@ -102,4 +95,4 @@ export const ProductTable: React.FC<
     </Card>
   );
 };
-ProductTable.displayName = "PriceCard";
+ProductTable.displayName = 'PriceCard';

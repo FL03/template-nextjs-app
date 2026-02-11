@@ -3,38 +3,40 @@
  * @author: @FL03
  * @file: back-button.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ClassNames } from '@pzzld/core';
 // components
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 // local
-import { IconButton } from "./icon-button";
+import { IconButton } from './icon-button';
 
 export const BackButton: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof IconButton>, "children" | "asChild">
-  & {
+  Omit<
+    React.ComponentPropsWithRef<typeof IconButton>,
+    'children' | 'asChild'
+  > & {
     description?: React.ReactNode;
-    orientation?: "left" | "right";
-    classNames?: ClassNames<"icon" | "label">;
+    orientation?: 'left' | 'right';
+    classNames?: ClassNames<'icon' | 'label'>;
   }
 > = ({
   ref,
   classNames,
-  description = "Return to the previous page",
-  orientation = "left",
-  label = "Back",
-  size = "icon",
-  variant = "ghost",
+  description = 'Return to the previous page',
+  orientation = 'left',
+  label = 'Back',
+  size = 'icon',
+  variant = 'ghost',
   onClick,
   ...props
 }) => {
@@ -44,7 +46,7 @@ export const BackButton: React.FC<
     ...props
   }) => {
     switch (orientation) {
-      case "right":
+      case 'right':
         return <ArrowRightIcon {...props} />;
       default:
         return <ArrowLeftIcon {...props} />;
@@ -72,7 +74,7 @@ export const BackButton: React.FC<
               else router.back();
             }}
           >
-            <Icon className={cn("size-5", classNames?.iconClassName)} />
+            <Icon className={cn('size-5', classNames?.iconClassName)} />
           </IconButton>
         </TooltipTrigger>
         <TooltipContent>{description}</TooltipContent>
@@ -80,6 +82,6 @@ export const BackButton: React.FC<
     </TooltipProvider>
   );
 };
-BackButton.displayName = "BackButton";
+BackButton.displayName = 'BackButton';
 
 export default BackButton;

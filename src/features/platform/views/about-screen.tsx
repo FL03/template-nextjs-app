@@ -3,34 +3,28 @@
  * @author - @FL03
  * @file - about-screen.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import About from "@/content/about.mdx";
+import About from '@/content/about.mdx';
 // components
-import { ArticleCard } from "@/components/common/articles";
+import { ArticleCard } from '@/components/common/articles';
 
 export const AboutPage: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof ArticleCard>,
-    "author" | "children"
+    'author' | 'children'
   >
-> = (
-  {
-    description = "A little bit about the software and its capabilities.",
-    title = "About",
-    ...props
-  },
-) => (
-  <ArticleCard
-    {...props}
-    description={description}
-    title={title}
-  >
+> = ({
+  description = 'A little bit about the software and its capabilities.',
+  title = 'About',
+  ...props
+}) => (
+  <ArticleCard {...props} description={description} title={title}>
     <About />
   </ArticleCard>
 );
-AboutPage.displayName = "AboutPage";
+AboutPage.displayName = 'AboutPage';
 
 export default AboutPage;

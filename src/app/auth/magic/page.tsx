@@ -5,10 +5,9 @@
  * @file - page.tsx
  */
 // imports
-import { MagicView } from "@/features/auth";
-
+import { MagicView } from '@/features/auth';
 
 export default function Page() {
   return <MagicView />;
 }
-Page.displayName = "PasswordlessVerificationPage";
+Page.displayName = 'PasswordlessVerificationPage';

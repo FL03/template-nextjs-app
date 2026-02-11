@@ -4,4 +4,4 @@
  * @directory - src/features/notifications/widgets/modals
  * @file - index.ts
  */
-export * from "./notification-popover";
+export * from './notification-popover';

@@ -4,22 +4,22 @@
  * @directory - src/components/common
  * @file - pagination.tsx
  */
-"use client";
-import * as React from "react";
+'use client';
+import * as React from 'react';
 import {
   ArrowLeftToLineIcon,
   ArrowRightToLineIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "lucide-react";
-import { ClassNames } from "@pzzld/core";
+} from 'lucide-react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { TooltipScaffold } from "@/components/common/tooltips";
-import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { TooltipScaffold } from '@/components/common/tooltips';
+import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -28,13 +28,13 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 /** A custom pagination component  */
 export const Pagination: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof ButtonGroup>, "children"> & {
+  Omit<React.ComponentPropsWithRef<typeof ButtonGroup>, 'children'> & {
     classNames?: ClassNames<
-      "select" | "selectLabel" | "content" | "leading" | "trailing"
+      'select' | 'selectLabel' | 'content' | 'leading' | 'trailing'
     >;
     hidePageCount?: boolean;
     pageCount?: number;
@@ -44,38 +44,36 @@ export const Pagination: React.FC<
     onPageChange?: React.Dispatch<React.SetStateAction<number>>;
     onPageSizeChange?: React.Dispatch<React.SetStateAction<number>>;
   }
-> = (
-  {
-    ref,
-    className,
-    classNames,
-    hidePageCount,
-    page,
-    defaultPage = 1,
-    pageCount = 1,
-    pageSize = 10,
-    onPageChange,
-    onPageSizeChange,
-    ...props
-  },
-) => {
+> = ({
+  ref,
+  className,
+  classNames,
+  hidePageCount,
+  page,
+  defaultPage = 1,
+  pageCount = 1,
+  pageSize = 10,
+  onPageChange,
+  onPageSizeChange,
+  ...props
+}) => {
   // local state
-  const [currentPage, setCurrentPage] = React.useState<number>(
-    defaultPage,
-  );
+  const [currentPage, setCurrentPage] = React.useState<number>(defaultPage);
   React.useEffect(() => {
     if (page && page !== currentPage) {
       setCurrentPage(page);
     }
   }, [page]);
-  const handlePageChange = React.useCallback((next: number) => (
-    setCurrentPage((prev) => {
-      if (next === prev) return prev;
-      const newPage = Math.min(Math.max(1, next), pageCount);
-      onPageChange?.(newPage);
-      return newPage;
-    })
-  ), [pageCount, onPageChange]);
+  const handlePageChange = React.useCallback(
+    (next: number) =>
+      setCurrentPage((prev) => {
+        if (next === prev) return prev;
+        const newPage = Math.min(Math.max(1, next), pageCount);
+        onPageChange?.(newPage);
+        return newPage;
+      }),
+    [pageCount, onPageChange],
+  );
   const nextPage = React.useCallback(() => {
     handlePageChange(currentPage + 1);
   }, [currentPage, handlePageChange]);
@@ -91,18 +89,18 @@ export const Pagination: React.FC<
   return (
     <ButtonGroup
       ref={ref}
-      data-slot="data-table-pagination"
+      data-slot='data-table-pagination'
       className={cn(
-        "relative z-auto mx-auto flex-1 items-center justify-center",
+        'relative z-auto mx-auto flex-1 items-center justify-center',
         className,
       )}
       {...props}
     >
       <ButtonGroup className={classNames?.leadingClassName}>
-        <TooltipScaffold asChild description="Go back to the first page">
+        <TooltipScaffold asChild description='Go back to the first page'>
           <Button
-            size="icon"
-            variant="outline"
+            size='icon'
+            variant='outline'
             disabled={currentPage === 1}
             onClick={(event) => {
               event.preventDefault();
@@ -111,28 +109,26 @@ export const Pagination: React.FC<
               handlePageChange(1);
             }}
           >
-            <ArrowLeftToLineIcon className="size-4" />
-            <span className="sr-only">First Page</span>
+            <ArrowLeftToLineIcon className='size-4' />
+            <span className='sr-only'>First Page</span>
           </Button>
         </TooltipScaffold>
-        <TooltipScaffold asChild description="Return to the previous page">
+        <TooltipScaffold asChild description='Return to the previous page'>
           <Button
-            size="icon"
-            variant="outline"
+            size='icon'
+            variant='outline'
             disabled={currentPage === 1}
             onClick={previousPage(currentPage)}
           >
-            <ChevronLeftIcon className="size-4" />
-            <span className="sr-only">Previous page</span>
+            <ChevronLeftIcon className='size-4' />
+            <span className='sr-only'>Previous page</span>
           </Button>
         </TooltipScaffold>
       </ButtonGroup>
       <ButtonGroup className={classNames?.contentClassName}>
         <Select
           value={currentPage.toString()}
-          onValueChange={(value) => (
-            handlePageChange(Number(value))
-          )}
+          onValueChange={(value) => handlePageChange(Number(value))}
         >
           <SelectTrigger>
             <SelectValue placeholder={currentPage} />
@@ -152,7 +148,7 @@ export const Pagination: React.FC<
           <ButtonGroupText asChild>
             <Label
               className={cn(
-                "text-center text-nowrap",
+                'text-center text-nowrap',
                 classNames?.selectLabelClassName,
               )}
             >
@@ -162,26 +158,26 @@ export const Pagination: React.FC<
         )}
       </ButtonGroup>
       <ButtonGroup className={classNames?.trailingClassName}>
-        <TooltipScaffold asChild description="Go to the next page">
+        <TooltipScaffold asChild description='Go to the next page'>
           <Button
-            size="icon"
-            variant="outline"
+            size='icon'
+            variant='outline'
             disabled={currentPage === pageCount}
             onClick={nextPage}
           >
-            <ChevronRightIcon className="size-4" />
-            <span className="sr-only">Next page</span>
+            <ChevronRightIcon className='size-4' />
+            <span className='sr-only'>Next page</span>
           </Button>
         </TooltipScaffold>
-        <TooltipScaffold asChild description="Go to the last page">
+        <TooltipScaffold asChild description='Go to the last page'>
           <Button
-            size="icon"
-            variant="outline"
+            size='icon'
+            variant='outline'
             disabled={currentPage === pageCount}
             onClick={() => handlePageChange(pageCount)}
           >
-            <ArrowRightToLineIcon className="size-4" />
-            <span className="sr-only">Last page</span>
+            <ArrowRightToLineIcon className='size-4' />
+            <span className='sr-only'>Last page</span>
           </Button>
         </TooltipScaffold>
       </ButtonGroup>

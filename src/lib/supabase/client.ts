@@ -4,15 +4,15 @@
  * @description - client-side functions for supabase
  * @file - client.ts
  */
-"use client";
+'use client';
 // imports
-import * as ssr from "@supabase/ssr";
-import { SupabaseClient } from "@supabase/supabase-js";
+import * as ssr from '@supabase/ssr';
+import { SupabaseClient } from '@supabase/supabase-js';
 // project
-import type { Database } from "@/types/database.types";
+import type { Database } from '@/types/database.types';
 // local
-import { supabaseCreds } from "./helpers";
-import type { SupabaseSchemaName } from "./types";
+import { supabaseCreds } from './helpers';
+import type { SupabaseSchemaName } from './types';
 
 /**
  * @param schema - the schema to use for the database connection, defaults to 'public'
@@ -20,9 +20,12 @@ import type { SupabaseSchemaName } from "./types";
  */
 export const createBrowserClient = <
   Db = Database,
-  Schema extends SupabaseSchemaName<Db> = "public" extends
-    keyof Omit<Db, "__InternalSupabase"> ? "public"
-    : string & keyof Omit<Db, "__InternalSupabase">,
+  Schema extends SupabaseSchemaName<Db> = 'public' extends keyof Omit<
+    Db,
+    '__InternalSupabase'
+  >
+    ? 'public'
+    : string & keyof Omit<Db, '__InternalSupabase'>,
 >(
   schema?: Schema,
 ): SupabaseClient<Db, Schema> => {
