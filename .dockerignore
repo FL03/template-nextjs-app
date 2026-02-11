@@ -1,0 +1,28 @@
+# General
+
+## Development
+
+### IDEs
+
+#### Atom
+**/.atom
+
+#### Jetbrains IntelliJ IDEA
+**/.idea
+
+*.iml
+*.ipr
+
+#### Visual Studio Code
+**/.vscode
+
+# Language Specific
+
+# Integrations
+
+## Docker
+**/Dockerfile
+**/docker-compose.yml
+
+## GitHub
+**/.github

@@ -7,10 +7,6 @@ FROM oven/bun:${BUN_VERSION} AS builder-base
 RUN mkdir -p /usr/src/app
 # set the working directory to the app workspace
 WORKDIR /usr/src/app
-# configure environment variables for all stages
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1 \
-    NEXT_PUBLIC_BUILD_OUTPUT="standalone"
 
 # === Install all dependencies (cached unless package files change) ===
 FROM builder-base AS deps
@@ -30,11 +26,11 @@ RUN mkdir -p /tmp/prod
 # change working directory to the temp directory for production dependencies
 WORKDIR /tmp/prod
 # copy package files to temp directory for production install
-COPY package.json bun.lock* /tmp/prod/
+COPY package.json /tmp/prod/
 # fallback, copy the lockfile from the deps stage if it exists to speed up install
-COPY --from=deps /tmp/dev/bun.lock* /tmp/prod/
+COPY --from=deps /tmp/dev/bun.lock /tmp/prod/
 # install production dependencies only
-RUN bun install --production --frozen-lockfile || bun install --production
+RUN bun install --production --frozen-lockfile
 
 # === Build the Next.js app ===
 FROM builder-base AS builder
@@ -49,7 +45,8 @@ COPY --from=deps /tmp/dev/node_modules ./
 # copy source files to the builder stage
 COPY . .
 # build the workspace
-RUN bun run build
+# RUN bun run build
+RUN bun run --bun next build
 
 # === Runtime ===
 FROM oven/bun:${BUN_VERSION}-alpine AS runner
