@@ -4,5 +4,5 @@
  * @directory - src/features/orgs/utils
  * @file - index.ts
  */
-export * from "./api";
-export * from "./actions";
+export * from './api';
+export * from './actions';

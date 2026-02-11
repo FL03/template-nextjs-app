@@ -4,7 +4,7 @@
  * @directory - src/features/profiles/utils
  * @file - index.ts
  */
-export * from "./actions";
-export * from "./api";
-export * from "./helpers";
-export * from "./server";
+export * from './actions';
+export * from './api';
+export * from './helpers';
+export * from './server';

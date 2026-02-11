@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - use-modal.tsx
  */
-"use client";
+'use client';
 // imports
 import {
   RefObject,
@@ -12,7 +12,7 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
 namespace UseModal {
   export type Hook = <TElem extends HTMLElement = HTMLDivElement>(
@@ -38,9 +38,7 @@ namespace UseModal {
 }
 
 /** The `useModal` hook works to provide controller for a particular element. */
-export function useModal<
-  TElem extends HTMLElement = HTMLDivElement,
->({
+export function useModal<TElem extends HTMLElement = HTMLDivElement>({
   target,
   defaultOpen = false,
   open: openProp,
@@ -49,9 +47,8 @@ export function useModal<
   closeOnOutsideClick = true,
 }: UseModal.Props<TElem> = {}): UseModal.Context {
   // uncontrolled state for when `openProp` is undefined
-  const [uncontrolledOpen, setUncontrolledOpen] = useState<boolean>(
-    defaultOpen,
-  );
+  const [uncontrolledOpen, setUncontrolledOpen] =
+    useState<boolean>(defaultOpen);
 
   // controlled check + derived current open state
   const isControlled = openProp !== undefined;
@@ -68,7 +65,7 @@ export function useModal<
     // If target is a ref-like object
     if (!target) return targetRef.current;
 
-    if (target instanceof Object && "current" in target) {
+    if (target instanceof Object && 'current' in target) {
       targetRef.current = (target as RefObject<TElem | null>).current;
     } else if ((target as any) instanceof HTMLElement) {
       // If target is an element
@@ -96,9 +93,10 @@ export function useModal<
   );
 
   // wrappers for the public API
-  const setIsOpen = useCallback((open: boolean) => updateOpen(open), [
-    updateOpen,
-  ]);
+  const setIsOpen = useCallback(
+    (open: boolean) => updateOpen(open),
+    [updateOpen],
+  );
   const toggle = useCallback(() => updateOpen(!isOpen), [isOpen, updateOpen]);
   const close = useCallback(() => updateOpen(false), [updateOpen]);
   const open = useCallback(() => updateOpen(true), [updateOpen]);
@@ -109,8 +107,8 @@ export function useModal<
     const el = targetElement;
     if (isOpen) {
       // save previous focus
-      previouslyFocused.current = (document.activeElement as HTMLElement) ??
-        null;
+      previouslyFocused.current =
+        (document.activeElement as HTMLElement) ?? null;
       // try focusing the target; if target is not focusable, try first focusable descendant
       if (el) {
         const tryFocus = (node: HTMLElement) => {
@@ -147,13 +145,13 @@ export function useModal<
   useEffect(() => {
     if (!closeOnEsc || !isOpen) return;
     const onKey = (ev: KeyboardEvent) => {
-      if (ev.key === "Escape") {
+      if (ev.key === 'Escape') {
         ev.stopPropagation();
         close();
       }
     };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [isOpen, closeOnEsc, close]);
 
   // Click-outside handler to close modal
@@ -170,8 +168,8 @@ export function useModal<
         close();
       }
     };
-    document.addEventListener("pointerdown", onPointer);
-    return () => document.removeEventListener("pointerdown", onPointer);
+    document.addEventListener('pointerdown', onPointer);
+    return () => document.removeEventListener('pointerdown', onPointer);
   }, [isOpen, closeOnOutsideClick, targetElement, close]);
 
   // keep internal targetRef up to date if target prop changed (for consumers that pass ref later)

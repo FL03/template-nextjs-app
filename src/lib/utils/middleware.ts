@@ -11,11 +11,10 @@ type IgnorePathsOptions = {
   skipHome?: boolean;
 };
 
-export const getProxyRegex = (): RegExp => (
+export const getProxyRegex = (): RegExp =>
   new RegExp(
     /^(about|api|auth|pricing|privacy|terms|help|_next\/static|_next\/image|.*\.(svg|png|jpg|jpeg|gif|webp|ico)$)/,
-  )
-);
+  );
 
 /** A utilitarian function used to determine if a given pathname should be ignored based on the given criteria.
  * @param {string} [pathname] - The pathname to check.
@@ -29,11 +28,11 @@ export function ignorePaths(
   { matches, ignore, skipHome = true }: IgnorePathsOptions = {},
 ): boolean {
   // split the pathname to get the first segment
-  const firstSegment = pathname.split("/").pop();
+  const firstSegment = pathname.split('/').pop();
   // check if the pathname is empty or matches the ignored paths
   let isIgnored = false;
   if (skipHome) {
-    isIgnored ||= pathname === "/" || firstSegment === "";
+    isIgnored ||= pathname === '/' || firstSegment === '';
   }
   if (firstSegment && ignore && Array.isArray(ignore)) {
     isIgnored ||= ignore.includes(firstSegment);

@@ -5,32 +5,32 @@
  * @file - user-profile.ts
  */
 // imports
-import { v4 } from "uuid";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { v4 } from 'uuid';
+import { SupabaseClient } from '@supabase/supabase-js';
 // project
-import { createBrowserClient } from "@/lib/supabase/client";
-import { logger } from "@/lib/logger";
-import { Json, PublicDatabase } from "@/types/database.types";
+import { createBrowserClient } from '@/lib/supabase/client';
+import { logger } from '@/lib/logger';
+import { Json, PublicDatabase } from '@/types/database.types';
 // feature-specific
-import { ProfileData, ProfileUpdate } from ".";
-import { getUserProfile } from "../utils";
+import { ProfileData, ProfileUpdate } from '.';
+import { getUserProfile } from '../utils';
 
 const defaultProfileData = (values?: Partial<ProfileData>): ProfileData => ({
   id: values?.id ?? v4(),
   username: values?.username ?? `user-${Math.floor(Math.random() * 10000)}`,
   avatar_url: values?.avatar_url ?? null,
   emails: values?.emails ?? [],
-  primary_email: values?.primary_email ?? "",
+  primary_email: values?.primary_email ?? '',
   bio: values?.bio ?? null,
   department: values?.department ?? null,
   phone: values?.phone ?? [],
-  role: values?.role ?? "user",
-  status: values?.status ?? "active",
+  role: values?.role ?? 'user',
+  status: values?.status ?? 'active',
   socials: values?.socials ?? [],
   titles: values?.titles ?? [],
   website: values?.website ?? null,
   metadata: values?.metadata ?? {},
-  subscription_status: values?.subscription_status ?? "inactive",
+  subscription_status: values?.subscription_status ?? 'inactive',
   name_prefix: values?.name_prefix ?? null,
   name_suffix: values?.name_suffix ?? null,
   first_name: values?.first_name ?? null,
@@ -48,27 +48,27 @@ const defaultProfileData = (values?: Partial<ProfileData>): ProfileData => ({
  */
 export class UserProfile extends Object {
   private _data: ProfileData;
-  private supabase: SupabaseClient<PublicDatabase, "public">;
+  private supabase: SupabaseClient<PublicDatabase, 'public'>;
 
   constructor(values?: Partial<ProfileData>) {
     super();
-    this.supabase = createBrowserClient<PublicDatabase, "public">();
+    this.supabase = createBrowserClient<PublicDatabase, 'public'>();
     this._data = {
       id: values?.id ?? v4(),
       username: values?.username ?? `user-${Math.floor(Math.random() * 10000)}`,
       avatar_url: values?.avatar_url ?? null,
       emails: values?.emails ?? [],
-      primary_email: values?.primary_email ?? "",
+      primary_email: values?.primary_email ?? '',
       bio: values?.bio ?? null,
       department: values?.department ?? null,
       phone: values?.phone ?? [],
-      role: values?.role ?? "user",
-      status: values?.status ?? "active",
+      role: values?.role ?? 'user',
+      status: values?.status ?? 'active',
       socials: values?.socials ?? [],
       titles: values?.titles ?? [],
       website: values?.website ?? null,
       metadata: values?.metadata ?? {},
-      subscription_status: values?.subscription_status ?? "inactive",
+      subscription_status: values?.subscription_status ?? 'inactive',
       name_prefix: values?.name_prefix ?? null,
       name_suffix: values?.name_suffix ?? null,
       first_name: values?.first_name ?? null,
@@ -82,9 +82,10 @@ export class UserProfile extends Object {
     };
   }
   /** Load the user profile from the database. */
-  static async load(
-    params?: { userId?: string; username?: string },
-  ): Promise<UserProfile | null> {
+  static async load(params?: {
+    userId?: string;
+    username?: string;
+  }): Promise<UserProfile | null> {
     const data = await getUserProfile(params);
     return new UserProfile(data ?? undefined);
   }
@@ -93,97 +94,97 @@ export class UserProfile extends Object {
 
   /** The unique identifier associated with each profile. */
   get id(): string {
-    return this.read("id");
+    return this.read('id');
   }
   /** A unique alias chosen by the user */
   get username(): string {
-    return this.read("username");
+    return this.read('username');
   }
   /** An optional url associated with the user for use as their avatar. */
   get avatar_url(): string | null {
-    return this.read("avatar_url");
+    return this.read('avatar_url');
   }
   /** */
   get bio(): string | null {
-    return this.read("bio");
+    return this.read('bio');
   }
 
   get department(): string | null {
-    return this.read("department");
+    return this.read('department');
   }
 
   get primary_email(): string {
-    return this.read("primary_email");
+    return this.read('primary_email');
   }
 
   get emails(): string[] {
-    return this.read("emails");
+    return this.read('emails');
   }
 
   get phone(): string[] {
-    return this.read("phone");
+    return this.read('phone');
   }
 
   get role(): string {
-    return this.read("role");
+    return this.read('role');
   }
 
   get status(): string {
-    return this.read("status");
+    return this.read('status');
   }
   get socials(): string[] {
-    return this.read("socials");
+    return this.read('socials');
   }
   get titles(): string[] {
-    return this.read("titles");
+    return this.read('titles');
   }
 
   get subscription_status(): string {
-    return this.read("subscription_status");
+    return this.read('subscription_status');
   }
   // name-related fields
   get name_prefix(): string | null {
-    return this.read("name_prefix");
+    return this.read('name_prefix');
   }
 
   get name_suffix(): string | null {
-    return this.read("name_suffix");
+    return this.read('name_suffix');
   }
 
   get first_name(): string | null {
-    return this.read("first_name");
+    return this.read('first_name');
   }
 
   get middle_name(): string | null {
-    return this.read("middle_name");
+    return this.read('middle_name');
   }
 
   get last_name(): string | null {
-    return this.read("last_name");
+    return this.read('last_name');
   }
 
   get display_name(): string | null {
-    return this.read("display_name");
+    return this.read('display_name');
   }
 
   get metadata(): Json {
-    return this.read("metadata");
+    return this.read('metadata');
   }
 
   get website(): string | null {
-    return this.read("website");
+    return this.read('website');
   }
 
   get customer_id(): string | null {
-    return this.read("customer_id");
+    return this.read('customer_id');
   }
 
   get created_at(): string {
-    return this.read("created_at");
+    return this.read('created_at');
   }
 
   get updated_at(): string {
-    return this.read("updated_at");
+    return this.read('updated_at');
   }
 
   // setters
@@ -195,14 +196,15 @@ export class UserProfile extends Object {
   set avatar_url(value: string | null) {
     this._data.avatar_url = value;
 
-    this.supabase.from("profiles")
-      .update({ avatar_url: value }, { count: "exact" })
-      .eq("id", this.id)
+    this.supabase
+      .from('profiles')
+      .update({ avatar_url: value }, { count: 'exact' })
+      .eq('id', this.id)
       .then(({ error }) => {
         if (error) {
           logger.error(
             error,
-            "Error updating the avatar url for the user; please try again later.",
+            'Error updating the avatar url for the user; please try again later.',
           );
           return Promise.reject();
         }
@@ -213,12 +215,13 @@ export class UserProfile extends Object {
   set username(value: string) {
     this._data.username = value;
 
-    this.supabase.from("profiles")
-      .update({ username: value }, { count: "exact" })
-      .eq("id", this.id)
+    this.supabase
+      .from('profiles')
+      .update({ username: value }, { count: 'exact' })
+      .eq('id', this.id)
       .then(({ error }) => {
         if (error) {
-          logger.error(error, "Error updating username:");
+          logger.error(error, 'Error updating username:');
           return Promise.reject();
         }
         return Promise.resolve();
@@ -257,33 +260,35 @@ export class UserProfile extends Object {
    */
   async insertRecord(): Promise<UserProfile> {
     // fetch the current user from the auth client
-    const { data: { user } } = await this.supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await this.supabase.auth.getUser();
     // ensure the user is authenticated
     if (!user) {
-      logger.error("User is not authenticated, cannot insert profile.");
-      throw new Error("User is not authenticated");
+      logger.error('User is not authenticated, cannot insert profile.');
+      throw new Error('User is not authenticated');
     }
     // ensure the user profile id is also the same as the user id
     this._data.id = user.id;
     this._data.username ??= user.user_metadata?.username;
     // query the database to insert the profile data and return the record
     const { data, error } = await this.supabase
-      .from("profiles")
-      .upsert(this._data, { onConflict: "id" })
+      .from('profiles')
+      .upsert(this._data, { onConflict: 'id' })
       .select()
       .single();
     // handle any errors that occur during the insert
     if (error) {
-      logger.error("Error inserting profile into database");
+      logger.error('Error inserting profile into database');
       throw error;
     }
     // ensure the data is not null
     if (!data) {
-      logger.error("No data returned from profile insert.");
-      throw new Error("No data returned from profile insert");
+      logger.error('No data returned from profile insert.');
+      throw new Error('No data returned from profile insert');
     }
     // log the success of the event
-    logger.info("Profile inserted successfully:");
+    logger.info('Profile inserted successfully:');
     // return the profile data
     return this.next(data);
   }
@@ -298,16 +303,16 @@ export class UserProfile extends Object {
     this.record = values;
 
     const { data, error } = await this.supabase
-      .from("profiles")
+      .from('profiles')
       .update(this._data)
-      .eq("id", this.id);
+      .eq('id', this.id);
 
     if (error) {
-      logger.error("Error updating profile:");
+      logger.error('Error updating profile:');
       throw error;
     }
 
-    logger.info("Profile updated successfully:");
+    logger.info('Profile updated successfully:');
   }
 
   /**
@@ -322,12 +327,12 @@ export class UserProfile extends Object {
     this._data = updatedProfile;
 
     const { error } = await this.supabase
-      .from("profiles")
+      .from('profiles')
       .upsert(updatedProfile)
-      .eq("id", this.id);
+      .eq('id', this.id);
 
     if (error) {
-      logger.error(error, "Error updating profile:");
+      logger.error(error, 'Error updating profile:');
       return Promise.reject(error);
     }
     return Promise.resolve();

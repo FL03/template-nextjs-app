@@ -4,22 +4,22 @@
  * @directory - src/features/notifications/widgets/modals
  * @file - notification-popover.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // local
-import { NotificationData } from "../../types";
-import { NotificationCard } from "../notification-card";
+import { NotificationData } from '../../types';
+import { NotificationCard } from '../notification-card';
 // components
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 export const NotificationPopover: React.FC<
-  & React.ComponentPropsWithoutRef<typeof Popover>
-  & React.PropsWithChildren<{ value?: NotificationData | null }>
+  React.ComponentPropsWithoutRef<typeof Popover> &
+    React.PropsWithChildren<{ value?: NotificationData | null }>
 > = ({ children, value, ...props }) => (
   <Popover {...props}>
     {children && <PopoverTrigger asChild>{children}</PopoverTrigger>}

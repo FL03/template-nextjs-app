@@ -4,12 +4,12 @@
  * @directory - src/features/notifications/widgets
  * @file - notification-card.tsx
  */
-"use client";
-import * as React from "react";
+'use client';
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import type { NotificationData } from "../types";
+import type { NotificationData } from '../types';
 // components
 import {
   Card,
@@ -19,22 +19,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { NotificationItemDropdownMenu } from "./actions";
-import { ButtonGroup } from "@/components/ui/button-group";
+} from '@/components/ui/card';
+import { NotificationItemDropdownMenu } from './actions';
+import { ButtonGroup } from '@/components/ui/button-group';
 
 export const NotificationCard: React.FC<
-  & Omit<React.ComponentPropsWithoutRef<typeof Card>, "children">
-  & { value?: NotificationData | null }
+  Omit<React.ComponentPropsWithoutRef<typeof Card>, 'children'> & {
+    value?: NotificationData | null;
+  }
 > = ({ className, value, ...props }) => (
-  <Card
-    {...props}
-    className={cn(
-      "flex flex-col w-full max-w-lg",
-      className,
-    )}
-  >
-    <CardContent className="flex-1 h-full w-full">
+  <Card {...props} className={cn('flex flex-col w-full max-w-lg', className)}>
+    <CardContent className='flex-1 h-full w-full'>
       <CardHeader>
         <CardTitle>{value?.sender}</CardTitle>
         <CardAction>

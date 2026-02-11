@@ -3,8 +3,8 @@
  * @author - @FL03
  * @file - buttons/index.ts
  */
-export * from "./action-button";
-export * from "./back-button";
-export * from "./icon-button";
-export * from "./refresh-button";
-export * from "./save-button";
+export * from './action-button';
+export * from './back-button';
+export * from './icon-button';
+export * from './refresh-button';
+export * from './save-button';

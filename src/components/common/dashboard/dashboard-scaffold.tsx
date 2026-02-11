@@ -3,11 +3,11 @@
  * @author - @FL03
  * @file - dashboard-scaffold.tsx
  */
-"use client";
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
+'use client';
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
 import {
   Dashboard,
@@ -16,20 +16,20 @@ import {
   DashboardHeader,
   DashboardLayout,
   DashboardTitle,
-} from "./dashboard";
-import { DashboardDrawerPanel, DashboardSheetPanel } from "./dashboard-panel";
-import { DashboardProvider } from "./dashboard-provider";
+} from './dashboard';
+import { DashboardDrawerPanel, DashboardSheetPanel } from './dashboard-panel';
+import { DashboardProvider } from './dashboard-provider';
 
 // DashboardHeaderScaffold
 export const DashboardHeaderScaffold: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof DashboardHeader>, "title"> & {
+  Omit<React.ComponentPropsWithRef<typeof DashboardHeader>, 'title'> & {
     title?: React.ReactNode;
     description?: React.ReactNode;
     leading?: React.ReactNode;
     trailing?: React.ReactNode;
     hideTitle?: boolean;
     showDescription?: boolean;
-    classNames?: ClassNames<"leading" | "trailing" | "title" | "description">;
+    classNames?: ClassNames<'leading' | 'trailing' | 'title' | 'description'>;
   }
 > = ({
   ref,
@@ -48,7 +48,7 @@ export const DashboardHeaderScaffold: React.FC<
     {...props}
     ref={ref}
     className={cn(
-      "flex flex-nowrap items-center gap-2 lg:gap-4 pb-2",
+      'flex flex-nowrap items-center gap-2 lg:gap-4 pb-2',
       className,
     )}
   >
@@ -56,23 +56,23 @@ export const DashboardHeaderScaffold: React.FC<
     {leading && (
       <div
         className={cn(
-          "flex flex-nowrap items-center gap-2 h-full w-fit",
-          "left-0 order-first",
+          'flex flex-nowrap items-center gap-2 h-full w-fit',
+          'left-0 order-first',
           classNames?.leadingClassName,
         )}
       >
         {leading}
       </div>
     )}
-    <div className="flex flex-1 flex-col top-0 h-full">
+    <div className='flex flex-1 flex-col top-0 h-full'>
       {/* Primary */}
-      <div className="flex flex-nowrap w-full items-center gap-2 justify-between leading-none tracking-tight">
-        <div className="flex flex-col flex-1 mr-auto">
+      <div className='flex flex-nowrap w-full items-center gap-2 justify-between leading-none tracking-tight'>
+        <div className='flex flex-col flex-1 mr-auto'>
           {/* Title */}
           {title && (
             <DashboardTitle
               className={cn(
-                hideTitle ? "sr-only" : "not-sr-only",
+                hideTitle ? 'sr-only' : 'not-sr-only',
                 classNames?.titleClassName,
               )}
             >
@@ -84,7 +84,7 @@ export const DashboardHeaderScaffold: React.FC<
           {description && (
             <DashboardDescription
               className={cn(
-                showDescription ? "not-sr-only" : "sr-only",
+                showDescription ? 'not-sr-only' : 'sr-only',
                 classNames?.descriptionClassName,
               )}
             >
@@ -94,8 +94,8 @@ export const DashboardHeaderScaffold: React.FC<
         </div>
         <div
           className={cn(
-            "flex items-center justify-end gap-2 h-full w-fit",
-            !trailing && "hidden",
+            'flex items-center justify-end gap-2 h-full w-fit',
+            !trailing && 'hidden',
             classNames?.trailingClassName,
           )}
         >
@@ -106,37 +106,37 @@ export const DashboardHeaderScaffold: React.FC<
     </div>
   </DashboardHeader>
 );
-DashboardHeaderScaffold.displayName = "DashboardHeaderScaffold";
+DashboardHeaderScaffold.displayName = 'DashboardHeaderScaffold';
 
 /** The `DashboardScaffold` component is a pre-configured dashboard that is intended to be used as a layout with parallel, intercepting routes.*/
 export const DashboardScaffold: React.FC<
-  & Omit<React.ComponentPropsWithRef<typeof Dashboard>, "title">
-  & React.PropsWithChildren<{
-    classNames?: ClassNames<
-      | "content"
-      | "footer"
-      | "layout"
-      | "leading"
-      | "trailing"
-      | "header"
-      | "headerContent"
-      | "headerLeading"
-      | "headerTrailing"
-      | "title"
-      | "description"
-    >;
-    leading?: React.ReactNode;
-    trailing?: React.ReactNode;
-    header?: {
-      content?: React.ReactNode;
-      description?: React.ReactNode;
-      title?: React.ReactNode;
+  Omit<React.ComponentPropsWithRef<typeof Dashboard>, 'title'> &
+    React.PropsWithChildren<{
+      classNames?: ClassNames<
+        | 'content'
+        | 'footer'
+        | 'layout'
+        | 'leading'
+        | 'trailing'
+        | 'header'
+        | 'headerContent'
+        | 'headerLeading'
+        | 'headerTrailing'
+        | 'title'
+        | 'description'
+      >;
       leading?: React.ReactNode;
       trailing?: React.ReactNode;
-    };
-    compact?: boolean;
-    hideDescription?: boolean;
-  }>
+      header?: {
+        content?: React.ReactNode;
+        description?: React.ReactNode;
+        title?: React.ReactNode;
+        leading?: React.ReactNode;
+        trailing?: React.ReactNode;
+      };
+      compact?: boolean;
+      hideDescription?: boolean;
+    }>
 > = ({
   ref,
   children,
@@ -187,4 +187,4 @@ export const DashboardScaffold: React.FC<
     </Dashboard>
   </DashboardProvider>
 );
-DashboardScaffold.displayName = "DashboardScaffold";
+DashboardScaffold.displayName = 'DashboardScaffold';

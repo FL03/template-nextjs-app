@@ -5,7 +5,7 @@
  */
 
 /** The root bucket for users to manage */
-export const ROOT_USER_BUCKET = "users";
+export const ROOT_USER_BUCKET = 'users';
 
 type BucketPathOptions = {
   path?: string;
@@ -24,5 +24,5 @@ export const userBucketPath = ({ params, path }: BucketPathOptions): string => {
   const baseBucket = `/${ROOT_USER_BUCKET}/${userId}`;
   // return the basepath if no other path(s) are provided
   if (!path) return baseBucket;
-  else return [baseBucket, path].join("/");
+  else return [baseBucket, path].join('/');
 };

@@ -180,7 +180,7 @@ export const PlatformSidebar: React.FC<
         {
           label: 'Dashboard',
           href: `/${username}/shifts`,
-          icon: <LayoutDashboardIcon className="size-4" />,
+          icon: <LayoutDashboardIcon className='size-4' />,
         },
       ],
     },
@@ -198,7 +198,7 @@ export const PlatformSidebar: React.FC<
               username,
             },
           },
-          icon: <SheetIcon className="size-4" />,
+          icon: <SheetIcon className='size-4' />,
         },
         {
           label: 'Organizations',
@@ -206,7 +206,7 @@ export const PlatformSidebar: React.FC<
             pathname: '/orgs',
             query: { username },
           },
-          icon: <BriefcaseBusinessIcon className="size-4" />,
+          icon: <BriefcaseBusinessIcon className='size-4' />,
         },
       ],
     },
@@ -216,7 +216,7 @@ export const PlatformSidebar: React.FC<
         {
           label: 'Help & Support',
           href: '/help',
-          icon: <CircleQuestionMarkIcon className="size-4" />,
+          icon: <CircleQuestionMarkIcon className='size-4' />,
         },
       ],
     },
@@ -255,23 +255,23 @@ export const PlatformSidebar: React.FC<
             )}
           </Link>
         </ProfileContextMenu>
-        {openMobile && <DialogTitle className="sr-only">Sidebar</DialogTitle>}
+        {openMobile && <DialogTitle className='sr-only'>Sidebar</DialogTitle>}
       </SidebarHeader>
       {/* Sidebar Content */}
-      <SidebarContent className="flex flex-col flex-1 h-full w-full items-center overflow-x-clip">
-        <SidebarGroup className="order-first w-full">
-          <SidebarGroupLabel className="sr-only">User</SidebarGroupLabel>
+      <SidebarContent className='flex flex-col flex-1 h-full w-full items-center overflow-x-clip'>
+        <SidebarGroup className='order-first w-full'>
+          <SidebarGroupLabel className='sr-only'>User</SidebarGroupLabel>
           {generateMenu({ links: linkTree.user.links })}
           <SidebarGroupContent></SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup className="order-2 flex-1 h-full w-full">
+        <SidebarGroup className='order-2 flex-1 h-full w-full'>
           <SidebarGroupLabel>Records</SidebarGroupLabel>
           <SidebarGroupContent>
             {generateMenu({ links: linkTree.records.links })}
           </SidebarGroupContent>
         </SidebarGroup>
         {/* trailing menu */}
-        <div className="order-last flex flex-col h-fit w-full justify-end mt-auto">
+        <div className='order-last flex flex-col h-fit w-full justify-end mt-auto'>
           <SidebarSeparator />
           <SidebarGroup>
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -286,8 +286,8 @@ export const PlatformSidebar: React.FC<
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <BillingPortalAction
-                      className="w-full justify-start"
-                      variant="ghost"
+                      className='w-full justify-start'
+                      variant='ghost'
                       customerEmail={email}
                       customerId={customerId}
                     />
@@ -298,9 +298,9 @@ export const PlatformSidebar: React.FC<
           </SidebarGroup>
         </div>
       </SidebarContent>
-      <SidebarFooter className="flex flex-nowrap items-center justify-center w-full">
+      <SidebarFooter className='flex flex-nowrap items-center justify-center w-full'>
         <ButtonGroup>
-          <Button asChild size="icon" variant="outline">
+          <Button asChild size='icon' variant='outline'>
             <Link
               href={{
                 pathname: '/notifications',
@@ -311,19 +311,19 @@ export const PlatformSidebar: React.FC<
                 },
               }}
             >
-              <BellIcon className="size-4" />
-              <span className="sr-only">Notifications</span>
+              <BellIcon className='size-4' />
+              <span className='sr-only'>Notifications</span>
             </Link>
           </Button>
           <ProfileSettingsButton
-            size="icon"
-            variant="outline"
+            size='icon'
+            variant='outline'
             username={username}
             classNames={{ iconClassName: 'size-4' }}
           />
           <LogoutButton
             classNames={{ iconClassName: 'size-4' }}
-            size="icon"
+            size='icon'
             onSignOut={() => {
               // close the sidebar on mobile
               if (isOpen) toggleSidebar();

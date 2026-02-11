@@ -3,16 +3,16 @@
  * @author - @FL03
  * @file - forgot-password-form.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import { resetPasswordAction } from "../../utils";
+import { resetPasswordAction } from '../../utils';
 // components
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldContent,
@@ -20,13 +20,12 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
+} from '@/components/ui/field';
 
-interface FormProps extends
-  Omit<
-    React.ComponentProps<"form">,
-    "action" | "children" | "onSubmit" | "title" | "method" | "id"
-  > {
+interface FormProps extends Omit<
+  React.ComponentProps<'form'>,
+  'action' | 'children' | 'onSubmit' | 'title' | 'method' | 'id'
+> {
   captchaToken?: string;
   redirectTo?: string;
   showLegend?: boolean;
@@ -35,18 +34,16 @@ interface FormProps extends
   onSuccess?(): void;
 }
 // Forgot Credentials Form
-export const ForgotPasswordForm: React.FC<FormProps> = (
-  {
-    ref,
-    captchaToken,
-    redirectTo,
-    showLegend,
-    onCancel,
-    onError,
-    onSuccess,
-    ...props
-  },
-) => {
+export const ForgotPasswordForm: React.FC<FormProps> = ({
+  ref,
+  captchaToken,
+  redirectTo,
+  showLegend,
+  onCancel,
+  onError,
+  onSuccess,
+  ...props
+}) => {
   const [formState, formAction, isPending] = React.useActionState(
     resetPasswordAction,
     {},
@@ -54,65 +51,65 @@ export const ForgotPasswordForm: React.FC<FormProps> = (
   return (
     <form
       {...props}
-      id="forgot-password-form"
+      id='forgot-password-form'
       ref={ref}
-      className="flex flex-nowrap items-center gap-2"
+      className='flex flex-nowrap items-center gap-2'
       action={formAction}
       onKeyDown={(event) => {
-        if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
           event.preventDefault();
           event.currentTarget.requestSubmit();
         }
-        if (event.key === "Escape") {
+        if (event.key === 'Escape') {
           event.currentTarget.reset();
         }
       }}
     >
-      <FieldSet form="forgot-password-form">
+      <FieldSet form='forgot-password-form'>
         <FieldLegend
-          className={cn("text-xl", showLegend ? "not-sr-only" : "sr-only")}
+          className={cn('text-xl', showLegend ? 'not-sr-only' : 'sr-only')}
         >
           Forgot Password?
         </FieldLegend>
-        <FieldGroup className={cn(showLegend ? "not-sr-only" : "sr-only")}>
-          <Field orientation="responsive">
+        <FieldGroup className={cn(showLegend ? 'not-sr-only' : 'sr-only')}>
+          <Field orientation='responsive'>
             <FieldContent>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor='email'>Email</FieldLabel>
             </FieldContent>
             <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Account email"
+              id='email'
+              name='email'
+              type='email'
+              placeholder='Account email'
             />
           </Field>
           {/* Hidden Fields */}
           <>
             <Field>
               <Input
-                id="captcha_token"
-                name="captchaToken"
-                type="hidden"
+                id='captcha_token'
+                name='captchaToken'
+                type='hidden'
                 value={captchaToken}
               />
             </Field>
             <Field>
               <Input
-                id="redirect_to"
-                name="redirectTo"
-                type="hidden"
+                id='redirect_to'
+                name='redirectTo'
+                type='hidden'
                 value={redirectTo}
               />
             </Field>
           </>
           {/* Actions */}
-          <Field orientation="horizontal">
+          <Field orientation='horizontal'>
             <Button
               disabled={isPending}
-              form="forgot-password-form"
-              id="forgot-password-submit"
-              data-testid="forgot-password-submit"
-              type="submit"
+              form='forgot-password-form'
+              id='forgot-password-submit'
+              data-testid='forgot-password-submit'
+              type='submit'
             >
               <span>Submit</span>
             </Button>
@@ -122,4 +119,4 @@ export const ForgotPasswordForm: React.FC<FormProps> = (
     </form>
   );
 };
-ForgotPasswordForm.displayName = "ForgotCredentialsForm";
+ForgotPasswordForm.displayName = 'ForgotCredentialsForm';

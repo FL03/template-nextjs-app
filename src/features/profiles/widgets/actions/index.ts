@@ -4,5 +4,5 @@
  * @directory - src/features/profiles/widgets/actions
  * @file - index.ts
  */
-export * from "./profile-buttons";
-export * from "./profile-menus";
+export * from './profile-buttons';
+export * from './profile-menus';

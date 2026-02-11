@@ -4,5 +4,5 @@
  * @directory - src/features/billing/views
  * @file - index.ts
  */
-export * from "./checkout-page";
-export * from "./pricing-page";
+export * from './checkout-page';
+export * from './pricing-page';

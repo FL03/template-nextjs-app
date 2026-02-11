@@ -3,9 +3,9 @@
  * @author - @FL03
  * @file - use-turnstile.tsx
  */
-"use client";
+'use client';
 // imports
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from 'react';
 
 namespace UseTurnstile {
   export type Props = { onValueChange?(value?: string): void };
@@ -19,27 +19,30 @@ namespace UseTurnstile {
   export type Hook = (options?: Props) => Output;
 }
 
-export const useTurnstile: UseTurnstile.Hook = (
-  { onValueChange } = {},
-) => {
+export const useTurnstile: UseTurnstile.Hook = ({ onValueChange } = {}) => {
   // define the token state
   const [token, setToken] = useState<string | undefined>();
   // handle changes to the captcha token
-  const onTokenChange = useCallback((token?: string) => (
-    setToken((prev) => {
-      if (prev === token) return prev;
-      onValueChange?.();
-      return prev;
-    })
-  ), [onValueChange]);
+  const onTokenChange = useCallback(
+    (token?: string) =>
+      setToken((prev) => {
+        if (prev === token) return prev;
+        onValueChange?.();
+        return prev;
+      }),
+    [onValueChange],
+  );
   // reset the captchaToken
   const reset = useCallback(() => {
     setToken(undefined);
   }, []);
   // memoize the output
-  return useMemo(() => ({
-    captchaToken: token ?? undefined,
-    onTokenChange,
-    reset,
-  }), [token, onTokenChange, reset]);
+  return useMemo(
+    () => ({
+      captchaToken: token ?? undefined,
+      onTokenChange,
+      reset,
+    }),
+    [token, onTokenChange, reset],
+  );
 };

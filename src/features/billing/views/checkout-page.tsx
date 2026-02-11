@@ -4,27 +4,20 @@
  * @directory - src/features/billing/views
  * @file - checkout-page.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // local
-import { PriceCard } from "../widgets";
+import { PriceCard } from '../widgets';
 // components
-import { DetailScaffold } from "@/components/common/details";
+import { DetailScaffold } from '@/components/common/details';
 
 export const CheckoutPage: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof DetailScaffold>, "children">
-> = (
-  {
-    title = "Pricing",
-    ...props
-  },
-) => {
+  Omit<React.ComponentPropsWithoutRef<typeof DetailScaffold>, 'children'>
+> = ({ title = 'Pricing', ...props }) => {
   const productDescription = () => (
-    <ul className="flex flex-col list-disc list-inside pt-2">
-      <li>
-        Maintain a personal ledger of tips received
-      </li>
+    <ul className='flex flex-col list-disc list-inside pt-2'>
+      <li>Maintain a personal ledger of tips received</li>
       <li>
         Create and manage your active organizations to enable the grouping of
         tips and earnings!
@@ -37,14 +30,14 @@ export const CheckoutPage: React.FC<
   );
   return (
     <DetailScaffold title={title} {...props}>
-      <ul className="flex flex-1 flex-wrap w-full items-center justify-center gap-4 lg:gap-6">
-        <li key="monthly">
-          <PriceCard lookupKey="pzzld_org_tips_monthly">
+      <ul className='flex flex-1 flex-wrap w-full items-center justify-center gap-4 lg:gap-6'>
+        <li key='monthly'>
+          <PriceCard lookupKey='pzzld_org_tips_monthly'>
             {productDescription()}
           </PriceCard>
         </li>
-        <li key="yearly">
-          <PriceCard lookupKey="pzzld_org_tips_yearly">
+        <li key='yearly'>
+          <PriceCard lookupKey='pzzld_org_tips_yearly'>
             {productDescription()}
           </PriceCard>
         </li>
@@ -52,6 +45,6 @@ export const CheckoutPage: React.FC<
     </DetailScaffold>
   );
 };
-CheckoutPage.displayName = "CheckoutPage";
+CheckoutPage.displayName = 'CheckoutPage';
 
 export default CheckoutPage;

@@ -5,29 +5,29 @@
  * @file - api.ts
  */
 // types
-import type { User } from "@supabase/supabase-js";
+import type { User } from '@supabase/supabase-js';
 // project
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 /** A client-side method for fetching the current user. */
 export const getCurrentUser = async (
-  init?: Omit<RequestInit, "method">,
+  init?: Omit<RequestInit, 'method'>,
 ): Promise<User | null> => {
   // execute a GET request to the endpoint
-  const res = await fetch("/api/users/current-user", {
+  const res = await fetch('/api/users/current-user', {
     ...init,
-    method: "GET",
+    method: 'GET',
     headers: {
       ...init?.headers,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   if (!res.ok) {
-    throw new Error("Failed to fetch the current user: " + res.statusText);
+    throw new Error('Failed to fetch the current user: ' + res.statusText);
   }
   const { data, error } = await res.json();
   if (error) {
-    logger.error(error, "Error fetching the current user...");
+    logger.error(error, 'Error fetching the current user...');
     throw new Error(error);
   }
   return data;

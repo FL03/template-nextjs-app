@@ -3,9 +3,9 @@
  * @author - @FL03
  * @file - [username]/page.tsx
  */
-"use server";
+'use server';
 // components
-import { ProfileDetailsView } from "@/features/profiles";
+import { ProfileDetailsView } from '@/features/profiles';
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -14,11 +14,11 @@ type PageProps = {
 export default async function Page() {
   return <ProfileDetailsView />;
 }
-Page.displayName = "UserProfileDetailsPage";
+Page.displayName = 'UserProfileDetailsPage';
 
 export async function generateMetadata(
   { params }: PageProps,
-  parent: import("next").ResolvingMetadata,
+  parent: import('next').ResolvingMetadata,
 ) {
   const { username } = await params;
   const parentMetadata = await parent;

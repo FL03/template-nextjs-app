@@ -4,8 +4,8 @@
  * @directory - src/features/platform/config
  * @file - endpoints.tsx
  */
-import { CalendarIcon, User2Icon } from "lucide-react";
-import { type UrlObject } from "url";
+import { CalendarIcon, User2Icon } from 'lucide-react';
+import { type UrlObject } from 'url';
 
 type RouteWithUsername<T = {}> = T & { username: string };
 
@@ -26,24 +26,24 @@ type SiteLinkBuilder<TParams, TRoot = {}> = (
 
 export const profileLinks = ({ username }: RouteWithUsername) => [
   {
-    label: "Profile",
-    icon: <User2Icon className="h-5 w-5" />,
+    label: 'Profile',
+    icon: <User2Icon className='h-5 w-5' />,
     href: {
       pathname: `/${username}`,
     },
   },
 ];
 
-export const shiftDetailEndpoint: SiteLinkBuilder<{ id: string }> = (
-  { id },
-) => {
+export const shiftDetailEndpoint: SiteLinkBuilder<{ id: string }> = ({
+  id,
+}) => {
   return () => ({
     details: {
       href: {
         pathname: `/shifts/${id}`,
       },
-      label: "Shift Details",
-      icon: <CalendarIcon className="h-5 w-5" />,
+      label: 'Shift Details',
+      icon: <CalendarIcon className='h-5 w-5' />,
     },
   });
 };

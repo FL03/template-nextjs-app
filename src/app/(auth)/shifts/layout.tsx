@@ -3,21 +3,19 @@
  * @author - @FL03
  * @file - layout.tsx
  */
-"use client";
+'use client';
 // imports
-import { useSearchParams } from "next/navigation";
-import { WorkScheduleProvider } from "@/features/shifts";
+import { useSearchParams } from 'next/navigation';
+import { WorkScheduleProvider } from '@/features/shifts';
 
-export default function Layout(
-  { children }: Readonly<React.PropsWithChildren>,
-) {
+export default function Layout({
+  children,
+}: Readonly<React.PropsWithChildren>) {
   const searchParams = useSearchParams();
-  const username = searchParams.get("username")?.toString();
+  const username = searchParams.get('username')?.toString();
   // render the layout
   return (
-    <WorkScheduleProvider username={username}>
-      {children}
-    </WorkScheduleProvider>
+    <WorkScheduleProvider username={username}>{children}</WorkScheduleProvider>
   );
 }
-Layout.displayName = "ShiftDetailsLayout";
+Layout.displayName = 'ShiftDetailsLayout';

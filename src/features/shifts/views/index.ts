@@ -3,5 +3,5 @@
  * @author - @FL03
  * @file - views/index.ts
  */
-export * from "./shift-details-view";
-export * from "./shift-table-view";
+export * from './shift-details-view';
+export * from './shift-table-view';

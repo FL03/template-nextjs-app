@@ -4,26 +4,26 @@
  * @directory - src/features/billing/widgets
  * @file - customer-actions.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { PlusIcon } from "lucide-react";
-import { toast } from "sonner";
+import * as React from 'react';
+import { PlusIcon } from 'lucide-react';
+import { toast } from 'sonner';
 // components
-import { IconButton } from "@/components/common/button";
+import { IconButton } from '@/components/common/button';
 // local
-import { createCustomerForCurrentUser } from "../utils";
+import { createCustomerForCurrentUser } from '../utils';
 
 /** Automatically create a customer object on stripe for the current user on-click. */
 export const NewCustomerButton: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof IconButton>,
-    "children" | "onClick"
+    'children' | 'onClick'
   >
 > = ({
-  label = "New Customer",
-  size = "icon",
-  variant = "default",
+  label = 'New Customer',
+  size = 'icon',
+  variant = 'default',
   ...props
 }) => (
   <IconButton
@@ -36,13 +36,13 @@ export const NewCustomerButton: React.FC<
       event.stopPropagation();
       // invoke the action
       toast.promise(createCustomerForCurrentUser(), {
-        loading: "Creating customer...",
-        success: "Customer created successfully!",
-        error: "Failed to create customer.",
+        loading: 'Creating customer...',
+        success: 'Customer created successfully!',
+        error: 'Failed to create customer.',
       });
     }}
     {...props}
   >
-    <PlusIcon className="h-5 w-5 " />
+    <PlusIcon className='h-5 w-5 ' />
   </IconButton>
 );

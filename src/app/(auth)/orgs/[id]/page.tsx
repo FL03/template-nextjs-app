@@ -5,7 +5,7 @@
  * @file - page.tsx
  */
 // project
-import { OrgDetails } from "@/features/orgs";
+import { OrgDetails } from '@/features/orgs';
 
 type RouteProps = {
   params: Promise<{ id: string }>;
@@ -14,6 +14,6 @@ type RouteProps = {
 
 export default async function Page({ params, searchParams }: RouteProps) {
   const { id } = await params;
-  const { mode = "read" } = await searchParams;
+  const { mode = 'read' } = await searchParams;
   return <OrgDetails orgId={id} defaultMode={mode} />;
 }

@@ -4,5 +4,5 @@
  * @directory - src/features/shifts/providers
  * @file - index.ts
  */
-export * from "./shift-provider";
-export * from "./shifts-provider";
+export * from './shift-provider';
+export * from './shifts-provider';

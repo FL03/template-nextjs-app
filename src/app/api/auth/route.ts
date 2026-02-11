@@ -3,16 +3,16 @@
  * @author - @FL03
  * @file - auth/route.ts
  */
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 // The client you created from the Server-Side Auth instructions
-import { createServerClient } from "@/lib/supabase";
-import { logger } from "@/lib/logger";
+import { createServerClient } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code")?.toString();
+  const code = searchParams.get('code')?.toString();
   // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get('next') ?? '/';
 
   if (!code) {
     return NextResponse.redirect(`${origin}/error?message=auth-code-missing`);
@@ -24,8 +24,8 @@ export async function GET(request: Request) {
     logger.error(error, error.message);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
-  const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-  const isLocalEnv = process.env.NODE_ENV === "development";
+  const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
+  const isLocalEnv = process.env.NODE_ENV === 'development';
   if (isLocalEnv) {
     // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
     return NextResponse.redirect(`${origin}${next}`);

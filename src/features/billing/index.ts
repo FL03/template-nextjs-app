@@ -4,7 +4,7 @@
  * @directory - src/features/billing
  * @file - index.ts
  */
-export * from "./provider";
-export * from "./utils";
-export * from "./views";
-export * from "./widgets";
+export * from './provider';
+export * from './utils';
+export * from './views';
+export * from './widgets';

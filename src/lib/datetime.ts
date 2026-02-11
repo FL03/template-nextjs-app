@@ -4,32 +4,35 @@
  * @description - datetime utilities for the platform
  * @file - utils.ts
  */
-import { TZDate } from "@date-fns/tz";
-import { UTCDate } from "@date-fns/utc";
+import { TZDate } from '@date-fns/tz';
+import { UTCDate } from '@date-fns/utc';
 
 /** A type defining a string enumeration */
 export type DayOfWeek =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday";
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 /** A constant list of days in the week */
 export const DAYS_OF_WEEK: Record<number, DayOfWeek> = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
+  0: 'Sunday',
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
 };
 
 export type DayOfWeekIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-export type WeekMap<TDays extends string | number | symbol = Days, TValue = any> = { [key in TDays]: TValue };
+export type WeekMap<
+  TDays extends string | number | symbol = Days,
+  TValue = any,
+> = { [key in TDays]: TValue };
 
 export interface Time {
   hour: number;

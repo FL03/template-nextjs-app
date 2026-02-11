@@ -4,12 +4,12 @@
  * @directory - src/features/shifts/providers
  * @file - shift-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { useShift } from "@/hooks/use-shift";
-import { useUsername } from "@/hooks/use-username";
+import { useShift } from '@/hooks/use-shift';
+import { useUsername } from '@/hooks/use-username';
 
 interface ShiftContext extends ReturnType<typeof useShift> {
   //
@@ -21,7 +21,7 @@ const ShiftContext = React.createContext<ShiftContext | null>(null);
 export const useWorkShift = () => {
   const context = React.useContext(ShiftContext);
   if (!context) {
-    throw new Error("useSchedule must be used within a ScheduleProvider");
+    throw new Error('useSchedule must be used within a ScheduleProvider');
   }
   return context;
 };
@@ -43,4 +43,4 @@ export const WorkShiftProvider: React.FC<
   // return the provider
   return <ShiftContext value={ctx}>{children}</ShiftContext>;
 };
-WorkShiftProvider.displayName = "WorkShiftProvider";
+WorkShiftProvider.displayName = 'WorkShiftProvider';

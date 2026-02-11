@@ -4,12 +4,12 @@
  * @directory - src/components/common
  * @file - form-toast.tsx
  */
-"use client";
+'use client';
 // imports
-import React from "react";
-import { useFormStatus } from "react-dom";
+import React from 'react';
+import { useFormStatus } from 'react-dom';
 
-type Status = "idle" | "pending" | "success" | "error";
+type Status = 'idle' | 'pending' | 'success' | 'error';
 
 type FormToastContext = {
   status: string | null;
@@ -23,41 +23,40 @@ export const useFormToast = (): FormToastContext => {
   const ctx = React.useContext(FormToastContext);
 
   if (!ctx) {
-    throw new Error(
-      "useFormToast must be used within a FormToastProvider",
-    );
+    throw new Error('useFormToast must be used within a FormToastProvider');
   }
   return ctx;
 };
 
 export const FormToast: React.FC<
-  React.PropsWithChildren<
-    {
-      defaultValue?: Status;
-      value?: Status;
-      onValueChange?(status?: Status): void;
-    }
-  >
-> = ({ children, value, defaultValue = "idle", onValueChange }) => {
+  React.PropsWithChildren<{
+    defaultValue?: Status;
+    value?: Status;
+    onValueChange?(status?: Status): void;
+  }>
+> = ({ children, value, defaultValue = 'idle', onValueChange }) => {
   const { pending } = useFormStatus();
 
   const [status, setStatus] = React.useState<Status | null>(defaultValue);
 
   React.useEffect(() => {
-    if (pending && status !== "pending") {
-      setStatus("pending");
+    if (pending && status !== 'pending') {
+      setStatus('pending');
     } else if (value && value !== status) {
       setStatus(value);
     }
   }, [pending, status, value]);
 
-  const handleStatusChange = React.useCallback((next?: Status | null) => {
-    setStatus((prev) => {
-      if (prev === next) return prev;
-      if (next) onValueChange?.(next);
-      return next ?? null;
-    });
-  }, [onValueChange]);
+  const handleStatusChange = React.useCallback(
+    (next?: Status | null) => {
+      setStatus((prev) => {
+        if (prev === next) return prev;
+        if (next) onValueChange?.(next);
+        return next ?? null;
+      });
+    },
+    [onValueChange],
+  );
 
   const ctx = React.useMemo(() => ({ status }), [status]);
   return (

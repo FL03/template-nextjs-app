@@ -4,4 +4,4 @@
  * @directory - src/features/orgs/widgets/modals
  * @file - index.ts
  */
-export * from "./org-form-modal";
+export * from './org-form-modal';

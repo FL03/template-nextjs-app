@@ -3,20 +3,20 @@
  * @author - @FL03
  * @file - shift-form.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { PlusIcon, XIcon } from "lucide-react";
-import type { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { PlusIcon, XIcon } from 'lucide-react';
+import type { ClassNames } from '@pzzld/core';
 // project
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useModal } from "@/hooks/use-modal";
-import { cn } from "@/lib/utils";
-import { PropsWithModal } from "@/types";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useModal } from '@/hooks/use-modal';
+import { cn } from '@/lib/utils';
+import { PropsWithModal } from '@/types';
 // local
-import { ShiftForm } from "../shift-form";
+import { ShiftForm } from '../shift-form';
 // components
-import { IconButton } from "@/components/common/button";
+import { IconButton } from '@/components/common/button';
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -34,7 +34,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from '@/components/ui/drawer';
 import {
   Sheet,
   SheetClose,
@@ -44,28 +44,28 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 
 export const ShiftFormDialog: React.FC<
-  & React.ComponentPropsWithoutRef<typeof ShiftForm>
-  & React.PropsWithChildren<
-    PropsWithModal<{
-      description?: React.ReactNode;
-      title?: React.ReactNode;
-      showDescription?: boolean;
-      hideTitle?: boolean;
-      side?: React.ComponentProps<typeof SheetContent>["side"];
-      classNames?: ClassNames<
-        | "content"
-        | "footer"
-        | "header"
-        | "description"
-        | "title"
-        | "form"
-        | "trigger"
-      >;
-    }>
-  >
+  React.ComponentPropsWithoutRef<typeof ShiftForm> &
+    React.PropsWithChildren<
+      PropsWithModal<{
+        description?: React.ReactNode;
+        title?: React.ReactNode;
+        showDescription?: boolean;
+        hideTitle?: boolean;
+        side?: React.ComponentProps<typeof SheetContent>['side'];
+        classNames?: ClassNames<
+          | 'content'
+          | 'footer'
+          | 'header'
+          | 'description'
+          | 'title'
+          | 'form'
+          | 'trigger'
+        >;
+      }>
+    >
 > = ({
   children,
   classNames,
@@ -86,12 +86,15 @@ export const ShiftFormDialog: React.FC<
         {children}
       </DialogTrigger>
     )}
-    <DialogContent hidden={hideTitle} className={cn("", classNames?.contentClassName)}>
-      <DialogHeader className={cn("w-full", classNames?.headerClassName)}>
+    <DialogContent
+      hidden={hideTitle}
+      className={cn('', classNames?.contentClassName)}
+    >
+      <DialogHeader className={cn('w-full', classNames?.headerClassName)}>
         {title && (
           <DialogTitle
             className={cn(
-              hideTitle ? "sr-only" : "not-sr-only",
+              hideTitle ? 'sr-only' : 'not-sr-only',
               classNames?.titleClassName,
             )}
           >
@@ -101,7 +104,7 @@ export const ShiftFormDialog: React.FC<
         {description && (
           <DialogDescription
             className={cn(
-              showDescription ? "not-sr-only" : "sr-only",
+              showDescription ? 'not-sr-only' : 'sr-only',
               classNames?.descriptionClassName,
             )}
           >
@@ -110,7 +113,7 @@ export const ShiftFormDialog: React.FC<
         )}
       </DialogHeader>
       <ShiftForm
-        className={cn("flex-1 overflow-y-auto", classNames?.formClassName)}
+        className={cn('flex-1 overflow-y-auto', classNames?.formClassName)}
         onCancel={() => {
           onOpenChange?.(false);
           onCancel?.();
@@ -126,25 +129,25 @@ export const ShiftFormDialog: React.FC<
 );
 
 export const ShiftFormSheet: React.FC<
-  & React.ComponentPropsWithoutRef<typeof ShiftForm>
-  & React.PropsWithChildren<
-    PropsWithModal<{
-      description?: React.ReactNode;
-      title?: React.ReactNode;
-      showDescription?: boolean;
-      hideTitle?: boolean;
-      side?: React.ComponentProps<typeof SheetContent>["side"];
-      classNames?: ClassNames<
-        | "content"
-        | "footer"
-        | "header"
-        | "description"
-        | "title"
-        | "form"
-        | "trigger"
-      >;
-    }>
-  >
+  React.ComponentPropsWithoutRef<typeof ShiftForm> &
+    React.PropsWithChildren<
+      PropsWithModal<{
+        description?: React.ReactNode;
+        title?: React.ReactNode;
+        showDescription?: boolean;
+        hideTitle?: boolean;
+        side?: React.ComponentProps<typeof SheetContent>['side'];
+        classNames?: ClassNames<
+          | 'content'
+          | 'footer'
+          | 'header'
+          | 'description'
+          | 'title'
+          | 'form'
+          | 'trigger'
+        >;
+      }>
+    >
 > = ({
   children,
   classNames,
@@ -157,7 +160,7 @@ export const ShiftFormSheet: React.FC<
   onCancel,
   onSuccess,
   onOpenChange,
-  side = "left",
+  side = 'left',
   ...props
 }) => (
   <Sheet defaultOpen={defaultOpen} open={open} onOpenChange={onOpenChange}>
@@ -169,7 +172,7 @@ export const ShiftFormSheet: React.FC<
     <SheetContent
       side={side}
       className={cn(
-        "not-[has-data[-slot=sheet-header]]]:pt-8",
+        'not-[has-data[-slot=sheet-header]]]:pt-8',
         classNames?.contentClassName,
       )}
     >
@@ -178,7 +181,7 @@ export const ShiftFormSheet: React.FC<
           {title && (
             <SheetTitle
               className={cn(
-                hideTitle ? "sr-only" : "not-sr-only",
+                hideTitle ? 'sr-only' : 'not-sr-only',
                 classNames?.titleClassName,
               )}
             >
@@ -188,7 +191,7 @@ export const ShiftFormSheet: React.FC<
           {description && (
             <SheetDescription
               className={cn(
-                showDescription ? "not-sr-only" : "sr-only",
+                showDescription ? 'not-sr-only' : 'sr-only',
                 classNames?.descriptionClassName,
               )}
             >
@@ -198,10 +201,7 @@ export const ShiftFormSheet: React.FC<
         </SheetHeader>
       )}
       <ShiftForm
-        className={cn(
-          "px-4 flex-1 overflow-y-auto",
-          classNames?.formClassName,
-        )}
+        className={cn('px-4 flex-1 overflow-y-auto', classNames?.formClassName)}
         onCancel={() => {
           onOpenChange?.(false);
           onCancel?.();
@@ -212,10 +212,10 @@ export const ShiftFormSheet: React.FC<
         }}
         {...props}
       />
-      <SheetFooter className={cn("w-full", classNames?.footerClassName)}>
+      <SheetFooter className={cn('w-full', classNames?.footerClassName)}>
         <SheetClose asChild>
-          <IconButton label="Close">
-            <XIcon className="size-4" />
+          <IconButton label='Close'>
+            <XIcon className='size-4' />
           </IconButton>
         </SheetClose>
       </SheetFooter>
@@ -224,18 +224,24 @@ export const ShiftFormSheet: React.FC<
 );
 
 export const ShiftFormDrawer: React.FC<
-  & React.ComponentPropsWithoutRef<typeof ShiftForm>
-  & PropsWithModal<
-    React.PropsWithChildren<{
-      classNames?: ClassNames<
-        "content" | "footer" | "header" | "form" | "description" | "title" | "trigger"
-      >;
-      description?: React.ReactNode;
-      title?: React.ReactNode;
-      showDescription?: boolean;
-      hideTitle?: boolean;
-    }>
-  >
+  React.ComponentPropsWithoutRef<typeof ShiftForm> &
+    PropsWithModal<
+      React.PropsWithChildren<{
+        classNames?: ClassNames<
+          | 'content'
+          | 'footer'
+          | 'header'
+          | 'form'
+          | 'description'
+          | 'title'
+          | 'trigger'
+        >;
+        description?: React.ReactNode;
+        title?: React.ReactNode;
+        showDescription?: boolean;
+        hideTitle?: boolean;
+      }>
+    >
 > = ({
   children,
   className,
@@ -258,20 +264,17 @@ export const ShiftFormDrawer: React.FC<
       </DrawerTrigger>
     )}
     <DrawerContent
-      className={cn(
-        "not-[has-data[-slot=drawer-header]]]:pt-8",
-        className,
-      )}
+      className={cn('not-[has-data[-slot=drawer-header]]]:pt-8', className)}
     >
       {Boolean(description || title) && (
         <DrawerHeader
-          className={cn("w-full", classNames?.headerClassName)}
+          className={cn('w-full', classNames?.headerClassName)}
           hidden={hideTitle}
         >
           {title && (
             <DrawerTitle
               className={cn(
-                hideTitle ? "sr-only" : "not-sr-only",
+                hideTitle ? 'sr-only' : 'not-sr-only',
                 classNames?.titleClassName,
               )}
             >
@@ -281,7 +284,7 @@ export const ShiftFormDrawer: React.FC<
           {description && (
             <DrawerDescription
               className={cn(
-                showDescription ? "not-sr-only" : "sr-only",
+                showDescription ? 'not-sr-only' : 'sr-only',
                 classNames?.descriptionClassName,
               )}
             >
@@ -292,15 +295,12 @@ export const ShiftFormDrawer: React.FC<
       )}
       <div
         className={cn(
-          "flex flex-1 flex-col h-full w-full overflow-y-auto",
+          'flex flex-1 flex-col h-full w-full overflow-y-auto',
           classNames?.contentClassName,
         )}
       >
         <ShiftForm
-          className={cn(
-            "px-4",
-            classNames?.formClassName,
-          )}
+          className={cn('px-4', classNames?.formClassName)}
           onCancel={() => {
             onOpenChange?.(false);
             onCancel?.();
@@ -311,10 +311,10 @@ export const ShiftFormDrawer: React.FC<
           }}
           {...props}
         />
-        <DrawerFooter className="w-full">
+        <DrawerFooter className='w-full'>
           <DrawerClose asChild>
-            <IconButton label="Close">
-              <XIcon className="size-4" />
+            <IconButton label='Close'>
+              <XIcon className='size-4' />
             </IconButton>
           </DrawerClose>
         </DrawerFooter>
@@ -324,34 +324,32 @@ export const ShiftFormDrawer: React.FC<
 );
 
 export const ShiftFormModal: React.FC<
-  & React.ComponentPropsWithoutRef<typeof ShiftForm>
-  & PropsWithModal<
-    {
+  React.ComponentPropsWithoutRef<typeof ShiftForm> &
+    PropsWithModal<{
       description?: React.ReactNode;
       title?: React.ReactNode;
       triggerIcon?: React.ReactNode;
       triggerLabel?: React.ReactNode;
-      triggerSize?: React.ComponentProps<typeof IconButton>["size"];
-      triggerVariant?: React.ComponentProps<typeof IconButton>["variant"];
+      triggerSize?: React.ComponentProps<typeof IconButton>['size'];
+      triggerVariant?: React.ComponentProps<typeof IconButton>['variant'];
       drawer?: boolean;
       isEditing?: boolean;
       showDescription?: boolean;
       hideTitle?: boolean;
       classNames?: ClassNames<
-        "description" | "title" | "form" | "icon" | "label" | "trigger"
+        'description' | 'title' | 'form' | 'icon' | 'label' | 'trigger'
       >;
-    }
-  >
+    }>
 > = ({
   description,
   drawer,
   defaultOpen,
   open,
   onOpenChange,
-  triggerLabel = "New Shift",
-  triggerSize = "icon",
-  triggerVariant = "outline",
-  title = "New Shift",
+  triggerLabel = 'New Shift',
+  triggerSize = 'icon',
+  triggerVariant = 'outline',
+  title = 'New Shift',
   classNames: {
     iconClassName,
     labelClassName,
@@ -371,7 +369,7 @@ export const ShiftFormModal: React.FC<
       variant={triggerVariant}
       onClick={modal.toggle}
     >
-      <PlusIcon className={cn("size-4", iconClassName)} />
+      <PlusIcon className={cn('size-4', iconClassName)} />
     </IconButton>
   );
 
@@ -391,7 +389,7 @@ export const ShiftFormModal: React.FC<
   }
   return (
     <ShiftFormSheet
-      side="left"
+      side='left'
       classNames={classNames}
       description={description}
       title={title}

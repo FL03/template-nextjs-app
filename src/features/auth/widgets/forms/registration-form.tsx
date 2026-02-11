@@ -3,22 +3,22 @@
  * @author - @FL03
  * @file - registration-form.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2Icon } from 'lucide-react';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 // project
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 // local
-import { handleRegistration } from "../../utils";
+import { handleRegistration } from '../../utils';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldContent,
@@ -27,34 +27,32 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 export const registrationFormSchema = z
   .object({
     captchaToken: z.string().optional(),
-    email: z
-      .email({
-        error: "Email is required...",
-      }),
+    email: z.email({
+      error: 'Email is required...',
+    }),
     password: z
       .string({
-        error: "Password is required...",
+        error: 'Password is required...',
       })
       .min(8, {
-        message: "Password must be at least 8 characters.",
+        message: 'Password must be at least 8 characters.',
       }),
-    passwordConfirm: z
-      .string({ error: "Password confirm is required..." }),
+    passwordConfirm: z.string({ error: 'Password confirm is required...' }),
     username: z
       .string({
-        error: "Username is required...",
+        error: 'Username is required...',
       })
-      .min(3, { message: "Username must be at least 3 characters." })
-      .max(60, { message: "Username must be at most 60 characters." }),
+      .min(3, { message: 'Username must be at least 3 characters.' })
+      .max(60, { message: 'Username must be at most 60 characters.' }),
   })
   .refine((data) => data.password === data.passwordConfirm, {
-    message: "Passwords must match.",
+    message: 'Passwords must match.',
   });
 
 export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
@@ -62,8 +60,8 @@ export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
 /** The primary form for creating new user accounts. */
 export const RegistrationForm: React.FC<
   Omit<
-    React.ComponentPropsWithRef<"form">,
-    "children" | "defaultValue" | "id" | "onSubmit"
+    React.ComponentPropsWithRef<'form'>,
+    'children' | 'defaultValue' | 'id' | 'onSubmit'
   > & {
     captchaToken?: string;
     emailRedirectTo?: string;
@@ -99,13 +97,13 @@ export const RegistrationForm: React.FC<
     <form
       {...props}
       ref={ref}
-      id="registration-form"
-      className={cn("relative z-auto flex flex-col w-full", className)}
+      id='registration-form'
+      className={cn('relative z-auto flex flex-col w-full', className)}
       onKeyDown={(event) => {
-        if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
           event.currentTarget.requestSubmit();
         }
-        if (event.key === "Escape") {
+        if (event.key === 'Escape') {
           onCancel?.();
         }
       }}
@@ -116,150 +114,138 @@ export const RegistrationForm: React.FC<
         event.stopPropagation();
 
         return await form.handleSubmit((formData) => {
-          logger.trace(event, "Submitting the registration form...");
+          logger.trace(event, 'Submitting the registration form...');
           if (beforeSubmit) beforeSubmit();
 
           toast.promise(
             handleRegistration(formData, { captchaToken, emailRedirectTo }),
             {
-              loading: "Registering...",
+              loading: 'Registering...',
               success: () => {
                 logger.info(
-                  "Successfully registered the user and created a session...",
+                  'Successfully registered the user and created a session...',
                 );
                 onSuccess?.();
                 // reset the form
                 form.reset();
-                return "Successfully registered the user...";
+                return 'Successfully registered the user...';
               },
-              error: "Error registering the user...",
+              error: 'Error registering the user...',
             },
           );
         })(event);
       }}
     >
-      <FieldSet form="registration-form">
+      <FieldSet form='registration-form'>
         <FieldLegend
-          className={cn("text-xl", showLegend ? "not-sr-only" : "sr-only")}
+          className={cn('text-xl', showLegend ? 'not-sr-only' : 'sr-only')}
         >
           Register
         </FieldLegend>
         <FieldDescription
-          className={cn(showLegend ? "not-sr-only" : "sr-only")}
+          className={cn(showLegend ? 'not-sr-only' : 'sr-only')}
         >
           Create a new account!
         </FieldDescription>
         <FieldGroup>
           {/* Username */}
-          <Field orientation="responsive">
+          <Field orientation='responsive'>
             <FieldContent>
-              <FieldLabel htmlFor="username">
-                Username
-              </FieldLabel>
+              <FieldLabel htmlFor='username'>Username</FieldLabel>
               <FieldDescription>
                 Choose a unique username for your account
               </FieldDescription>
             </FieldContent>
             <Input
-              {...form.register("username")}
-              id="username"
-              name="username"
-              placeholder="Username"
-              type="text"
+              {...form.register('username')}
+              id='username'
+              name='username'
+              placeholder='Username'
+              type='text'
             />
           </Field>
           {/* Email */}
-          <Field orientation="responsive">
+          <Field orientation='responsive'>
             <FieldContent>
-              <FieldLabel htmlFor="email">
-                Email
-              </FieldLabel>
+              <FieldLabel htmlFor='email'>Email</FieldLabel>
               <FieldDescription>
                 Provide a valid email address to associate with your account
               </FieldDescription>
             </FieldContent>
             <Input
-              {...form.register("email")}
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              type="email"
+              {...form.register('email')}
+              id='email'
+              name='email'
+              placeholder='Enter your email'
+              type='email'
             />
           </Field>
           {/* Password */}
-          <Field orientation="responsive">
+          <Field orientation='responsive'>
             <FieldContent>
-              <FieldLabel htmlFor="password">
-                Password
-              </FieldLabel>
+              <FieldLabel htmlFor='password'>Password</FieldLabel>
               <FieldDescription>
                 Choose a strong password to protect your account
               </FieldDescription>
             </FieldContent>
             <Input
-              {...form.register("password")}
-              id="password"
-              name="password"
-              placeholder="password"
-              type="password"
+              {...form.register('password')}
+              id='password'
+              name='password'
+              placeholder='password'
+              type='password'
             />
           </Field>
           {/* Confirm Password */}
-          <Field orientation="responsive">
+          <Field orientation='responsive'>
             <FieldContent>
-              <FieldLabel htmlFor="password_confirm">
+              <FieldLabel htmlFor='password_confirm'>
                 Confirm Password
               </FieldLabel>
-              <FieldDescription>
-                Confirm your account password
-              </FieldDescription>
+              <FieldDescription>Confirm your account password</FieldDescription>
             </FieldContent>
             <Input
-              {...form.register("passwordConfirm")}
-              id="password_confirm"
-              name="passwordConfirm"
-              placeholder="password"
-              type="password"
+              {...form.register('passwordConfirm')}
+              id='password_confirm'
+              name='passwordConfirm'
+              placeholder='password'
+              type='password'
             />
           </Field>
           {/* Hidden Fields */}
           <>
             <Field>
               <Input
-                {...form.register("captchaToken")}
-                name="captchaToken"
-                type="hidden"
-                id="captchaToken"
+                {...form.register('captchaToken')}
+                name='captchaToken'
+                type='hidden'
+                id='captchaToken'
               />
             </Field>
           </>
           {/* Actions */}
           <>
-            <Field orientation="horizontal">
+            <Field orientation='horizontal'>
               <Button
-                id="register-form-submit"
-                data-testid="register-form-submit"
-                form="registration-form"
-                type="submit"
+                id='register-form-submit'
+                data-testid='register-form-submit'
+                form='registration-form'
+                type='submit'
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting
-                  ? (
-                    <>
-                      <Loader2Icon className="animate-spin h-4 w-4" />
-                      <span className="animate-pulse">Registering...</span>
-                    </>
-                  )
-                  : <span>Register</span>}
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2Icon className='animate-spin h-4 w-4' />
+                    <span className='animate-pulse'>Registering...</span>
+                  </>
+                ) : (
+                  <span>Register</span>
+                )}
               </Button>
             </Field>
-            <Field orientation="horizontal" className="justify-center">
-              <Button
-                asChild
-                size="default"
-                variant="link"
-              >
-                <Link href="/auth/login">Already have an account?</Link>
+            <Field orientation='horizontal' className='justify-center'>
+              <Button asChild size='default' variant='link'>
+                <Link href='/auth/login'>Already have an account?</Link>
               </Button>
             </Field>
           </>
@@ -268,6 +254,6 @@ export const RegistrationForm: React.FC<
     </form>
   );
 };
-RegistrationForm.displayName = "RegistrationForm";
+RegistrationForm.displayName = 'RegistrationForm';
 
 export default RegistrationForm;

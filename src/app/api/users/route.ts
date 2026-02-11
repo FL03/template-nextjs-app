@@ -4,14 +4,14 @@
  * @endpoint - /api/profiles
  * @file - route.ts
  */
-"use server";
-import { NextRequest, NextResponse } from "next/server";
+'use server';
+import { NextRequest, NextResponse } from 'next/server';
 // project
-import { logger } from "@/lib/logger";
-import { createServerClient } from "@/lib/supabase";
+import { logger } from '@/lib/logger';
+import { createServerClient } from '@/lib/supabase';
 // types
-import type { ProfileData } from "@/features/profiles";
-import type { ApiResponse } from "@/types";
+import type { ProfileData } from '@/features/profiles';
+import type { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
@@ -21,22 +21,22 @@ export async function GET(
   // parse the request url
   const { searchParams } = new URL(req.url);
   // extract the search parameters
-  const limit = searchParams.get("limit")?.toString();
-  const sortBy = searchParams.get("sortBy")?.toString();
-  const filterBy = searchParams.get("filterBy")?.toString();
+  const limit = searchParams.get('limit')?.toString();
+  const sortBy = searchParams.get('sortBy')?.toString();
+  const filterBy = searchParams.get('filterBy')?.toString();
   // initialize the query
-  let query = supabase.from("profiles").select("*", { count: "estimated" });
+  let query = supabase.from('profiles').select('*', { count: 'estimated' });
 
   if (limit) {
-    query = query.limit(limit === "all" ? 1000 : parseInt(limit, 10));
+    query = query.limit(limit === 'all' ? 1000 : parseInt(limit, 10));
   }
   if (filterBy) {
-    const [column, value] = filterBy.split(":");
+    const [column, value] = filterBy.split(':');
     query = query.eq(column, value);
   }
   if (sortBy) {
-    const [column, order] = sortBy.split(":");
-    query = query.order(column, { ascending: order === "asc" });
+    const [column, order] = sortBy.split(':');
+    query = query.order(column, { ascending: order === 'asc' });
   }
 
   const { data, error } = await query;

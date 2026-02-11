@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - dashboard/index.ts
  */
-export * from "./dashboard";
-export * from "./dashboard-panel";
-export * from "./dashboard-provider";
-export * from "./dashboard-scaffold";
+export * from './dashboard';
+export * from './dashboard-panel';
+export * from './dashboard-provider';
+export * from './dashboard-scaffold';

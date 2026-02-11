@@ -4,26 +4,23 @@
  * @directory - tests
  * @file - auth.forgot-password.test.tsx
  */
-import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import * as React from 'react';
+import { render, screen } from '@testing-library/react';
 
 // Prevent the real server action from running at module-eval
-jest.mock("../src/features/auth", () => ({
+jest.mock('../src/features/auth', () => ({
   resetPasswordAction: jest.fn(),
 }));
 
-import { ForgotPasswordForm } from "../src/features/auth/widgets/forms/forgot-password-form";
+import { ForgotPasswordForm } from '../src/features/auth/widgets/forms/forgot-password-form';
 
-describe("ForgotPasswordForm", () => {
+describe('ForgotPasswordForm', () => {
   let useActionStateSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    useActionStateSpy = jest.spyOn(React as any, "useActionState")
-      .mockReturnValue([
-        {},
-        jest.fn(),
-        false,
-      ]);
+    useActionStateSpy = jest
+      .spyOn(React as any, 'useActionState')
+      .mockReturnValue([{}, jest.fn(), false]);
   });
 
   afterEach(() => {
@@ -31,11 +28,11 @@ describe("ForgotPasswordForm", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the fields and actions for the forgot password form", () => {
-    render(<ForgotPasswordForm captchaToken="tok" redirectTo="/ok" />);
+  it('renders the fields and actions for the forgot password form', () => {
+    render(<ForgotPasswordForm captchaToken='tok' redirectTo='/ok' />);
 
     const email = screen.getByPlaceholderText(
-      "Account email",
+      'Account email',
     ) as HTMLInputElement;
     expect(email).toBeInTheDocument();
 
@@ -43,15 +40,15 @@ describe("ForgotPasswordForm", () => {
       'input[name="captchaToken"]',
     ) as HTMLInputElement;
     expect(captcha).toBeInTheDocument();
-    expect(captcha.value).toBe("tok");
+    expect(captcha.value).toBe('tok');
 
     const redirect = document.querySelector(
       'input[name="redirectTo"]',
     ) as HTMLInputElement;
     expect(redirect).toBeInTheDocument();
-    expect(redirect.value).toBe("/ok");
+    expect(redirect.value).toBe('/ok');
 
-    const submit = screen.getByTestId("forgot-password-submit");
+    const submit = screen.getByTestId('forgot-password-submit');
     expect(submit).toBeInTheDocument();
     expect(submit).not.toBeDisabled();
   });

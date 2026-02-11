@@ -4,21 +4,23 @@
  * @description - helper functions supporting integration with the supabase database
  * @file - database.ts
  */
-import type { PublicTables } from "@/types/database.types";
-import { REALTIME_SUBSCRIBE_STATES } from "@supabase/supabase-js";
-import { logger } from "@/lib/logger";
-import { SupabaseOnSubscribeHandler } from "@/lib/supabase/types";
+import type { PublicTables } from '@/types/database.types';
+import { REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js';
+import { logger } from '@/lib/logger';
+import { SupabaseOnSubscribeHandler } from '@/lib/supabase/types';
 
-export const realtimeSubscriptionHandler = (onSubscribe?: SupabaseOnSubscribeHandler): SupabaseOnSubscribeHandler => {
+export const realtimeSubscriptionHandler = (
+  onSubscribe?: SupabaseOnSubscribeHandler,
+): SupabaseOnSubscribeHandler => {
   return (status, err) => {
     onSubscribe?.(status, err);
     if (err) throw err;
     switch (status) {
-      case "SUBSCRIBED": {
-        logger.info("Successfully subscribed to shifts changes");
+      case 'SUBSCRIBED': {
+        logger.info('Successfully subscribed to shifts changes');
       }
-      case "CLOSED": {
-        logger.warn("Closed the shifts channel");
+      case 'CLOSED': {
+        logger.warn('Closed the shifts channel');
       }
       default: {
         logger.debug(`Shifts channel status: ${status}`);
@@ -38,26 +40,27 @@ export const handleRealtimeSubscription = (
   return realtimeSubscriptionHandler()(status, err);
 };
 
-type Product = PublicTables<"pricing">;
+type Product = PublicTables<'pricing'>;
 
-export const getURL = (path: string = "") => {
+export const getURL = (path: string = '') => {
   // Check if NEXT_PUBLIC_SITE_URL is set and non-empty. Set this to your site URL in production env.
-  let url = process?.env?.NEXT_PUBLIC_SITE_URL &&
-      process.env.NEXT_PUBLIC_SITE_URL.trim() !== ""
-    ? process.env.NEXT_PUBLIC_SITE_URL
-    // If not set, check for NEXT_PUBLIC_VERCEL_URL, which is automatically set by Vercel.
-    : process?.env?.NEXT_PUBLIC_VERCEL_URL &&
-        process.env.NEXT_PUBLIC_VERCEL_URL.trim() !== ""
-    ? process.env.NEXT_PUBLIC_VERCEL_URL
-    // If neither is set, default to localhost for local development.
-    : "http://localhost:3000/";
+  let url =
+    process?.env?.NEXT_PUBLIC_SITE_URL &&
+    process.env.NEXT_PUBLIC_SITE_URL.trim() !== ''
+      ? process.env.NEXT_PUBLIC_SITE_URL
+      : // If not set, check for NEXT_PUBLIC_VERCEL_URL, which is automatically set by Vercel.
+        process?.env?.NEXT_PUBLIC_VERCEL_URL &&
+          process.env.NEXT_PUBLIC_VERCEL_URL.trim() !== ''
+        ? process.env.NEXT_PUBLIC_VERCEL_URL
+        : // If neither is set, default to localhost for local development.
+          'http://localhost:3000/';
 
   // Trim the URL and remove trailing slash if exists.
-  url = url.replace(/\/+$/, "");
+  url = url.replace(/\/+$/, '');
   // Make sure to include `https://` when not localhost.
-  url = url.includes("http") ? url : `https://${url}`;
+  url = url.includes('http') ? url : `https://${url}`;
   // Ensure path starts without a slash to avoid double slashes in the final URL.
-  path = path.replace(/^\/+/, "");
+  path = path.replace(/^\/+/, '');
 
   // Concatenate the URL and the path.
   return path ? `${url}/${path}` : url;
@@ -71,9 +74,9 @@ export const postData = async ({
   data?: { item: Product };
 }) => {
   const res = await fetch(url, {
-    method: "POST",
-    headers: new Headers({ "Content-Type": "application/json" }),
-    credentials: "same-origin",
+    method: 'POST',
+    headers: new Headers({ 'Content-Type': 'application/json' }),
+    credentials: 'same-origin',
     body: JSON.stringify(data),
   });
 
@@ -106,28 +109,26 @@ export const calculateTrialEndUnixTimestamp = (
 };
 
 const toastKeyMap: { [key: string]: string[] } = {
-  status: ["status", "status_description"],
-  error: ["error", "error_description"],
+  status: ['status', 'status_description'],
+  error: ['error', 'error_description'],
 };
 
 const getToastRedirect = (
   path: string,
   toastType: string,
   toastName: string,
-  toastDescription: string = "",
+  toastDescription: string = '',
   disableButton: boolean = false,
-  arbitraryParams: string = "",
+  arbitraryParams: string = '',
 ): string => {
   const [nameKey, descriptionKey] = toastKeyMap[toastType];
 
   let redirectPath = `${path}?${nameKey}=${encodeURIComponent(toastName)}`;
 
   if (toastDescription) {
-    redirectPath += `&${descriptionKey}=${
-      encodeURIComponent(
-        toastDescription,
-      )
-    }`;
+    redirectPath += `&${descriptionKey}=${encodeURIComponent(
+      toastDescription,
+    )}`;
   }
 
   if (disableButton) {
@@ -144,13 +145,13 @@ const getToastRedirect = (
 export const getStatusRedirect = (
   path: string,
   statusName: string,
-  statusDescription: string = "",
+  statusDescription: string = '',
   disableButton: boolean = false,
-  arbitraryParams: string = "",
+  arbitraryParams: string = '',
 ) =>
   getToastRedirect(
     path,
-    "status",
+    'status',
     statusName,
     statusDescription,
     disableButton,
@@ -160,13 +161,13 @@ export const getStatusRedirect = (
 export const getErrorRedirect = (
   path: string,
   errorName: string,
-  errorDescription: string = "",
+  errorDescription: string = '',
   disableButton: boolean = false,
-  arbitraryParams: string = "",
+  arbitraryParams: string = '',
 ) =>
   getToastRedirect(
     path,
-    "error",
+    'error',
     errorName,
     errorDescription,
     disableButton,

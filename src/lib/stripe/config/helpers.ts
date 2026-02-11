@@ -5,12 +5,12 @@
  * @file - helpers.ts
  */
 
-import type { StripeCreds } from "./types";
+import type { StripeCreds } from './types';
 /** A method for resolving the secret */
 export const stripeSecretKey = (): string => {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
-    throw new Error("Stripe secret key is missing");
+    throw new Error('Stripe secret key is missing');
   }
   return secretKey;
 };
@@ -18,7 +18,7 @@ export const stripeSecretKey = (): string => {
 export const stripePublishableKey = (): string => {
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   if (!publishableKey) {
-    throw new Error("Stripe publishable key is missing");
+    throw new Error('Stripe publishable key is missing');
   }
   return publishableKey;
 };

@@ -3,22 +3,23 @@
  * @author - @FL03
  * @file - notification-screen.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import dynamic from "next/dynamic";
+import * as React from 'react';
+import dynamic from 'next/dynamic';
 // local
-import { NotificationProvider } from "../provider";
-import { useCurrentUser } from "@/features/auth";
+import { NotificationProvider } from '../provider';
+import { useCurrentUser } from '@/features/auth';
 
 type ScreenViewProps = {
   className?: string;
   username?: string;
 };
 // The notification screen component with dynamic import to avoid server-side rendering issues
-export const NotificationScreen: React.FC<ScreenViewProps> = (
-  { className, username },
-) => {
+export const NotificationScreen: React.FC<ScreenViewProps> = ({
+  className,
+  username,
+}) => {
   const currentUser = useCurrentUser();
 
   const resolvedUsername = React.useMemo(
@@ -26,16 +27,16 @@ export const NotificationScreen: React.FC<ScreenViewProps> = (
     [username, currentUser.username],
   );
   // dynamically import the view
-  const Comp = dynamic(() => import("../widgets/notification-center"), {
+  const Comp = dynamic(() => import('../widgets/notification-center'), {
     ssr: false,
   });
   // render the component
   return (
-    <NotificationProvider username={resolvedUsername}>      
+    <NotificationProvider username={resolvedUsername}>
       <Comp className={className} />
     </NotificationProvider>
   );
 };
-NotificationScreen.displayName = "NotificationScreen";
+NotificationScreen.displayName = 'NotificationScreen';
 
 export default NotificationScreen;

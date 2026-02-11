@@ -4,12 +4,12 @@
  * @directory - src/hooks
  * @file - use-product.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import Stripe from "stripe";
+import * as React from 'react';
+import Stripe from 'stripe';
 // project
-import { fetchPrice, fetchPrices } from "@/features/billing";
+import { fetchPrice, fetchPrices } from '@/features/billing';
 
 namespace UsePrice {
   export interface Options {
@@ -32,9 +32,12 @@ namespace UsePrice {
   export type Hook = (options?: Options) => Context;
 }
 
-export const usePrice: UsePrice.Hook = (
-  { lookupKey, priceId, onDataChange, onError } = {},
-) => {
+export const usePrice: UsePrice.Hook = ({
+  lookupKey,
+  priceId,
+  onDataChange,
+  onError,
+} = {}) => {
   const [_id, _setId] = React.useState<string | null>(priceId ?? null);
   const [_data, _setData] = React.useState<Stripe.Price | null>(null);
   const [_error, _setError] = React.useState<Error | null>(null);
@@ -42,46 +45,54 @@ export const usePrice: UsePrice.Hook = (
   const [isLoading, setIsLoading] = React.useState<boolean>(Boolean(priceId));
   const [isLooking, setIsLooking] = React.useState<boolean>(!Boolean(priceId));
   // aggregate the signals into a single state object
-  const state = React.useMemo<UsePrice.State>(() => ({ isLoading }), [
-    isLoading,
-  ]);
+  const state = React.useMemo<UsePrice.State>(
+    () => ({ isLoading }),
+    [isLoading],
+  );
 
-  const handleChange = React.useCallback((data: Stripe.Price | null) => (
-    _setData((prev) => {
-      if (prev?.id === data?.id) return prev;
-      if (onDataChange) onDataChange(data);
-      return data;
-    })
-  ), [onDataChange]);
+  const handleChange = React.useCallback(
+    (data: Stripe.Price | null) =>
+      _setData((prev) => {
+        if (prev?.id === data?.id) return prev;
+        if (onDataChange) onDataChange(data);
+        return data;
+      }),
+    [onDataChange],
+  );
 
-  const handleError = React.useCallback((value: unknown) => (
-    _setError((prev) => {
-      const error = new Error(String(value));
-      if (prev === error) return prev;
-      if (onError) onError(value);
-      return error;
-    })
-  ), [onError]);
+  const handleError = React.useCallback(
+    (value: unknown) =>
+      _setError((prev) => {
+        const error = new Error(String(value));
+        if (prev === error) return prev;
+        if (onError) onError(value);
+        return error;
+      }),
+    [onError],
+  );
 
-  const getPrice = React.useCallback(async (id: string): Promise<void> => {
-    return await fetchPrice({ priceId: id }).then(handleChange).catch(
-      handleError,
-    );
-  }, [handleChange, handleError]);
+  const getPrice = React.useCallback(
+    async (id: string): Promise<void> => {
+      return await fetchPrice({ priceId: id })
+        .then(handleChange)
+        .catch(handleError);
+    },
+    [handleChange, handleError],
+  );
 
   const lookupPrice = React.useCallback(
     async (key: string): Promise<void> => {
-      return await fetchPrices({ lookup_keys: [key] }).then((data) => {
-        if (data.length === 0) {
-          handleError("No price found for the given lookup key: " + key);
-          return;
-        }
-        const p = data[0];
-        _setId(p.id);
-        handleChange(p);
-      }).catch(
-        handleError,
-      );
+      return await fetchPrices({ lookup_keys: [key] })
+        .then((data) => {
+          if (data.length === 0) {
+            handleError('No price found for the given lookup key: ' + key);
+            return;
+          }
+          const p = data[0];
+          _setId(p.id);
+          handleChange(p);
+        })
+        .catch(handleError);
     },
     [handleChange, handleError],
   );
@@ -102,9 +113,9 @@ export const usePrice: UsePrice.Hook = (
     if (isLoading && !isLooking && _id) {
       getPrice(_id).finally(() => setIsLoading(false));
     }
-    (() => {
+    () => {
       setIsLoading(false);
-    });
+    };
   }, [isLoading, isLooking, _id, getPrice]);
   return { data: _data ?? undefined, error: _error, state };
 };

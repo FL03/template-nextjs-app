@@ -4,9 +4,9 @@
  * @directory - src/hooks
  * @file - use-form.tsx
  */
-"use client";
+'use client';
 // imports
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 namespace UseData {
   export interface Props<TValue extends string> {
@@ -26,13 +26,11 @@ namespace UseData {
   ) => Context<TValue>;
 }
 /** The `useData` hook is a simple hook for controlling some value */
-export function useData<TValue extends string>(
-  {
-    defaultValue,
-    value,
-    onValueChange,
-  }: UseData.Props<TValue> = {},
-): UseData.Context<TValue> {
+export function useData<TValue extends string>({
+  defaultValue,
+  value,
+  onValueChange,
+}: UseData.Props<TValue> = {}): UseData.Context<TValue> {
   // states
   const [_data, _setData] = useState<TValue | null>(defaultValue ?? null);
   const [_error, _setError] = useState<Error | null>(null);
@@ -51,13 +49,16 @@ export function useData<TValue extends string>(
     });
   }, []);
   // handle any changes made to the signal
-  const onDataChange = useCallback((next: TValue | null) => {
-    _setData((prev) => {
-      if (prev === next) return prev;
-      onValueChange?.(next);
-      return next;
-    });
-  }, [onValueChange]);
+  const onDataChange = useCallback(
+    (next: TValue | null) => {
+      _setData((prev) => {
+        if (prev === next) return prev;
+        onValueChange?.(next);
+        return next;
+      });
+    },
+    [onValueChange],
+  );
   // memoize the output
   return {
     data: _data,

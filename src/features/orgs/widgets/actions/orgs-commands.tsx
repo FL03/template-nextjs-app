@@ -4,26 +4,26 @@
  * @directory - src/features/orgs/widgets
  * @file - org-actions.tsx
  */
-"use client";
+'use client';
 // imports
-import React from "react";
+import React from 'react';
 import {
   CommandIcon,
   EditIcon,
   FileSpreadsheetIcon,
   MoreVerticalIcon,
   RotateCwIcon,
-} from "lucide-react";
-import { toast } from "sonner";
-import { ClassNames, downloadAsCSV, downloadAsJSON } from "@pzzld/core";
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { ClassNames, downloadAsCSV, downloadAsJSON } from '@pzzld/core';
 // project
-import { useModal } from "@/hooks/use-modal";
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { useModal } from '@/hooks/use-modal';
+import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 // local
-import { useOrganizations } from "../../provider";
+import { useOrganizations } from '../../provider';
 // components
-import { IconButton } from "@/components/common/button";
+import { IconButton } from '@/components/common/button';
 import {
   Command,
   CommandDialog,
@@ -33,14 +33,14 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
+} from '@/components/ui/empty';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,22 +50,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Popover } from "@/components/ui/popover";
+} from '@/components/ui/dropdown-menu';
+import { Popover } from '@/components/ui/popover';
 
 const OrgCommandList: React.FC<
   React.ComponentPropsWithRef<typeof CommandList> & {
-    classNames?: ClassNames<"list" | "empty" | "item" | "group">;
+    classNames?: ClassNames<'list' | 'empty' | 'item' | 'group'>;
   }
 > = ({ ref, children, className, classNames, ...props }) => {
   const { data, reload } = useOrganizations();
   return (
-    <CommandList ref={ref} className={cn("w-full", className)} {...props}>
+    <CommandList ref={ref} className={cn('w-full', className)} {...props}>
       <CommandEmpty>
         <Empty className={classNames?.emptyClassName}>
           <EmptyHeader>
             <EmptyMedia>
-              <CommandIcon className="size-8" />
+              <CommandIcon className='size-8' />
             </EmptyMedia>
             <EmptyTitle>No Organizations Found</EmptyTitle>
             <EmptyDescription>
@@ -75,23 +75,23 @@ const OrgCommandList: React.FC<
           </EmptyHeader>
         </Empty>
       </CommandEmpty>
-      <CommandGroup heading="Actions">
+      <CommandGroup heading='Actions'>
         <CommandItem
           onSelect={async () => {
             // wrap the callback with a toast
             return toast.promise(reload(), {
-              loading: "Reloading...",
-              error: "Failed to reload; try again later.",
-              success: "Reloaded successfully.",
+              loading: 'Reloading...',
+              error: 'Failed to reload; try again later.',
+              success: 'Reloaded successfully.',
             });
           }}
         >
-          <RotateCwIcon className="size-4" />
+          <RotateCwIcon className='size-4' />
           <span>Reload</span>
           <CommandShortcut>⌘⇧R</CommandShortcut>
         </CommandItem>
       </CommandGroup>
-      <CommandGroup heading="Export">
+      <CommandGroup heading='Export'>
         <CommandItem
           onClick={(event) => {
             // clean the event
@@ -104,7 +104,7 @@ const OrgCommandList: React.FC<
             );
           }}
         >
-          <EditIcon className="size-4" />
+          <EditIcon className='size-4' />
           <span>Export JSON</span>
           <CommandShortcut>⌘⇧J</CommandShortcut>
         </CommandItem>
@@ -120,7 +120,7 @@ const OrgCommandList: React.FC<
             );
           }}
         >
-          <FileSpreadsheetIcon className="size-4" />
+          <FileSpreadsheetIcon className='size-4' />
           <span>Export CSV</span>
           <CommandShortcut>⌘⇧C</CommandShortcut>
         </CommandItem>
@@ -130,29 +130,32 @@ const OrgCommandList: React.FC<
 };
 
 const OrganizationsCommandDialog: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof CommandDialog>, "children"> & {
+  Omit<React.ComponentPropsWithRef<typeof CommandDialog>, 'children'> & {
     kbdTrigger?: string;
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
   }
-> = ({ defaultOpen, open, onOpenChange, kbdTrigger = "k", ...props }) => {
+> = ({ defaultOpen, open, onOpenChange, kbdTrigger = 'k', ...props }) => {
   const modal = useModal({ defaultOpen, open, onOpenChange });
   // create a callback to handle the keydown
-  const handleKeyDown = React.useCallback((event: KeyboardEvent) => {
-    if (event.key === kbdTrigger && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      modal.toggle();
-    }
-  }, [kbdTrigger, modal]);
+  const handleKeyDown = React.useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === kbdTrigger && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        modal.toggle();
+      }
+    },
+    [kbdTrigger, modal],
+  );
   // toggle the modal on some command
   React.useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
   return (
     <CommandDialog {...props}>
-      <CommandInput placeholder="Organizations... ⌘K" />
+      <CommandInput placeholder='Organizations... ⌘K' />
       <OrgCommandList />
     </CommandDialog>
   );
@@ -161,25 +164,17 @@ const OrganizationsCommandDialog: React.FC<
 const OrganizationsCommandPopover: React.FC<
   React.ComponentPropsWithoutRef<typeof Popover> & {
     className?: string;
-    classNames?: ClassNames<"list" | "input" | "empty" | "item" | "group">;
+    classNames?: ClassNames<'list' | 'input' | 'empty' | 'item' | 'group'>;
   }
-> = (
-  {
-    className,
-    classNames,
-    ...props
-  },
-) => (
+> = ({ className, classNames, ...props }) => (
   <Popover {...props}>
-    <Command
-      className={cn("h-96 w-80 sm:w-96", className)}
-    >
+    <Command className={cn('h-96 w-80 sm:w-96', className)}>
       <CommandInput
         className={cn(
-          "border-b-0 px-3 pt-3 pb-2 focus:ring-0 focus:ring-offset-0",
+          'border-b-0 px-3 pt-3 pb-2 focus:ring-0 focus:ring-offset-0',
           classNames?.inputClassName,
         )}
-        placeholder="Type a command or search..."
+        placeholder='Type a command or search...'
       />
       <OrgCommandList
         className={classNames?.listClassName}
@@ -192,42 +187,40 @@ const OrganizationsCommandPopover: React.FC<
 const OrganizationsDropdownMenu: React.FC<
   React.ComponentPropsWithoutRef<typeof DropdownMenu> & {
     itemId?: string;
-    classNames?: ClassNames<"content" | "icon" | "label" | "trigger">;
-    alignContent?: React.ComponentProps<typeof DropdownMenuContent>["align"];
-    contentSide?: React.ComponentProps<typeof DropdownMenuContent>["side"];
-    triggerSize?: React.ComponentProps<typeof IconButton>["size"];
-    triggerVariant?: React.ComponentProps<typeof IconButton>["variant"];
+    classNames?: ClassNames<'content' | 'icon' | 'label' | 'trigger'>;
+    alignContent?: React.ComponentProps<typeof DropdownMenuContent>['align'];
+    contentSide?: React.ComponentProps<typeof DropdownMenuContent>['side'];
+    triggerSize?: React.ComponentProps<typeof IconButton>['size'];
+    triggerVariant?: React.ComponentProps<typeof IconButton>['variant'];
   }
-> = (
-  {
-    classNames,
-    itemId,
-    alignContent = "start",
-    contentSide = "bottom",
-    dir = "ltr",
-    triggerSize = "icon",
-    triggerVariant = "outline",
-    ...props
-  },
-) => {
+> = ({
+  classNames,
+  itemId,
+  alignContent = 'start',
+  contentSide = 'bottom',
+  dir = 'ltr',
+  triggerSize = 'icon',
+  triggerVariant = 'outline',
+  ...props
+}) => {
   const { data, reload } = useOrganizations();
   return (
     <DropdownMenu dir={dir} {...props}>
       <DropdownMenuTrigger asChild>
         <IconButton
-          label="More"
+          label='More'
           size={triggerSize}
           variant={triggerVariant}
           className={classNames?.triggerClassName}
           classNames={{ labelClassName: classNames?.labelClassName }}
         >
           <MoreVerticalIcon
-            className={cn("size-4", classNames?.iconClassName)}
+            className={cn('size-4', classNames?.iconClassName)}
           />
         </IconButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-64"
+        className='w-64'
         align={alignContent}
         side={contentSide}
       >
@@ -240,18 +233,18 @@ const OrganizationsDropdownMenu: React.FC<
               event.stopPropagation();
               if (!itemId) {
                 return logger.error(
-                  "No organization ID passed to the delete button.",
+                  'No organization ID passed to the delete button.',
                 );
               }
               // wrap the callback with a toast
               return toast.promise(reload(), {
-                loading: "Reloading...",
-                error: "Failed to reload; try again later.",
-                success: "Reloaded successfully.",
+                loading: 'Reloading...',
+                error: 'Failed to reload; try again later.',
+                success: 'Reloaded successfully.',
               });
             }}
           >
-            <RotateCwIcon className="size-4" />
+            <RotateCwIcon className='size-4' />
             <span>Reload</span>
             <DropdownMenuShortcut>⌘⇧R</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -270,7 +263,7 @@ const OrganizationsDropdownMenu: React.FC<
               );
             }}
           >
-            <EditIcon className="size-4" />
+            <EditIcon className='size-4' />
             <span>Export JSON</span>
             <DropdownMenuShortcut>⌘⇧J</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -286,7 +279,7 @@ const OrganizationsDropdownMenu: React.FC<
               );
             }}
           >
-            <FileSpreadsheetIcon className="size-4" />
+            <FileSpreadsheetIcon className='size-4' />
             <span>Export CSV</span>
             <DropdownMenuShortcut>⌘⇧C</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -295,7 +288,7 @@ const OrganizationsDropdownMenu: React.FC<
     </DropdownMenu>
   );
 };
-OrganizationsDropdownMenu.displayName = "OrganizationsDropdownMenu";
+OrganizationsDropdownMenu.displayName = 'OrganizationsDropdownMenu';
 
 export {
   OrganizationsCommandDialog,

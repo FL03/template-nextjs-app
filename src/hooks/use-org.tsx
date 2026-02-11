@@ -4,26 +4,26 @@
  * @directory - src/hooks
  * @file - use-org.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 import {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
-} from "@supabase/supabase-js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+} from '@supabase/supabase-js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // project
 import {
   deleteOrganization,
   fetchOrganization,
   OrganizationData,
-} from "@/features/orgs";
-import { logger } from "@/lib/logger";
+} from '@/features/orgs';
+import { logger } from '@/lib/logger';
 import {
   createBrowserClient,
   realtimeSubscriptionHandler,
-} from "@/lib/supabase";
-import { OrgsDatabase } from "@/types/database.types";
+} from '@/lib/supabase';
+import { OrgsDatabase } from '@/types/database.types';
 
 namespace UseOrg {
   export interface State {
@@ -43,7 +43,7 @@ namespace UseOrg {
 
   export interface Props {
     id?: string | null;
-    supabase?: ReturnType<typeof createBrowserClient<OrgsDatabase, "orgs">>;
+    supabase?: ReturnType<typeof createBrowserClient<OrgsDatabase, 'orgs'>>;
     staleTime?: number;
     onError?(error: Error): void;
     onDataChange?(data?: OrganizationData | null): void;
@@ -51,19 +51,17 @@ namespace UseOrg {
   export type Callback = (options?: Props) => Context;
 }
 
-export const useOrg: UseOrg.Callback = (
-  {
-    id,
-    supabase = createBrowserClient<OrgsDatabase, "orgs">("orgs"),
-    staleTime = 1000 * 60, // 1 minute
-    onError,
-    onDataChange,
-  } = {},
-) => {
+export const useOrg: UseOrg.Callback = ({
+  id,
+  supabase = createBrowserClient<OrgsDatabase, 'orgs'>('orgs'),
+  staleTime = 1000 * 60, // 1 minute
+  onError,
+  onDataChange,
+} = {}) => {
   const queryClient = useQueryClient();
   const channelRef = React.useRef<RealtimeChannel | null>(null);
 
-  const queryKey = React.useMemo(() => ["organization", id ?? "unknown"], [id]);
+  const queryKey = React.useMemo(() => ['organization', id ?? 'unknown'], [id]);
 
   // React Query: fetch organization
   const {
@@ -75,9 +73,7 @@ export const useOrg: UseOrg.Callback = (
   } = useQuery<OrganizationData | null>({
     queryKey,
     staleTime,
-    queryFn: async () => (
-      id ? await fetchOrganization(id) : null
-    ),
+    queryFn: async () => (id ? await fetchOrganization(id) : null),
     enabled: Boolean(id),
   });
 
@@ -85,7 +81,7 @@ export const useOrg: UseOrg.Callback = (
   const { mutateAsync: deleteMutateAsync, isPending: isDeleting } = useMutation(
     {
       mutationFn: async () => {
-        if (!id) throw new Error("No organization ID provided for deletion.");
+        if (!id) throw new Error('No organization ID provided for deletion.');
         return deleteOrganization(id);
       },
       onSuccess: async () => {
@@ -94,7 +90,7 @@ export const useOrg: UseOrg.Callback = (
         logger.info(`Deleted organization ${id} and cleared cache`);
       },
       onError: (err) => {
-        logger.error(err, "Failed to delete organization");
+        logger.error(err, 'Failed to delete organization');
         onError?.(err as Error);
       },
     },
@@ -110,35 +106,34 @@ export const useOrg: UseOrg.Callback = (
     const channel = supabase
       .channel(`org-id:${id}`, { config: { private: true } })
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "orgs",
-          table: "organizations",
+          event: '*',
+          schema: 'orgs',
+          table: 'organizations',
           filter: `id=eq.${id}`,
         },
-        (
-          { eventType, ...payload }: RealtimePostgresChangesPayload<
-            OrganizationData
-          >,
-        ) => {
-          logger.trace({ eventType }, "Received an organization change event");
+        ({
+          eventType,
+          ...payload
+        }: RealtimePostgresChangesPayload<OrganizationData>) => {
+          logger.trace({ eventType }, 'Received an organization change event');
           const newRow = payload.new as OrganizationData | null;
 
-          if (eventType === "INSERT") {
+          if (eventType === 'INSERT') {
             queryClient.setQueryData(queryKey, newRow ?? null);
             onDataChange?.(newRow ?? null);
-          } else if (eventType === "UPDATE") {
+          } else if (eventType === 'UPDATE') {
             queryClient.setQueryData<OrganizationData | null>(
               queryKey,
               (prev) =>
-                prev && newRow ? { ...prev, ...newRow } : newRow ?? null,
+                prev && newRow ? { ...prev, ...newRow } : (newRow ?? null),
             );
             const latest =
               queryClient.getQueryData<OrganizationData | null>(queryKey) ??
-                null;
+              null;
             onDataChange?.(latest ?? null);
-          } else if (eventType === "DELETE") {
+          } else if (eventType === 'DELETE') {
             queryClient.setQueryData(queryKey, null);
             onDataChange?.(null);
           }
@@ -159,12 +154,12 @@ export const useOrg: UseOrg.Callback = (
 
   const reload = React.useCallback(async (): Promise<void> => {
     if (!id) {
-      const err = new Error("No organization ID provided for reload.");
+      const err = new Error('No organization ID provided for reload.');
       onError?.(err);
       return Promise.reject(err);
     }
     await refetch().catch((err) => {
-      logger.error(err, "Error reloading organization");
+      logger.error(err, 'Error reloading organization');
       onError?.(err as Error);
     });
   }, [id, refetch, onError]);
@@ -173,24 +168,30 @@ export const useOrg: UseOrg.Callback = (
     try {
       await deleteMutateAsync();
     } catch (err) {
-      logger.error(err, "Error deleting organization");
+      logger.error(err, 'Error deleting organization');
       onError?.(err as Error);
       return Promise.reject(err);
     }
   }, [deleteMutateAsync, onError]);
 
-  const state = React.useMemo<UseOrg.State>(() => ({
-    isError: Boolean(queryError),
-    isLoading,
-    isReloading,
-    isDeleting,
-  }), [queryError, isLoading, isReloading, isDeleting]);
+  const state = React.useMemo<UseOrg.State>(
+    () => ({
+      isError: Boolean(queryError),
+      isLoading,
+      isReloading,
+      isDeleting,
+    }),
+    [queryError, isLoading, isReloading, isDeleting],
+  );
 
-  return React.useMemo(() => ({
-    data: orgData ?? null,
-    error: (queryError as Error) ?? null,
-    state,
-    delete: remove,
-    reload,
-  }), [orgData, queryError, state, remove, reload]);
+  return React.useMemo(
+    () => ({
+      data: orgData ?? null,
+      error: (queryError as Error) ?? null,
+      state,
+      delete: remove,
+      reload,
+    }),
+    [orgData, queryError, state, remove, reload],
+  );
 };

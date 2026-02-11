@@ -3,7 +3,7 @@
  * @author - @FL03
  * @file - shifts/layout.tsx
  */
-import { ShiftDashboard, WorkScheduleProvider } from "@/features/shifts";
+import { ShiftDashboard, WorkScheduleProvider } from '@/features/shifts';
 
 type WithRouteParams<T = {}> = T & { params: Promise<{ username: string }> };
 
@@ -12,9 +12,11 @@ type WithLayoutProps<T = {}> = T & {
   leading: React.ReactNode;
 };
 
-export default async function Layout(
-  { params, children, leading }: WithLayoutProps<WithRouteParams>,
-) {
+export default async function Layout({
+  params,
+  children,
+  leading,
+}: WithLayoutProps<WithRouteParams>) {
   const { username } = await params;
   return (
     <WorkScheduleProvider username={username}>
@@ -22,4 +24,4 @@ export default async function Layout(
     </WorkScheduleProvider>
   );
 }
-Layout.displayName = "ShiftDashboardLayout";
+Layout.displayName = 'ShiftDashboardLayout';

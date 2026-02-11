@@ -4,14 +4,14 @@
  * @directory - src/features/billing/utils
  * @file - server.ts
  */
-"use server";
+'use server';
 // imports
-import Stripe from "stripe";
+import Stripe from 'stripe';
 // project
-import { resolveOrigin } from "@/lib/utils";
-import { logger } from "@/lib/logger";
-import { stripeServerClient } from "@/lib/stripe";
-import { createServerClient } from "@/lib/supabase";
+import { resolveOrigin } from '@/lib/utils';
+import { logger } from '@/lib/logger';
+import { stripeServerClient } from '@/lib/stripe';
+import { createServerClient } from '@/lib/supabase';
 
 const origin = resolveOrigin();
 
@@ -21,7 +21,7 @@ export const linkCustomerToUser = async (customerId: string) => {
   // fetch the customer to ensure the email matches
   const customer = await stripe.customers.retrieve(customerId);
   if (customer.deleted) {
-    throw new Error("The provided customerId is invalid.");
+    throw new Error('The provided customerId is invalid.');
   } else {
     await supabase.auth.updateUser({
       data: { customer_email: customer.email },
@@ -39,24 +39,22 @@ type ItemCheckoutOptions = {
   lookupKey?: string;
 };
 
-export const checkoutItemByPrice = async (
-  {
-    customerId,
-    priceId,
-    quantity = 1,
-    userId,
-    username,
-    returnUrl = origin,
-    lookupKey,
-  }: ItemCheckoutOptions = {},
-): Promise<Stripe.Checkout.Session> => {
+export const checkoutItemByPrice = async ({
+  customerId,
+  priceId,
+  quantity = 1,
+  userId,
+  username,
+  returnUrl = origin,
+  lookupKey,
+}: ItemCheckoutOptions = {}): Promise<Stripe.Checkout.Session> => {
   const stripe = stripeServerClient();
   // ensure a customer id or email is provided
   if (!customerId) {
-    throw new Error("A valid customer id is required for checkout.");
+    throw new Error('A valid customer id is required for checkout.');
   }
   if (!priceId && !lookupKey) {
-    throw new Error("Either priceId or lookupKey is required.");
+    throw new Error('Either priceId or lookupKey is required.');
   }
   // if a lookup key is provided, fetch the price id
   if (!priceId && lookupKey) {
@@ -75,12 +73,12 @@ export const checkoutItemByPrice = async (
   // create the checkout session
   return await stripe.checkout.sessions.create({
     automatic_tax: { enabled: true },
-    billing_address_collection: "auto",
-    currency: "usd",
+    billing_address_collection: 'auto',
+    currency: 'usd',
     customer: customerId,
-    customer_update: { address: "auto" },
-    mode: "subscription",
-    ui_mode: "hosted",
+    customer_update: { address: 'auto' },
+    mode: 'subscription',
+    ui_mode: 'hosted',
     cancel_url: `${returnUrl}/?canceled=true`,
     success_url: `${returnUrl}/?success=true`,
     line_items: [
@@ -96,13 +94,17 @@ export const checkoutItemByPrice = async (
   });
 };
 
-export const createPortalLink = async (
-  { customerId, returnUrl }: { customerId?: string; returnUrl?: string } = {},
-): Promise<Stripe.BillingPortal.Session> => {
+export const createPortalLink = async ({
+  customerId,
+  returnUrl,
+}: {
+  customerId?: string;
+  returnUrl?: string;
+} = {}): Promise<Stripe.BillingPortal.Session> => {
   const stripe = stripeServerClient();
   if (!customerId) {
     throw new Error(
-      "A customerId is required for creating a new billing portal session",
+      'A customerId is required for creating a new billing portal session',
     );
   }
   return await stripe.billingPortal.sessions.create({
@@ -113,7 +115,9 @@ export const createPortalLink = async (
 
 export const getOrCreateCustomer = async (
   email: string,
-  { metadata }: {
+  {
+    metadata,
+  }: {
     metadata?: { userId?: string | null; username?: string | null };
   } = {},
 ): Promise<Stripe.Customer> => {

@@ -3,4 +3,4 @@
  * @author - @FL03
  * @file - views/index.ts
  */
-export * from "./notification-screen";
+export * from './notification-screen';

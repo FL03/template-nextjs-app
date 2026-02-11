@@ -3,27 +3,23 @@
  * @author - @FL03
  * @file - about-screen.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import Privacy from "@/content/privacy.mdx";
+import Privacy from '@/content/privacy.mdx';
 // components
-import { ArticleCard } from "@/components/common/articles";
+import { ArticleCard } from '@/components/common/articles';
 export const PrivacyScreen: React.FC<
   Omit<
     React.ComponentPropsWithoutRef<typeof ArticleCard>,
-    "title" | "children" | "showDescription"
+    'title' | 'children' | 'showDescription'
   >
 > = ({ ...props }) => (
-  <ArticleCard
-    {...props}
-    showDescription
-    title="Privacy Policy"
-  >
+  <ArticleCard {...props} showDescription title='Privacy Policy'>
     <Privacy />
   </ArticleCard>
 );
-PrivacyScreen.displayName = "PrivacyScreen";
+PrivacyScreen.displayName = 'PrivacyScreen';
 
 export default PrivacyScreen;

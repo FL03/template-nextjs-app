@@ -4,16 +4,16 @@
  * @directory - src/features/profiles/widgets
  * @file - dashboard.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { UserCircle2Icon } from "lucide-react";
+import * as React from 'react';
+import { UserCircle2Icon } from 'lucide-react';
 // project
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 // local
-import { useProfile } from "../provider";
-import { UserProfileCard } from "./profile-card";
-import { ProfileLinks } from "./profile-links";
+import { useProfile } from '../provider';
+import { UserProfileCard } from './profile-card';
+import { ProfileLinks } from './profile-links';
 // components
 import {
   Dashboard,
@@ -24,21 +24,21 @@ import {
   DashboardProvider,
   DashboardSection,
   DashboardSheetPanel,
-} from "@/components/common/dashboard";
+} from '@/components/common/dashboard';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
+} from '@/components/ui/empty';
 import {
   Item,
   ItemContent,
   ItemDescription,
   ItemTitle,
-} from "@/components/ui/item";
-import { LoadingScaffold } from "@/components/common/loading";
+} from '@/components/ui/item';
+import { LoadingScaffold } from '@/components/common/loading';
 
 export const ProfileDashboardLeading: React.FC<
   React.ComponentPropsWithRef<typeof DashboardSection>
@@ -47,7 +47,7 @@ export const ProfileDashboardLeading: React.FC<
   const currentUser = useProfile();
   // handle the case where no user profile is found
   if (!currentUser) {
-    logger.error("No user profile found");
+    logger.error('No user profile found');
     return null;
   }
   // deconstruct the hook to get the profile data
@@ -57,7 +57,7 @@ export const ProfileDashboardLeading: React.FC<
     // handle the case where no socials are available
     if (!profile?.socials || profile.socials.length === 0) {
       return (
-        <span className="text-muted-foreground font-semibold italic">
+        <span className='text-muted-foreground font-semibold italic'>
           No links available
         </span>
       );
@@ -66,13 +66,13 @@ export const ProfileDashboardLeading: React.FC<
     const createSocialLabel = (item: string) => {
       switch (item) {
         case item.match(/apple\.com/)?.input as string:
-          return "Apple";
+          return 'Apple';
         case item.match(/meta\.com/)?.input as string:
-          return "Facebook";
+          return 'Facebook';
         case item.match(/github\.com/)?.input as string:
-          return "GitHub";
+          return 'GitHub';
         case item.match(/linkedin\.com/)?.input as string:
-          return "LinkedIn";
+          return 'LinkedIn';
         default:
           return item;
       }
@@ -93,15 +93,15 @@ export const ProfileDashboardLeading: React.FC<
     <DashboardSection {...props} ref={ref}>
       <UserProfileCard
         profile={profile}
-        className="bg-accent text-accent-foreground border-accent/10 border"
+        className='bg-accent text-accent-foreground border-accent/10 border'
       >
         {profile?.bio && (
-          <span className="text-muted-foreground text-sm text-wrap">
+          <span className='text-muted-foreground text-sm text-wrap'>
             {profile?.bio}
           </span>
         )}
-        <div className="flex flex-col gap-2 w-full mt-3">
-          <span className="font-semibold leading-none tracking-tight">
+        <div className='flex flex-col gap-2 w-full mt-3'>
+          <span className='font-semibold leading-none tracking-tight'>
             Links
           </span>
           {renderLinks()}
@@ -125,27 +125,27 @@ export const ProfileDashboardTrailing: React.FC<
 };
 
 export const ProfileDashboard: React.FC<
-  & Omit<
+  Omit<
     React.ComponentPropsWithRef<typeof Dashboard>,
-    "children" | "description" | "title"
-  >
-  & React.PropsWithChildren<{
-    leading?: React.ReactNode;
-    trailing?: React.ReactNode;
-  }>
+    'children' | 'description' | 'title'
+  > &
+    React.PropsWithChildren<{
+      leading?: React.ReactNode;
+      trailing?: React.ReactNode;
+    }>
 > = ({ ref, children, leading, trailing, ...props }) => {
   const { profile, state } = useProfile();
 
   const Content = () => {
     if (state.isLoading) {
-      return <LoadingScaffold description="Loading the user-profile" />;
+      return <LoadingScaffold description='Loading the user-profile' />;
     } else if (!profile && !state.isLoading) {
-      logger.error("No user profile found");
+      logger.error('No user profile found');
       return (
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <UserCircle2Icon className="size-10" />
+            <EmptyMedia variant='icon'>
+              <UserCircle2Icon className='size-10' />
             </EmptyMedia>
             <EmptyTitle>No Profile Found</EmptyTitle>
             <EmptyDescription>
@@ -167,14 +167,11 @@ export const ProfileDashboard: React.FC<
   };
   return (
     <DashboardProvider>
-      <Dashboard
-        {...props}
-        ref={ref}
-      >
+      <Dashboard {...props} ref={ref}>
         <DashboardHeader asChild>
           <Item>
             <ItemContent>
-              <ItemTitle className="text-xl">Profile Dashboard</ItemTitle>
+              <ItemTitle className='text-xl'>Profile Dashboard</ItemTitle>
               <ItemDescription>
                 View and manage your profile information, settings, and more!
               </ItemDescription>
@@ -188,4 +185,4 @@ export const ProfileDashboard: React.FC<
     </DashboardProvider>
   );
 };
-ProfileDashboard.displayName = "ProfileDashboard";
+ProfileDashboard.displayName = 'ProfileDashboard';

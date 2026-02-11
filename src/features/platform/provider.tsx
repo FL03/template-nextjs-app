@@ -4,13 +4,13 @@
  * @directory - src/features/platform/provider
  * @file - platform-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // project
-import { CurrentUserProvider } from "@/features/auth";
-import { ThemeProvider } from "next-themes";
+import { CurrentUserProvider } from '@/features/auth';
+import { ThemeProvider } from 'next-themes';
 
 /** The root provider for the platform  */
 export const PlatformProvider: React.FC<
@@ -20,13 +20,11 @@ export const PlatformProvider: React.FC<
   }>
 > = ({
   children,
-  defaultTheme = "system",
+  defaultTheme = 'system',
   queryClient: queryClientProp = new QueryClient(),
 }) => {
   // Use the provided queryClient or create one per provider instance
-  const [queryClient] = React.useState(
-    () => queryClientProp,
-  );
+  const [queryClient] = React.useState(() => queryClientProp);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -34,18 +32,16 @@ export const PlatformProvider: React.FC<
         disableTransitionOnChange
         enableColorScheme
         enableSystem
-        attribute="class"
+        attribute='class'
         defaultTheme={defaultTheme}
-        storageKey="theme"
-        themes={["light", "dark"]}
+        storageKey='theme'
+        themes={['light', 'dark']}
       >
-        <CurrentUserProvider>
-          {children}
-        </CurrentUserProvider>
+        <CurrentUserProvider>{children}</CurrentUserProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
 };
-PlatformProvider.displayName = "PlatformProvider";
+PlatformProvider.displayName = 'PlatformProvider';
 
 export default PlatformProvider;

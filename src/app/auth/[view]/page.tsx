@@ -4,11 +4,11 @@
  * @description - the page for the auth gate (/auth/[view])
  * @file - page.tsx
  */
-"use server";
+'use server';
 // imports
-import { ResolvingMetadata } from "next";
+import { ResolvingMetadata } from 'next';
 // project
-import { AuthScreen } from "@/features/auth";
+import { AuthScreen } from '@/features/auth';
 
 type PageRouteProps = { params: Promise<{ view: string }> };
 
@@ -18,7 +18,7 @@ export default async function Page({ params }: PageRouteProps) {
   // render the auth gate with the view
   return <AuthScreen centered defaultView={view} />;
 }
-Page.displayName = "AuthPage";
+Page.displayName = 'AuthPage';
 
 export const generateMetadata = async (
   { params }: PageRouteProps,
@@ -28,13 +28,13 @@ export const generateMetadata = async (
   const { openGraph } = await parent;
   const previousImages = openGraph?.images || [];
 
-  const description = "The authentication page for the application";
+  const description = 'The authentication page for the application';
 
-  const title = ["forgot-password", "reset-password"].includes(view)
-    ? "Forgot Password"
-    : ["register", "registration"].includes(view)
-    ? "Register"
-    : "Login";
+  const title = ['forgot-password', 'reset-password'].includes(view)
+    ? 'Forgot Password'
+    : ['register', 'registration'].includes(view)
+      ? 'Register'
+      : 'Login';
 
   return {
     openGraph: {

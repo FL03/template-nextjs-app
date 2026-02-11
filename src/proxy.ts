@@ -3,12 +3,12 @@
  * @author - @FL03
  * @file - middleware.ts
  */
-"use server";
+'use server';
 // imports
-import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
+import { MiddlewareConfig, NextRequest, NextResponse } from 'next/server';
 // project
-import { supabaseUserSessionProxy } from "@/lib/supabase";
-import { ignorePaths } from "@/lib/utils";
+import { supabaseUserSessionProxy } from '@/lib/supabase';
+import { ignorePaths } from '@/lib/utils';
 
 /**
  * The middleware for the application; currently integrates each request with supabase related metadata and cookies.
@@ -17,13 +17,11 @@ import { ignorePaths } from "@/lib/utils";
  * @returns {Promise<NextResponse>} The response object for the current request.
  * @see https://nextjs.org/docs/app/getting-started/proxy for more information on middleware.
  */
-export async function proxy(
-  request: NextRequest,
-): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname: nextPath } = request.nextUrl;
 
   let skip: boolean = false;
-  if (nextPath === "/") skip = true;
+  if (nextPath === '/') skip = true;
   skip ||= ignorePaths(nextPath);
   // if the pathname is ignored, return the response
   if (skip) {
@@ -42,6 +40,6 @@ export const config: MiddlewareConfig = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!about|api|auth|docs|pricing|privacy|terms|help|_next/static|_next/image|.*\\.svg|png|jpg|jpeg|gif|webp|ico$).*)",
+    '/((?!about|api|auth|docs|pricing|privacy|terms|help|_next/static|_next/image|.*\\.svg|png|jpg|jpeg|gif|webp|ico$).*)',
   ],
 };

@@ -3,4 +3,4 @@
  * @author - @FL03
  * @file - utils/index.ts
  */
-export * from "./api";
+export * from './api';

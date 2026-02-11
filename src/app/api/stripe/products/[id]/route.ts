@@ -4,12 +4,12 @@
  * @directory - src/app/api/stripe/prices/[id]
  * @file - route.ts
  */
-"use server";
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+'use server';
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 // project
-import { stripeServerClient } from "@/lib/stripe";
-import { ApiResponse } from "@/types";
+import { stripeServerClient } from '@/lib/stripe';
+import { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
@@ -19,25 +19,31 @@ export async function GET(
   // handle the request
   const { pathname } = new URL(req.url);
   // extract the necessary params
-  const productId = pathname.split("/").pop();
+  const productId = pathname.split('/').pop();
   // validate the params
   if (!productId) {
-    return NextResponse.json({ data: null, error: "Price ID is required." }, {
-      status: 400,
-    });
+    return NextResponse.json(
+      { data: null, error: 'Price ID is required.' },
+      {
+        status: 400,
+      },
+    );
   }
   // fetch and return the price
   try {
     const product = await stripe.products.retrieve(productId);
     if (product.deleted) {
-      throw new Error("The requested product has been deleted.");
+      throw new Error('The requested product has been deleted.');
     }
     return NextResponse.json({ data: product, error: null }, { status: 200 });
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
-    return NextResponse.json({
-      data: null,
-      error: "Unable to retrieve the price: " + error.message,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        data: null,
+        error: 'Unable to retrieve the price: ' + error.message,
+      },
+      { status: 500 },
+    );
   }
 }

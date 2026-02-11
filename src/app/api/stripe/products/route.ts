@@ -4,12 +4,12 @@
  * @directory - src/app/api/stripe/prices
  * @file - route.ts
  */
-"use server";
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+'use server';
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 // project
-import { stripeServerClient } from "@/lib/stripe";
-import { ApiResponse } from "@/types";
+import { stripeServerClient } from '@/lib/stripe';
+import { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
@@ -18,36 +18,51 @@ export async function GET(
   const stripe = stripeServerClient();
   // handle the request
   const { searchParams } = new URL(req.url);
-  const active = searchParams.get("active") === "true" ? true : undefined;
-  const apiVersion = searchParams.get("apiVersion")?.toString();
-  const lookup_keys = searchParams.getAll("lookup_keys");
-  const limit = parseInt(searchParams.get("limit") ?? "10", 10);
+  const active = searchParams.get('active') === 'true' ? true : undefined;
+  const apiVersion = searchParams.get('apiVersion')?.toString();
+  const lookup_keys = searchParams.getAll('lookup_keys');
+  const limit = parseInt(searchParams.get('limit') ?? '10', 10);
 
   if (isNaN(limit) || limit < 1 || limit > 100) {
-    return NextResponse.json({
-      data: null,
-      error: "Limit must be a number between 1 and 100.",
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        data: null,
+        error: 'Limit must be a number between 1 and 100.',
+      },
+      { status: 400 },
+    );
   }
 
   if (lookup_keys.length > 10) {
-    return NextResponse.json({
-      data: null,
-      error: "You can only filter by up to 10 lookup keys at a time.",
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        data: null,
+        error: 'You can only filter by up to 10 lookup keys at a time.',
+      },
+      { status: 400 },
+    );
   }
 
-  return await stripe.products.list({
-    active,
-    limit,
-  }, {
-    apiVersion,
-  }).then((prices) => (
-    NextResponse.json({ data: prices.data, error: null }, { status: 200 })
-  )).catch((err) =>
-    NextResponse.json({
-      data: null,
-      error: "Unable to retrieve the prices: " + String(err),
-    }, { status: 500 })
-  );
+  return await stripe.products
+    .list(
+      {
+        active,
+        limit,
+      },
+      {
+        apiVersion,
+      },
+    )
+    .then((prices) =>
+      NextResponse.json({ data: prices.data, error: null }, { status: 200 }),
+    )
+    .catch((err) =>
+      NextResponse.json(
+        {
+          data: null,
+          error: 'Unable to retrieve the prices: ' + String(err),
+        },
+        { status: 500 },
+      ),
+    );
 }

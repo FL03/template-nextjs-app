@@ -4,24 +4,24 @@
  * @directory - src/features/platform/widgets
  * @file - platform-settings.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { useTheme } from "next-themes";
+import * as React from 'react';
+import { useTheme } from 'next-themes';
 // project
-import { cn } from "@/lib/utils";
-import { FormProps } from "@/types";
+import { cn } from '@/lib/utils';
+import { FormProps } from '@/types';
 // local
-import { savePlatformSettings } from "../utils";
+import { savePlatformSettings } from '../utils';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Field,
   FieldContent,
@@ -30,7 +30,7 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
+} from '@/components/ui/field';
 
 type Colorway = {
   name: string;
@@ -39,16 +39,16 @@ type Colorway = {
 };
 
 const COLORWAYS: Colorway[] = [
-  { name: "Blue", value: "blue" },
-  { name: "Red", value: "red" },
-  { name: "Green", value: "green" },
-  { name: "Purple", value: "purple" },
-  { name: "Orange", value: "orange" },
-  { name: "Pink", value: "pink" },
-  { name: "Yellow", value: "yellow" },
-  { name: "Gray", value: "gray" },
-  { name: "Cyan", value: "cyan" },
-  { name: "Teal", value: "teal" },
+  { name: 'Blue', value: 'blue' },
+  { name: 'Red', value: 'red' },
+  { name: 'Green', value: 'green' },
+  { name: 'Purple', value: 'purple' },
+  { name: 'Orange', value: 'orange' },
+  { name: 'Pink', value: 'pink' },
+  { name: 'Yellow', value: 'yellow' },
+  { name: 'Gray', value: 'gray' },
+  { name: 'Cyan', value: 'cyan' },
+  { name: 'Teal', value: 'teal' },
 ];
 
 type SystemFormData = {};
@@ -73,14 +73,14 @@ export const SystemSettingsForm: React.FC<FormProps<SystemFormData>> = ({
     <form
       {...props}
       ref={ref}
-      id="platform-settings-form"
+      id='platform-settings-form'
       action={formAction}
       className={cn(
-        "flex flex-1 flex-col h-full w-full relative z-auto",
+        'flex flex-1 flex-col h-full w-full relative z-auto',
         className,
       )}
     >
-      <FieldSet form="platform-settings-form">
+      <FieldSet form='platform-settings-form'>
         <FieldLegend>System</FieldLegend>
         <FieldDescription>
           COnfigure various platform settings.
@@ -96,20 +96,20 @@ export const SystemSettingsForm: React.FC<FormProps<SystemFormData>> = ({
             </FieldContent>
 
             <Select
-              // onValueChange={(value) => field.onChange(value)}
-              // value={field.value}
+            // onValueChange={(value) => field.onChange(value)}
+            // value={field.value}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Choose your colorway" />
+                <SelectValue placeholder='Choose your colorway' />
               </SelectTrigger>
-              <SelectContent defaultValue="default">
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="light">Light</SelectItem>
+              <SelectContent defaultValue='default'>
+                <SelectItem value='default'>Default</SelectItem>
+                <SelectItem value='light'>Light</SelectItem>
                 {COLORWAYS.map(({ name, value }, index) => (
                   <SelectItem key={index} value={value}>
                     <div
                       className={cn(
-                        "h-10 w-10 rounded-lg bg-linear-to-br from-100% to-25% bg-blend-color",
+                        'h-10 w-10 rounded-lg bg-linear-to-br from-100% to-25% bg-blend-color',
                         `bg-${value}-500`,
                       )}
                     />
@@ -126,23 +126,22 @@ export const SystemSettingsForm: React.FC<FormProps<SystemFormData>> = ({
                 Select the theme you want to use.
               </FieldDescription>
             </FieldContent>
-            <Select
-              onValueChange={(value) => setTheme(value)}
-              value={theme}
-            >
+            <Select onValueChange={(value) => setTheme(value)} value={theme}>
               <SelectTrigger>
-                <SelectValue placeholder="Choose your preffered theme" />
+                <SelectValue placeholder='Choose your preffered theme' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="system">System</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value='system'>System</SelectItem>
+                <SelectItem value='dark'>Dark</SelectItem>
+                <SelectItem value='light'>Light</SelectItem>
               </SelectContent>
             </Select>
           </Field>
           {/* Actions */}
-          <Field orientation="horizontal">
-            <Button form="platform-settings-form" type="submit">Save</Button>
+          <Field orientation='horizontal'>
+            <Button form='platform-settings-form' type='submit'>
+              Save
+            </Button>
           </Field>
         </FieldGroup>
       </FieldSet>

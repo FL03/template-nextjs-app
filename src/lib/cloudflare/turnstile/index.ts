@@ -4,5 +4,5 @@
  * @directory - src/lib/cloudflare/turnstile
  * @file - index.ts
  */
-export * from "./credentials";
-export * from "./helpers";
+export * from './credentials';
+export * from './helpers';

@@ -3,22 +3,22 @@
  * @author - @FL03
  * @file - platform-appbar.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import Link from "next/link";
+import * as React from 'react';
+import Link from 'next/link';
 import {
   DollarSignIcon,
   EqualApproximatelyIcon,
   HomeIcon,
   LibraryBigIcon,
-} from "lucide-react";
+} from 'lucide-react';
 // project
-import { LoginButton, useCurrentUser } from "@/features/auth";
-import { cn } from "@/lib/utils";
-import { NavItemData } from "@/types";
+import { LoginButton, useCurrentUser } from '@/features/auth';
+import { cn } from '@/lib/utils';
+import { NavItemData } from '@/types';
 // local
-import { PlatformSidebarTrigger } from "./platform-sidebar";
+import { PlatformSidebarTrigger } from './platform-sidebar';
 // components
 import {
   AppBar,
@@ -26,10 +26,10 @@ import {
   AppBarLeading,
   AppBarTitle,
   AppBarTrailing,
-} from "@/components/common/appbar";
-import { PzzldLogo } from "@/components/common/icons";
-import { ThemeButton } from "@/components/common/theme";
-import { ButtonGroup } from "@/components/ui/button-group";
+} from '@/components/common/appbar';
+import { PzzldLogo } from '@/components/common/icons';
+import { ThemeButton } from '@/components/common/theme';
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -37,85 +37,78 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 
 const PLATFORM_MENU_LINKS: NavItemData[] = [
   {
-    label: "About",
-    href: "/about",
-    icon: <EqualApproximatelyIcon className="size-4" />,
+    label: 'About',
+    href: '/about',
+    icon: <EqualApproximatelyIcon className='size-4' />,
   },
   {
-    label: "Docs",
-    href: "/docs",
-    icon: <LibraryBigIcon className="size-4" />,
+    label: 'Docs',
+    href: '/docs',
+    icon: <LibraryBigIcon className='size-4' />,
   },
   {
-    label: "Pricing",
-    href: "/pricing",
-    icon: <DollarSignIcon className="size-4" />,
+    label: 'Pricing',
+    href: '/pricing',
+    icon: <DollarSignIcon className='size-4' />,
   },
 ];
 
 const NavLink: React.FC<
-  & Partial<React.ComponentPropsWithoutRef<typeof Link>>
-  & React.PropsWithChildren<{
-    label?: React.ReactNode;
-  }>
-> = ({ className, children, label, href = "#", ...props }) => (
+  Partial<React.ComponentPropsWithoutRef<typeof Link>> &
+    React.PropsWithChildren<{
+      label?: React.ReactNode;
+    }>
+> = ({ className, children, label, href = '#', ...props }) => (
   <Link
     {...props}
     className={cn(
-      "inline-flex flex-nowrap items-center gap-1 text-base text-nowrap px-2 py-1 rounded-lg",
-      "transition-none hover:opacity-80",
+      'inline-flex flex-nowrap items-center gap-1 text-base text-nowrap px-2 py-1 rounded-lg',
+      'transition-none hover:opacity-80',
     )}
     href={href}
   >
     {children}
-    <span className="leading-none tracking-tight" hidden={!label}>
+    <span className='leading-none tracking-tight' hidden={!label}>
       {label}
     </span>
   </Link>
 );
 
 const PlatformNavbar: React.FC<
-  Omit<
-    React.ComponentPropsWithoutRef<typeof NavigationMenu>,
-    "id" | "children"
-  >
+  Omit<React.ComponentPropsWithoutRef<typeof NavigationMenu>, 'id' | 'children'>
 > = ({ className, ...props }) => (
   <NavigationMenu
     {...props}
-    id="platform-navbar"
-    className={cn(
-      "flex-nowrap justify-start",
-      className,
-    )}
+    id='platform-navbar'
+    className={cn('flex-nowrap justify-start', className)}
   >
     <NavigationMenuList>
       <NavigationMenuItem>
         <NavigationMenuLink asChild>
-          <NavLink href="/" label="Home">
-            <HomeIcon className="size-4" />
+          <NavLink href='/' label='Home'>
+            <HomeIcon className='size-4' />
           </NavLink>
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
         <NavigationMenuTrigger
           autoFocus={false}
-          className="items-center justify-center bg-accent text-accent-foreground hover:bg-accent/75 h-8"
+          className='items-center justify-center bg-accent text-accent-foreground hover:bg-accent/75 h-8'
         >
           Platform
         </NavigationMenuTrigger>
         <NavigationMenuContent>
-          <ul className="grid grid-cols-2 grid-flow-rows gap-3 p-4 w-48">
+          <ul className='grid grid-cols-2 grid-flow-rows gap-3 p-4 w-48'>
             {PLATFORM_MENU_LINKS.map(({ href, label, icon }, idx) => (
-              <li
-                key={idx}
-                className="col-span-1 w-full"
-              >
+              <li key={idx} className='col-span-1 w-full'>
                 <NavigationMenuLink asChild>
-                  <NavLink href={href} label={label}>{icon}</NavLink>
+                  <NavLink href={href} label={label}>
+                    {icon}
+                  </NavLink>
                 </NavigationMenuLink>
               </li>
             ))}
@@ -130,20 +123,14 @@ const PlatformNavbar: React.FC<
 export const PlatformAppBar: React.FC<
   Omit<
     React.ComponentPropsWithRef<typeof AppBar>,
-    "asChild" | "id" | "children"
+    'asChild' | 'id' | 'children'
   >
-> = ({
-  ref,
-  className,
-  flavor = "accent",
-  position = "top",
-  ...props
-}) => {
+> = ({ ref, className, flavor = 'accent', position = 'top', ...props }) => {
   const { user } = useCurrentUser();
   return (
     <AppBar
       {...props}
-      id="platform-appbar"
+      id='platform-appbar'
       ref={ref}
       flavor={flavor}
       position={position}
@@ -151,15 +138,15 @@ export const PlatformAppBar: React.FC<
       <AppBarLeading>
         <Link
           className={cn(
-            "inline-flex items-center flex-nowrap gap-1 p-2",
-            "cursor-pointer transition-colors rounded-lg",
-            "hover:opacity-80 hover:animate-pulse",
+            'inline-flex items-center flex-nowrap gap-1 p-2',
+            'cursor-pointer transition-colors rounded-lg',
+            'hover:opacity-80 hover:animate-pulse',
             className,
           )}
-          href="/"
+          href='/'
         >
-          <PzzldLogo className="size-8" />
-          <AppBarTitle className="text-xl font-bold sr-only md:not-sr-only">
+          <PzzldLogo className='size-8' />
+          <AppBarTitle className='text-xl font-bold sr-only md:not-sr-only'>
             pzzld
           </AppBarTitle>
         </Link>
@@ -169,19 +156,15 @@ export const PlatformAppBar: React.FC<
       </AppBarContent>
       <AppBarTrailing asChild>
         <ButtonGroup>
-          <ThemeButton size="icon" variant="ghost" />
-          {user
-            ? (
-              <PlatformSidebarTrigger
-                size="icon"
-                variant="ghost"
-                side="right"
-              />
-            )
-            : <LoginButton variant="ghost" />}
+          <ThemeButton size='icon' variant='ghost' />
+          {user ? (
+            <PlatformSidebarTrigger size='icon' variant='ghost' side='right' />
+          ) : (
+            <LoginButton variant='ghost' />
+          )}
         </ButtonGroup>
       </AppBarTrailing>
     </AppBar>
   );
 };
-PlatformAppBar.displayName = "PlatformAppBar";
+PlatformAppBar.displayName = 'PlatformAppBar';

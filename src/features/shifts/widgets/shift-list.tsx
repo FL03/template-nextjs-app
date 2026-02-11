@@ -3,19 +3,19 @@
  * @author - @FL03
  * @file - shift-list.tsx
  */
-"use client";
+'use client';
 // packages
-import * as React from "react";
-import { compareAsc, compareDesc } from "date-fns";
-import { formatAsCurrency } from "@pzzld/core";
+import * as React from 'react';
+import { compareAsc, compareDesc } from 'date-fns';
+import { formatAsCurrency } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // local
-import { useWorkSchedule } from "../providers";
-import { type ShiftData } from "../types";
-import { ShiftItemContextMenu, ShiftItemDropdownMenu } from "./actions";
+import { useWorkSchedule } from '../providers';
+import { type ShiftData } from '../types';
+import { ShiftItemContextMenu, ShiftItemDropdownMenu } from './actions';
 // components
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Item,
   ItemActions,
@@ -23,42 +23,33 @@ import {
   ItemGroup,
   ItemMedia,
   ItemTitle,
-} from "@/components/ui/item";
+} from '@/components/ui/item';
 
 export const ShiftListItem: React.FC<
-  Omit<React.ComponentPropsWithRef<typeof Item>, "asChild"> & {
+  Omit<React.ComponentPropsWithRef<typeof Item>, 'asChild'> & {
     value: ShiftData;
   }
-> = (
-  {
-    ref,
-    value,
-    className,
-    size = "sm",
-    variant = "default",
-    ...props
-  },
-) => {
+> = ({ ref, value, className, size = 'sm', variant = 'default', ...props }) => {
   const { id, date, tips_cash = 0, tips_credit = 0 } = value;
   return (
     <ShiftItemContextMenu asChild itemId={id}>
       <Item
         ref={ref}
-        className={cn("w-full", className)}
+        className={cn('w-full', className)}
         size={size}
         variant={variant}
         {...props}
       >
-        <ItemMedia variant="icon">
-          <Checkbox className="size-4" />
+        <ItemMedia variant='icon'>
+          <Checkbox className='size-4' />
         </ItemMedia>
         <ItemContent>
-          <ItemTitle className="text-right">
-            {new Date(date).toLocaleDateString("en-US", { timeZone: "UTC" })}
+          <ItemTitle className='text-right'>
+            {new Date(date).toLocaleDateString('en-US', { timeZone: 'UTC' })}
           </ItemTitle>
         </ItemContent>
-        <ItemContent className="">
-          <ItemTitle className="text-left font-mono">
+        <ItemContent className=''>
+          <ItemTitle className='text-left font-mono'>
             {formatAsCurrency(tips_cash + tips_credit)}
           </ItemTitle>
         </ItemContent>
@@ -95,13 +86,14 @@ export const ShiftList: React.FC<
     return values;
   }
 
-  const data = React.useMemo<ShiftData[]>(() => (
-    handleShifts(shifts, { ascending: !descending, limit: itemCount })
-  ), [shifts, descending, itemCount]);
+  const data = React.useMemo<ShiftData[]>(
+    () => handleShifts(shifts, { ascending: !descending, limit: itemCount }),
+    [shifts, descending, itemCount],
+  );
 
   return (
     <ItemGroup
-      className={cn("w-full", scrollable && "overflow-y-auto", className)}
+      className={cn('w-full', scrollable && 'overflow-y-auto', className)}
       {...props}
     >
       {data?.map((item, index) => (
@@ -110,4 +102,4 @@ export const ShiftList: React.FC<
     </ItemGroup>
   );
 };
-ShiftList.displayName = "ShiftList";
+ShiftList.displayName = 'ShiftList';

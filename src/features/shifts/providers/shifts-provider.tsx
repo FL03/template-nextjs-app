@@ -3,20 +3,18 @@
  * @author - @FL03
  * @file - shifts-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // project
-import { useFilter } from "@/hooks/use-filter";
-import { useShifts } from "@/hooks/use-shifts";
-import { useUsername } from "@/hooks/use-username";
+import { useFilter } from '@/hooks/use-filter';
+import { useShifts } from '@/hooks/use-shifts';
+import { useUsername } from '@/hooks/use-username';
 // types
-import type { ShiftData } from "../types";
+import type { ShiftData } from '../types';
 
-type ScheduleContext =
-  & Omit<ReturnType<typeof useShifts>, "data">
-  & ReturnType<typeof useFilter<ShiftData>>
-  & {};
+type ScheduleContext = Omit<ReturnType<typeof useShifts>, 'data'> &
+  ReturnType<typeof useFilter<ShiftData>> & {};
 
 const ScheduleContext = React.createContext<ScheduleContext | null>(null);
 
@@ -24,7 +22,7 @@ const ScheduleContext = React.createContext<ScheduleContext | null>(null);
 export const useWorkSchedule = () => {
   const context = React.useContext(ScheduleContext);
   if (!context) {
-    throw new Error("useSchedule must be used within a ScheduleProvider");
+    throw new Error('useSchedule must be used within a ScheduleProvider');
   }
   return context;
 };
@@ -49,4 +47,4 @@ export const WorkScheduleProvider: React.FC<
   // return the provider
   return <ScheduleContext value={ctx}>{children}</ScheduleContext>;
 };
-WorkScheduleProvider.displayName = "ScheduleProvider";
+WorkScheduleProvider.displayName = 'ScheduleProvider';

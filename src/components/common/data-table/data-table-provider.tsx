@@ -4,14 +4,14 @@
  * @directory - src/components/common/data-table
  * @file - data-table-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 import ReactTable, {
   RowData,
   TableOptions,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 type DataTableContext<TData extends RowData> = {
   options: TableOptions<TData>;
@@ -23,12 +23,12 @@ const DataTableContext = React.createContext<DataTableContext<any> | null>(
 );
 
 /** The `useDataTable` hook provides access to the context injected by a `DataTableProvider`. */
-export function useDataTable<TData extends RowData = any>(): DataTableContext<
-  TData
-> {
+export function useDataTable<
+  TData extends RowData = any,
+>(): DataTableContext<TData> {
   const context = React.useContext(DataTableContext);
   if (!context) {
-    throw new Error("useDataTable must be used within a DataTableProvider");
+    throw new Error('useDataTable must be used within a DataTableProvider');
   }
   return context;
 }

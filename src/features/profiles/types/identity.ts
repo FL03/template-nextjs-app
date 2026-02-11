@@ -14,14 +14,13 @@ export type UserProfileLinkParams = {
   searchParams: Promise<Partial<WithUserId<{ view: string }>>>;
 };
 
-export type UserIdVariants = "userId" | "uid" | "user_id";
+export type UserIdVariants = 'userId' | 'uid' | 'user_id';
 
-export type WithUserIds<T = {}> =
-  & T
-  & {
-    [key in UserIdVariants]?: string;
-  };
+export type WithUserIds<T = {}> = T & {
+  [key in UserIdVariants]?: string;
+};
 
-export type ProfileIdentifiers = WithUserIds<
-  { email?: string; username?: string }
->;
+export type ProfileIdentifiers = WithUserIds<{
+  email?: string;
+  username?: string;
+}>;

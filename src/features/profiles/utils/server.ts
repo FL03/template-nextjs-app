@@ -3,10 +3,10 @@
  * @author - @FL03
  * @file - server.ts
  */
-"use server";
+'use server';
 // project
-import { logger } from "@/lib/logger";
-import { createServerClient, getUsername } from "@/lib/supabase";
+import { logger } from '@/lib/logger';
+import { createServerClient, getUsername } from '@/lib/supabase';
 
 type NewUserBucketOptions = {
   allowedMimeTypes?: string[];
@@ -15,20 +15,15 @@ type NewUserBucketOptions = {
   fileSizeLimit?: number;
 };
 
-const bucketUrl = (...paths: string[]) => (
-  paths.filter(Boolean).join("/")
-);
+const bucketUrl = (...paths: string[]) => paths.filter(Boolean).join('/');
 
 /**
  * A callback for creating a new bucket for a user
  */
 export async function createUserBucket(
   username: string,
-  {
-    basePath = "avatars",
-    ...options
-  }: NewUserBucketOptions = {
-    allowedMimeTypes: ["image/png", "image/jpeg", "image/gif"],
+  { basePath = 'avatars', ...options }: NewUserBucketOptions = {
+    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
     fileSizeLimit: 1024 * 1024 * 10,
     public: false,
   },
@@ -38,10 +33,7 @@ export async function createUserBucket(
   // initialize the supabase client
   const supabase = await createServerClient();
   // construct the base path for the bucket
-  const { data, error } = await supabase.storage.createBucket(
-    path,
-    options,
-  );
+  const { data, error } = await supabase.storage.createBucket(path, options);
   // handle any errors creating the bucket
   if (error) {
     // throw an error with the message
@@ -55,15 +47,13 @@ export async function createUserBucket(
  * @param {string} username - The username of the user whose avatar is being fetched
  * @returns {File} - The user's avatar as a File object, or null if no avatar is found
  */
-export async function loadProfileAvatar(
-  username: string,
-): Promise<File> {
+export async function loadProfileAvatar(username: string): Promise<File> {
   const supabase = await createServerClient();
   // fetch the user
   const { data: profileData, error: dbError } = await supabase
-    .from("profiles")
-    .select("avatar_url")
-    .eq("username", username)
+    .from('profiles')
+    .select('avatar_url')
+    .eq('username', username)
     .single();
   // handle any errors fetching the profile data
   if (dbError) {
@@ -76,7 +66,7 @@ export async function loadProfileAvatar(
   }
   // fetch the avatar from the bucket
   const { data: downloadData, error: downloadError } = await supabase.storage
-    .from("avatars")
+    .from('avatars')
     .download(avatar_url);
   // handle any errors downloading the avatar
   if (downloadError) {
@@ -87,7 +77,7 @@ export async function loadProfileAvatar(
   // create a new File object with the blob and the username as the file name
   const file = new File(
     [blob],
-    `${username}.${downloadData.type.split("/")[1]}`,
+    `${username}.${downloadData.type.split('/')[1]}`,
     {
       type: downloadData.type,
     },
@@ -102,33 +92,33 @@ export async function loadProfileAvatar(
  * @param {File} file - The file to upload
  */
 export async function uploadAvatar(file?: File | null): Promise<string> {
-  if (!file) throw new Error("No file provided for upload...");
+  if (!file) throw new Error('No file provided for upload...');
 
   const supabase = await createServerClient();
   // fetch the user
   const username = await getUsername({ client: supabase });
 
   if (!username) {
-    throw new Error("Error uploading avatar: user not found");
+    throw new Error('Error uploading avatar: user not found');
   }
   // name the bucket after the using the username
-  const bucket = bucketUrl("avatars", username);
+  const bucket = bucketUrl('avatars', username);
   /// rename the file to username.extension
-  const fname = `${username}.${file.name.split(".").pop()}`;
+  const fname = `${username}.${file.name.split('.').pop()}`;
   // if the user doesn't have a bucket, create one
-  if (!supabase.storage.from("avatars").exists(username)) {
+  if (!supabase.storage.from('avatars').exists(username)) {
     // create the object if one does not exist
     const { error: createBucketError } = await supabase.storage.createBucket(
       bucket,
       {
         public: true,
-        allowedMimeTypes: ["image/png", "image/jpeg", "image/gif"],
+        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
       },
     );
     if (createBucketError) {
       logger.error(
         createBucketError,
-        "Error creating a new bucket for the user avatar upload...",
+        'Error creating a new bucket for the user avatar upload...',
       );
       throw new Error(createBucketError.message);
     }
@@ -139,10 +129,7 @@ export async function uploadAvatar(file?: File | null): Promise<string> {
     .upload(fname, file, { upsert: true });
   // throw an error if the upload fails
   if (error) {
-    logger.error(
-      error,
-      "Unable to upload the users avatar to the bucket...",
-    );
+    logger.error(error, 'Unable to upload the users avatar to the bucket...');
     throw new Error(error.message);
   }
   // get the public URL of the uploaded file
@@ -151,14 +138,14 @@ export async function uploadAvatar(file?: File | null): Promise<string> {
   } = supabase.storage.from(bucket).getPublicUrl(fname);
   // update the user's profile with the new avatar URL
   const { error: dbError } = await supabase
-    .from("profiles")
+    .from('profiles')
     .update({ avatar_url: publicUrl })
-    .eq("username", username);
+    .eq('username', username);
   // throw an error if the update fails
   if (dbError) {
     logger.error(
       dbError,
-      "Error updating the user profile with the new avatar...",
+      'Error updating the user profile with the new avatar...',
     );
     throw new Error(dbError.message);
   }

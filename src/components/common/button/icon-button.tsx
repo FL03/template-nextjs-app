@@ -3,21 +3,21 @@
  * @author - @FL03
  * @file - icon-button.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Trash2Icon, XIcon } from "lucide-react";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { Trash2Icon, XIcon } from 'lucide-react';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 /** The `IconButton` component is a wrapper around the `Button` component outfitted with an optional label. */
 export const IconButton: React.FC<
   React.ComponentPropsWithRef<typeof Button> & {
     label?: React.ReactNode;
-    classNames?: ClassNames<"label">;
+    classNames?: ClassNames<'label'>;
     reverse?: boolean;
   }
 > = ({
@@ -27,13 +27,13 @@ export const IconButton: React.FC<
   classNames,
   label,
   reverse,
-  size = "default",
-  variant = "default",
+  size = 'default',
+  variant = 'default',
   ...props
 }) => (
   <Button
     ref={ref}
-    className={cn(reverse && "flex-row-reverse", className)}
+    className={cn(reverse && 'flex-row-reverse', className)}
     size={size}
     variant={variant}
     {...props}
@@ -42,8 +42,8 @@ export const IconButton: React.FC<
     {label && (
       <span
         className={cn(
-          "text-nowrap truncate",
-          size?.startsWith("icon") ? "sr-only" : "not-sr-only",
+          'text-nowrap truncate',
+          size?.startsWith('icon') ? 'sr-only' : 'not-sr-only',
           classNames?.labelClassName,
         )}
       >
@@ -54,27 +54,21 @@ export const IconButton: React.FC<
 );
 
 export const XIconButton: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof IconButton>, "children"> & {
+  Omit<React.ComponentPropsWithoutRef<typeof IconButton>, 'children'> & {
     classNames?: { iconClassName?: string; labelClassName?: string };
   }
 > = ({ classNames: { iconClassName, labelClassName } = {}, ...props }) => (
-  <IconButton
-    classNames={{ labelClassName }}
-    {...props}
-  >
-    <XIcon className={cn("size-4", iconClassName)} />
+  <IconButton classNames={{ labelClassName }} {...props}>
+    <XIcon className={cn('size-4', iconClassName)} />
   </IconButton>
 );
 
 export const TrashIconButton: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof IconButton>, "children"> & {
+  Omit<React.ComponentPropsWithoutRef<typeof IconButton>, 'children'> & {
     classNames?: { iconClassName?: string; labelClassName?: string };
   }
 > = ({ classNames: { iconClassName, labelClassName } = {}, ...props }) => (
-  <IconButton
-    classNames={{ labelClassName }}
-    {...props}
-  >
-    <Trash2Icon className={cn("size-4", iconClassName)} />
+  <IconButton classNames={{ labelClassName }} {...props}>
+    <Trash2Icon className={cn('size-4', iconClassName)} />
   </IconButton>
 );

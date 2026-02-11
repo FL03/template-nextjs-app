@@ -4,13 +4,13 @@
  * @directory - src/features/billing/widgets
  * @file - checkout-form.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Stripe, StripeElements } from "@stripe/stripe-js";
-import { ElementsConsumer, PaymentElement } from "@stripe/react-stripe-js";
+import * as React from 'react';
+import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { ElementsConsumer, PaymentElement } from '@stripe/react-stripe-js';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -18,12 +18,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 // InternalForm
-class CheckoutFormInternal extends React.Component<
-  { stripe?: Stripe | null; elements?: StripeElements | null }
-> {
+class CheckoutFormInternal extends React.Component<{
+  stripe?: Stripe | null;
+  elements?: StripeElements | null;
+}> {
   handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     const { stripe, elements } = this.props;
@@ -43,14 +44,14 @@ class CheckoutFormInternal extends React.Component<
     }
 
     // Create the PaymentIntent and obtain clientSecret
-    const res = await fetch("/create-intent", {
-      method: "POST",
+    const res = await fetch('/create-intent', {
+      method: 'POST',
     });
 
     const { client_secret: clientSecret } = await res.json();
 
-    const returnUrl = new URL("/checkout", window.location.origin);
-    returnUrl.searchParams.set("status", "success");
+    const returnUrl = new URL('/checkout', window.location.origin);
+    returnUrl.searchParams.set('status', 'success');
 
     const { error } = await stripe.confirmPayment({
       //`Elements` instance that was used to create the Payment Element
@@ -76,7 +77,7 @@ class CheckoutFormInternal extends React.Component<
     const { stripe } = this.props;
     return (
       <form onSubmit={this.handleSubmit}>
-        <Card className="flex flex-1 flex-col w-full">
+        <Card className='flex flex-1 flex-col w-full'>
           <CardHeader>
             <CardTitle>Checkout</CardTitle>
             <CardDescription>
@@ -84,10 +85,10 @@ class CheckoutFormInternal extends React.Component<
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <PaymentElement options={{ layout: "accordion" }} />
+            <PaymentElement options={{ layout: 'accordion' }} />
           </CardContent>
-          <CardFooter className="flex flex-1 flex-nowrap items-center justify-end w-full gap-4 lg:gap-6">
-            <Button type="submit" disabled={!stripe} className="w-full">
+          <CardFooter className='flex flex-1 flex-nowrap items-center justify-end w-full gap-4 lg:gap-6'>
+            <Button type='submit' disabled={!stripe} className='w-full'>
               Pay
             </Button>
           </CardFooter>
@@ -106,6 +107,6 @@ export const CheckoutForm: React.FC = () => (
     )}
   </ElementsConsumer>
 );
-CheckoutForm.displayName = "CheckoutForm";
+CheckoutForm.displayName = 'CheckoutForm';
 
 export default CheckoutForm;

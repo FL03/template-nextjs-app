@@ -4,18 +4,18 @@
  * @description - Hooks for working with authenticated users and their profiles
  * @file - use-profile.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Subscription } from "@supabase/supabase-js";
+import * as React from 'react';
+import { Subscription } from '@supabase/supabase-js';
 // project
-import { CACHE_KEY_USERNAME } from "@/lib/config";
-import { logger } from "@/lib/logger";
-import { createBrowserClient } from "@/lib/supabase";
+import { CACHE_KEY_USERNAME } from '@/lib/config';
+import { logger } from '@/lib/logger';
+import { createBrowserClient } from '@/lib/supabase';
 
 namespace UseUsername {
   export interface Props {
-    client?: ReturnType<typeof createBrowserClient<any, "public">>;
+    client?: ReturnType<typeof createBrowserClient<any, 'public'>>;
     onDataChange?(data: string): void;
     onError?(error: unknown): void;
   }
@@ -31,7 +31,7 @@ namespace UseUsername {
     error: Error | null;
     state: State;
     reload(): Promise<void>;
-  }
+  };
 
   export type Callback = (options?: Props) => Context;
 }
@@ -68,22 +68,25 @@ export const useUsername: UseUsername.Callback = ({
     [_error, isLoading, isReloading],
   );
   // a callback for handling any errors that occur
-  const handleError = React.useCallback((value: unknown) => {
-    _setError((prev) => {
-      const error = value instanceof Error ? value : new Error(String(value));
-      if (prev === error) return prev;
-      if (onError) onError(error);
-      return error;
-    });
-  }, [onError]);
+  const handleError = React.useCallback(
+    (value: unknown) => {
+      _setError((prev) => {
+        const error = value instanceof Error ? value : new Error(String(value));
+        if (prev === error) return prev;
+        if (onError) onError(error);
+        return error;
+      });
+    },
+    [onError],
+  );
   /** clear the cached username */
   const _clearCache = React.useCallback(() => {
     // ensure that the window object is available
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     // clear the cached username
     try {
       window.localStorage.removeItem(CACHE_KEY_USERNAME);
-      logger.trace("Cleared the cached username...");
+      logger.trace('Cleared the cached username...');
     } catch (err) {
       handleError(err);
     }
@@ -93,13 +96,13 @@ export const useUsername: UseUsername.Callback = ({
   const _cache = React.useCallback(
     (value: string) => {
       // ensure the window is defined
-      if (typeof window === "undefined") return;
+      if (typeof window === 'undefined') return;
       // cache the username
       try {
         window.localStorage.setItem(CACHE_KEY_USERNAME, value);
-        logger.trace("Successfully cached the username");
+        logger.trace('Successfully cached the username');
       } catch (err) {
-        handleError("Failed to cache username: " + String(err));
+        handleError('Failed to cache username: ' + String(err));
       }
     },
     [handleError],
@@ -119,7 +122,7 @@ export const useUsername: UseUsername.Callback = ({
   );
   // invoke the "public.username" function deployed on the database using supabase's "rpc" method
   const _get = React.useCallback(async (): Promise<void> => {
-    const { data, error } = await supabase.rpc("username");
+    const { data, error } = await supabase.rpc('username');
     if (error) {
       handleError(error);
     }
@@ -129,16 +132,16 @@ export const useUsername: UseUsername.Callback = ({
   const reload = React.useCallback(async (): Promise<void> => {
     // double check that we aren't already loading
     if (isLoading) {
-      logger.warn("already loading; skipping refresh...");
+      logger.warn('already loading; skipping refresh...');
       return Promise.resolve();
     }
     // ensure the refreshing state is toggled
     if (!isReloading) setIsReloading(true);
     // trace the event
-    logger.trace("Refreshing the username...");
-    return _get().then(() => logger.info("Refreshed the username!")).finally(
-      () => setIsReloading(false),
-    );
+    logger.trace('Refreshing the username...');
+    return _get()
+      .then(() => logger.info('Refreshed the username!'))
+      .finally(() => setIsReloading(false));
   }, [isReloading, isLoading, _get]);
   // handle the subscription to the auth state changes
   const createAuthSubscription = React.useCallback(() => {
@@ -148,11 +151,11 @@ export const useUsername: UseUsername.Callback = ({
       // check if the user is logged in
       if (session) {
         const { user } = session;
-        if (event === "SIGNED_IN") {
+        if (event === 'SIGNED_IN') {
           // fetch the username from the database
           if (
             !user.user_metadata.username ||
-            user.user_metadata.username === ""
+            user.user_metadata.username === ''
           ) {
             await _get();
           } else {
@@ -160,18 +163,13 @@ export const useUsername: UseUsername.Callback = ({
           }
         }
       }
-      if (event === "SIGNED_OUT") {
+      if (event === 'SIGNED_OUT') {
         // nullify the state and clear the cache
         handleOnChange(null);
       }
     });
     return subscription;
-  }, [
-    supabase.auth,
-    _value,
-    _get,
-    handleOnChange,
-  ]);
+  }, [supabase.auth, _value, _get, handleOnChange]);
   // loading effects
   React.useEffect(() => {
     // if the loading state is true, automatically invoke the onLoad callback
@@ -194,8 +192,8 @@ export const useUsername: UseUsername.Callback = ({
         _setValue(e.newValue ?? null);
       }
     }
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
   // subscribe to the auth state changes
   React.useEffect(() => {
@@ -214,11 +212,6 @@ export const useUsername: UseUsername.Callback = ({
   // memoize the output
   return React.useMemo(
     () => ({ username: _value ?? undefined, error: _error, state, reload }),
-    [
-      _error,
-      _value,
-      state,
-      reload,
-    ],
+    [_error, _value, state, reload],
   );
 };

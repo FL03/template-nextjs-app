@@ -5,10 +5,10 @@
  * @file - not_found.tsx
  */
 // imports
-import Link from "next/link";
+import Link from 'next/link';
 // components
-import { HomeIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { HomeIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardAction,
@@ -16,26 +16,23 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 export default async function NotFound() {
   return (
-    <Card className="flex flex-1 flex-col h-full w-full">
+    <Card className='flex flex-1 flex-col h-full w-full'>
       <CardContent>
         <CardHeader>
-          <CardTitle className="text-xl font-semibold tracking-tight">
+          <CardTitle className='text-xl font-semibold tracking-tight'>
             Not Found
           </CardTitle>
-          <CardDescription className="leading-snug tracking-tight text-muted-foreground">
+          <CardDescription className='leading-snug tracking-tight text-muted-foreground'>
             Could not find requested resource
           </CardDescription>
           <CardAction>
-            <Button asChild variant="link" size="sm">
-              <Link
-                href="/"
-                className="flex flex-nowrap items-center gap-2"
-              >
-                <HomeIcon className="h-4 w-4" />
+            <Button asChild variant='link' size='sm'>
+              <Link href='/' className='flex flex-nowrap items-center gap-2'>
+                <HomeIcon className='h-4 w-4' />
                 <span>Home</span>
               </Link>
             </Button>
@@ -45,4 +42,4 @@ export default async function NotFound() {
     </Card>
   );
 }
-NotFound.displayName = "NotFound";
+NotFound.displayName = 'NotFound';

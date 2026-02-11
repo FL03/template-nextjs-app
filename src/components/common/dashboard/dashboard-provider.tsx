@@ -3,15 +3,14 @@
  * @author - @FL03
  * @file - dashboard-provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // hooks
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from '@/hooks/use-mobile';
 // import { useModal } from "@/hooks/use-modal";
 
-interface DashboardState {
-}
+interface DashboardState {}
 
 type DashboardContext = {
   error: Error | null;
@@ -33,7 +32,7 @@ export function useDashboard(): DashboardContext {
   const ctx = React.useContext(DashboardContext);
   if (!ctx) {
     throw new Error(
-      "The `useDashboard` hook must be used within the bounds of a `DashboardProvider`.",
+      'The `useDashboard` hook must be used within the bounds of a `DashboardProvider`.',
     );
   }
   return ctx;
@@ -51,10 +50,7 @@ export const DashboardProvider: React.FC<
   // check if the current device is mobile
   const isMobile = useIsMobile();
 
-  const _state = React.useMemo<DashboardState>(
-    () => ({}),
-    [],
-  );
+  const _state = React.useMemo<DashboardState>(() => ({}), []);
 
   function toggleCompact() {
     setIsCompact((prev) => !prev);
@@ -69,12 +65,7 @@ export const DashboardProvider: React.FC<
       setCompact: setIsCompact,
       toggleCompact,
     }),
-    [
-      _error,
-      _state,
-      isMobile,
-      isCompact,
-    ],
+    [_error, _state, isMobile, isCompact],
   );
   // render provider
   return (
@@ -83,6 +74,6 @@ export const DashboardProvider: React.FC<
     </DashboardContext.Provider>
   );
 };
-DashboardProvider.displayName = "DashboardProvider";
+DashboardProvider.displayName = 'DashboardProvider';
 
 export default DashboardProvider;

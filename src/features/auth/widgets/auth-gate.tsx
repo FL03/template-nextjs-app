@@ -3,47 +3,47 @@
  * @author - @FL03
  * @file - auth-gate.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { cva, VariantProps } from "class-variance-authority";
-import { useRouter } from "next/navigation";
+import * as React from 'react';
+import { cva, VariantProps } from 'class-variance-authority';
+import { useRouter } from 'next/navigation';
 // project
-import { cn } from "@/lib/utils";
-import { useTurnstile } from "@/hooks/use-turnstile";
+import { cn } from '@/lib/utils';
+import { useTurnstile } from '@/hooks/use-turnstile';
 // local
 import {
   EmailPasswordForm,
   ForgotPasswordForm,
   PasswordlessLoginForm,
   RegistrationForm,
-} from "./forms";
+} from './forms';
 // components
-import { CloudflareTurnstile } from "@/components/common/captcha";
+import { CloudflareTurnstile } from '@/components/common/captcha';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 const authGateVariants = cva(
-  "flex flex-1 flex-col items-center relative z-auto",
+  'flex flex-1 flex-col items-center relative z-auto',
   {
     defaultVariants: {
-      position: "center",
+      position: 'center',
     },
     variants: {
       position: {
-        center: "justify-center h-fit min-h-xs max-h-screen",
-        right: "justify-end ml-auto h-screen w-fit px-8 border-l rounded-none",
+        center: 'justify-center h-fit min-h-xs max-h-screen',
+        right: 'justify-end ml-auto h-screen w-fit px-8 border-l rounded-none',
       },
     },
   },
 );
 
 export const AuthGate: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "children" | "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'children' | 'title'> & {
     defaultView?: string;
     view?: string;
     withTurnstile?: boolean;
@@ -53,8 +53,8 @@ export const AuthGate: React.FC<
   className,
   withTurnstile,
   view,
-  defaultView = "login",
-  position = "center",
+  defaultView = 'login',
+  position = 'center',
   ...props
 }) => {
   // get a reference to the isMobile hook
@@ -77,7 +77,7 @@ export const AuthGate: React.FC<
       return (
         <ForgotPasswordForm
           showLegend
-          key="forgot-password"
+          key='forgot-password'
           captchaToken={captchaToken}
         />
       );
@@ -87,25 +87,25 @@ export const AuthGate: React.FC<
       return (
         <RegistrationForm
           showLegend
-          key="register"
+          key='register'
           captchaToken={captchaToken}
-          onSuccess={() => router.push("/")}
+          onSuccess={() => router.push('/')}
         />
       );
     } else if (currentView.match(/^(magic|passwordless)$/gi)) {
       return (
         <PasswordlessLoginForm
           showLegend
-          key="passwordless"
+          key='passwordless'
           captchaToken={captchaToken}
-          onSuccess={() => router.push("/")}
+          onSuccess={() => router.push('/')}
         />
       );
     } else {
       return (
         <EmailPasswordForm
           showLegend
-          key="email-password"
+          key='email-password'
           captchaToken={captchaToken}
         />
       );
@@ -118,13 +118,13 @@ export const AuthGate: React.FC<
       ref={ref}
       className={cn(authGateVariants({ position }), className)}
     >
-      <Card className="w-full min-w-sm max-w-md">
-        <CardContent className="flex-1 h-full w-full">
+      <Card className='w-full min-w-sm max-w-md'>
+        <CardContent className='flex-1 h-full w-full'>
           <CardHeader>{renderForm()}</CardHeader>
           {withTurnstile && (
-            <CardFooter className="w-full">
+            <CardFooter className='w-full'>
               <CloudflareTurnstile
-                className="m-auto"
+                className='m-auto'
                 onSuccess={onTokenChange}
                 onError={captcha.reset}
                 onExpire={captcha.reset}
@@ -137,6 +137,6 @@ export const AuthGate: React.FC<
     </div>
   );
 };
-AuthGate.displayName = "AuthGate";
+AuthGate.displayName = 'AuthGate';
 
 export default AuthGate;

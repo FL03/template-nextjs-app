@@ -4,23 +4,21 @@
  * @directory - src/hooks
  * @file - use-form.tsx
  */
-"use client";
+'use client';
 // imports
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 namespace UseSignal {
   type Dict<Key extends string, Value> = {
     [K in Key]?: Value;
   };
 
-  type OnSignal<TSig extends string> = (
-    options?: { message?: string; signal?: TSig },
-  ) => void;
+  type OnSignal<TSig extends string> = (options?: {
+    message?: string;
+    signal?: TSig;
+  }) => void;
 
-  type StatusFuncs<TSig extends string> = Dict<
-    TSig,
-    OnSignal<TSig>
-  >;
+  type StatusFuncs<TSig extends string> = Dict<TSig, OnSignal<TSig>>;
 
   export type Props<TSig extends string> = {
     messages?: Dict<TSig, string>;
@@ -40,21 +38,17 @@ namespace UseSignal {
   ) => Context<TSig>;
 }
 /** The `useSignal` hook is a simple hook for handling a string value */
-export function useSignal<TSig extends string>(
-  {
-    messages,
-    funcs,
-    defaultValue,
-    value,
-    onValueChange,
-  }: UseSignal.Props<TSig> = {},
-): UseSignal.Context<TSig> {
+export function useSignal<TSig extends string>({
+  messages,
+  funcs,
+  defaultValue,
+  value,
+  onValueChange,
+}: UseSignal.Props<TSig> = {}): UseSignal.Context<TSig> {
   // state(s)
-  const [_signal, _setSignal] = useState<TSig | null>(
-    defaultValue ?? null,
-  );
+  const [_signal, _setSignal] = useState<TSig | null>(defaultValue ?? null);
   const message = useMemo<string | undefined>(
-    () => _signal ? messages?.[_signal] : undefined,
+    () => (_signal ? messages?.[_signal] : undefined),
     [_signal, messages],
   );
   // sync the internal and external states
@@ -64,17 +58,20 @@ export function useSignal<TSig extends string>(
     }
   }, [_signal, value]);
   // handle any changes made to the signal
-  const handleSignalChange = useCallback((next: TSig | null) => {
-    _setSignal((prev) => {
-      if (prev === next) return prev;
-      onValueChange?.(next);
-      return next;
-    });
-  }, [onValueChange]);
+  const handleSignalChange = useCallback(
+    (next: TSig | null) => {
+      _setSignal((prev) => {
+        if (prev === next) return prev;
+        onValueChange?.(next);
+        return next;
+      });
+    },
+    [onValueChange],
+  );
 
   // handle changes to the status
   useEffect(() => {
-    if (!_signal || ["init", "idle"].includes(_signal)) {
+    if (!_signal || ['init', 'idle'].includes(_signal)) {
       return;
     } else {
       funcs?.[_signal]?.({ message });

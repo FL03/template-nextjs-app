@@ -4,19 +4,19 @@
  * @directory - tests
  * @file - profile-form.test.tsx
  */
-import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import React from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 // Prevent the real server action from running at module-eval
-jest.mock("../src/features/profiles/utils", () => ({
+jest.mock('../src/features/profiles/utils', () => ({
   updateProfileAction: jest.fn(),
 }));
 
 // Stub OrgSelect so tests can assert organization input behavior
-jest.mock("../src/features/orgs", () => ({
+jest.mock('../src/features/orgs', () => ({
   OrgSelect: ({ name, defaultValue, value }: any) => (
     <input
-      data-testid="org-select"
+      data-testid='org-select'
       name={name}
       defaultValue={defaultValue}
       value={value}
@@ -25,19 +25,16 @@ jest.mock("../src/features/orgs", () => ({
 }));
 
 // Import after mocks
-import { ProfileForm } from "../src/features/profiles/widgets/profile-form";
+import { ProfileForm } from '../src/features/profiles/widgets/profile-form';
 
-describe("ProfileForm", () => {
+describe('ProfileForm', () => {
   let useActionStateSpy: jest.SpyInstance;
 
   beforeEach(() => {
     // stub React.useActionState used by the form
-    useActionStateSpy = jest.spyOn(React as any, "useActionState")
-      .mockReturnValue([
-        { status: "init" },
-        jest.fn(),
-        false,
-      ]);
+    useActionStateSpy = jest
+      .spyOn(React as any, 'useActionState')
+      .mockReturnValue([{ status: 'init' }, jest.fn(), false]);
   });
 
   afterEach(() => {
@@ -45,75 +42,75 @@ describe("ProfileForm", () => {
     jest.clearAllMocks();
   });
 
-  it("renders inputs with provided default values and hidden id", () => {
+  it('renders inputs with provided default values and hidden id', () => {
     render(
       <ProfileForm
         defaultValues={{
-          username: "alice",
-          primary_organization: "org-xyz",
-          display_name: "Alice Smith",
-          first_name: "Alice",
-          middle_name: "M",
-          last_name: "Smith",
-          bio: "I serve tables",
-          id: "profile-123",
+          username: 'alice',
+          primary_organization: 'org-xyz',
+          display_name: 'Alice Smith',
+          first_name: 'Alice',
+          middle_name: 'M',
+          last_name: 'Smith',
+          bio: 'I serve tables',
+          id: 'profile-123',
         }}
       />,
     );
 
     const username = screen.getByPlaceholderText(
-      "Username...",
+      'Username...',
     ) as HTMLInputElement;
     expect(username).toBeInTheDocument();
-    expect(username).toHaveValue("alice");
+    expect(username).toHaveValue('alice');
 
     const displayName = screen.getByPlaceholderText(
-      "Display Name",
+      'Display Name',
     ) as HTMLInputElement;
     expect(displayName).toBeInTheDocument();
-    expect(displayName).toHaveValue("Alice Smith");
+    expect(displayName).toHaveValue('Alice Smith');
 
-    const first = screen.getByPlaceholderText("First Name") as HTMLInputElement;
+    const first = screen.getByPlaceholderText('First Name') as HTMLInputElement;
     expect(first).toBeInTheDocument();
-    expect(first).toHaveValue("Alice");
+    expect(first).toHaveValue('Alice');
 
     const middle = screen.getByPlaceholderText(
-      "Middle Name",
+      'Middle Name',
     ) as HTMLInputElement;
     expect(middle).toBeInTheDocument();
-    expect(middle).toHaveValue("M");
+    expect(middle).toHaveValue('M');
 
-    const last = screen.getByPlaceholderText("Last Name") as HTMLInputElement;
+    const last = screen.getByPlaceholderText('Last Name') as HTMLInputElement;
     expect(last).toBeInTheDocument();
-    expect(last).toHaveValue("Smith");
+    expect(last).toHaveValue('Smith');
 
-    const bio = screen.getByPlaceholderText("Bio") as HTMLTextAreaElement;
+    const bio = screen.getByPlaceholderText('Bio') as HTMLTextAreaElement;
     expect(bio).toBeInTheDocument();
-    expect(bio).toHaveValue("I serve tables");
+    expect(bio).toHaveValue('I serve tables');
 
     const hidden = document.querySelector(
       'input[name="id"]',
     ) as HTMLInputElement;
     expect(hidden).toBeInTheDocument();
-    expect(hidden.value).toBe("profile-123");
+    expect(hidden.value).toBe('profile-123');
 
-    const org = screen.getByTestId("org-select") as HTMLInputElement;
+    const org = screen.getByTestId('org-select') as HTMLInputElement;
     expect(org).toBeInTheDocument();
-    expect(org.defaultValue).toBe("org-xyz");
+    expect(org.defaultValue).toBe('org-xyz');
   });
 
-  it("enables save button when not pending and responds to Escape (calls onCancel)", () => {
+  it('enables save button when not pending and responds to Escape (calls onCancel)', () => {
     const onCancel = jest.fn();
     render(<ProfileForm onCancel={onCancel} />);
 
-    const saveBtn = screen.getByTestId("profile-form-submit");
+    const saveBtn = screen.getByTestId('profile-form-submit');
     expect(saveBtn).not.toBeDisabled();
 
     // pressing Escape should reset and call onCancel
-    const form = document.getElementById("profile-form") as HTMLFormElement;
+    const form = document.getElementById('profile-form') as HTMLFormElement;
     expect(form).toBeInTheDocument();
 
-    fireEvent.keyDown(form, { key: "Escape", code: "Escape" });
+    fireEvent.keyDown(form, { key: 'Escape', code: 'Escape' });
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });

@@ -4,14 +4,14 @@
  * @directory - src/features/profiles/widgets
  * @file - profile-actions.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { BellIcon, LogOutIcon, SettingsIcon } from "lucide-react";
-import Link from "next/link";
+import * as React from 'react';
+import { BellIcon, LogOutIcon, SettingsIcon } from 'lucide-react';
+import Link from 'next/link';
 // project
-import { useCurrentUser } from "@/features/auth";
-import { cn } from "@/lib/utils";
+import { useCurrentUser } from '@/features/auth';
+import { cn } from '@/lib/utils';
 // components
 import {
   ContextMenu,
@@ -21,26 +21,24 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from '@/components/ui/context-menu';
 
 const MenuLink: React.FC<
-  & React.ComponentPropsWithRef<typeof Link>
-  & React.PropsWithChildren<{ label?: React.ReactNode; hideLabel?: boolean }>
-> = (
-  { ref, children, className, href, label, hideLabel, ...props },
-) => (
+  React.ComponentPropsWithRef<typeof Link> &
+    React.PropsWithChildren<{ label?: React.ReactNode; hideLabel?: boolean }>
+> = ({ ref, children, className, href, label, hideLabel, ...props }) => (
   <Link
     {...props}
     ref={ref}
     href={href}
-    className={cn("inline-flex flex-nowrap items-center gap-1", className)}
+    className={cn('inline-flex flex-nowrap items-center gap-1', className)}
   >
     {children}
     {label && (
       <span
         className={cn(
-          "leading-snug tracking-tight",
-          hideLabel ? "sr-only" : "not-sr-only",
+          'leading-snug tracking-tight',
+          hideLabel ? 'sr-only' : 'not-sr-only',
         )}
       >
         {label}
@@ -63,41 +61,36 @@ export const ProfileContextMenu: React.FC<
       <ContextMenuTrigger ref={ref} {...props} />
       <ContextMenuContent>
         <ContextMenuGroup>
-          <ContextMenuLabel className="sr-only">Navigation</ContextMenuLabel>
+          <ContextMenuLabel className='sr-only'>Navigation</ContextMenuLabel>
           <ContextMenuItem asChild>
             <MenuLink
-              label="Notifications"
+              label='Notifications'
               href={{
-                pathname: "/notifications",
-                query: { filterBy: "unread", sortBy: "date" },
+                pathname: '/notifications',
+                query: { filterBy: 'unread', sortBy: 'date' },
               }}
             >
-              <BellIcon className="size-4" />
+              <BellIcon className='size-4' />
             </MenuLink>
           </ContextMenuItem>
           <ContextMenuItem asChild>
-            <MenuLink
-              label="Settings"
-              href={`/${username}/settings`}
-            >
-              <SettingsIcon className="size-4" />
+            <MenuLink label='Settings' href={`/${username}/settings`}>
+              <SettingsIcon className='size-4' />
             </MenuLink>
           </ContextMenuItem>
         </ContextMenuGroup>
         <ContextMenuGroup>
-          <ContextMenuLabel className="sr-only">Actions</ContextMenuLabel>
+          <ContextMenuLabel className='sr-only'>Actions</ContextMenuLabel>
           <ContextMenuSeparator />
-          <ContextMenuItem onSelect={signOut} variant="destructive">
-            <LogOutIcon className="size-4" />
-            <span>
-              Logout
-            </span>
+          <ContextMenuItem onSelect={signOut} variant='destructive'>
+            <LogOutIcon className='size-4' />
+            <span>Logout</span>
           </ContextMenuItem>
         </ContextMenuGroup>
       </ContextMenuContent>
     </ContextMenu>
   );
 };
-ProfileContextMenu.displayName = "ProfileContextMenu";
+ProfileContextMenu.displayName = 'ProfileContextMenu';
 
 export default ProfileContextMenu;

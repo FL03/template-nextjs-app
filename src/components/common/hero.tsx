@@ -3,220 +3,182 @@
  * @author - @FL03
  * @file - Hero.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 /** The `Hero` component */
 export const Hero: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<{
-    asChild?: boolean;
-  }>
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
+      asChild?: boolean;
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero"
+      data-slot='hero'
       className={cn(
-        "relative z-auto flex col items-center w-full gap-2 lg:gap-4 py-2",
+        'relative z-auto flex col items-center w-full gap-2 lg:gap-4 py-2',
         className,
       )}
     />
   );
 };
-Hero.displayName = "Hero";
+Hero.displayName = 'Hero';
 
 // HeroHeader
 export const HeroHeader: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<{
-    asChild?: boolean;
-  }>
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
+      asChild?: boolean;
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-content"
-      className={cn(
-        "flex flex-1 flex-col w-full py-6",
-        className,
-      )}
+      data-slot='hero-content'
+      className={cn('flex flex-1 flex-col w-full py-6', className)}
     />
   );
 };
-HeroHeader.displayName = "HeroHeader";
+HeroHeader.displayName = 'HeroHeader';
 
 // HeroFooter
 export const HeroFooter: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<{
-    asChild?: boolean;
-  }>
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
+      asChild?: boolean;
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-footer"
+      data-slot='hero-footer'
       className={cn(
-        "order-last flex flex-nowrap items-center w-full gap-2 lg:gap-4 py-2",
+        'order-last flex flex-nowrap items-center w-full gap-2 lg:gap-4 py-2',
         className,
       )}
     />
   );
 };
-HeroFooter.displayName = "HeroFooter";
+HeroFooter.displayName = 'HeroFooter';
 
 // HeroContent
 export const HeroContent: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<{
-    asChild?: boolean;
-  }>
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
+      asChild?: boolean;
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-content"
-      className={cn(
-        "flex flex-1 flex-col w-full",
-        className,
-      )}
+      data-slot='hero-content'
+      className={cn('flex flex-1 flex-col w-full', className)}
     />
   );
 };
-HeroContent.displayName = "HeroContent";
+HeroContent.displayName = 'HeroContent';
 
 // HeroLeading
 export const HeroLeading: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<{
-    asChild?: boolean;
-  }>
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
+      asChild?: boolean;
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-leading"
+      data-slot='hero-leading'
       className={cn(
-        "flex shrink-0 items-center w-fit h-full gap-2",
-        "left-0 order-first",
+        'flex shrink-0 items-center w-fit h-full gap-2',
+        'left-0 order-first',
         className,
       )}
     />
   );
 };
-HeroLeading.displayName = "HeroLeading";
+HeroLeading.displayName = 'HeroLeading';
 
 // HeroTrailing
 export const HeroTrailing: React.FC<
-  & React.ComponentPropsWithRef<"div">
-  & React.PropsWithChildren<
-    {
+  React.ComponentPropsWithRef<'div'> &
+    React.PropsWithChildren<{
       asChild?: boolean;
-    }
-  >
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+    }>
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-trailing"
+      data-slot='hero-trailing'
       className={cn(
-        "flex shrink items-center justify-end h-full w-auto gap-2",
-        "right-0 ml-auto order-last",
+        'flex shrink items-center justify-end h-full w-auto gap-2',
+        'right-0 ml-auto order-last',
         className,
       )}
     />
   );
 };
-HeroTrailing.displayName = "HeroTrailing";
+HeroTrailing.displayName = 'HeroTrailing';
 
 // HeroDescription
 export const HeroDescription: React.FC<
-  Omit<React.ComponentPropsWithRef<"span">, "data-slot"> & {
+  Omit<React.ComponentPropsWithRef<'span'>, 'data-slot'> & {
     asChild?: boolean;
     hidden?: boolean;
   }
 > = ({ ref, className, asChild, hidden, ...props }) => {
-  const Comp = asChild ? Slot : "span";
+  const Comp = asChild ? Slot : 'span';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-description"
+      data-slot='hero-description'
       className={cn(
-        "text-sm text-muted-foreground leading-none tracking-tight truncate line-clamp-2",
-        hidden ? "sr-only" : "not-sr-only",
+        'text-sm text-muted-foreground leading-none tracking-tight truncate line-clamp-2',
+        hidden ? 'sr-only' : 'not-sr-only',
         className,
       )}
     />
   );
 };
-HeroDescription.displayName = "HeroDescription";
+HeroDescription.displayName = 'HeroDescription';
 
 // HeroTitle
 export const HeroTitle: React.FC<
-  React.ComponentPropsWithRef<"div"> & {
+  React.ComponentPropsWithRef<'div'> & {
     asChild?: boolean;
   }
 > = ({ ref, className, asChild, hidden, ...props }) => {
-  const Comp = asChild ? Slot : "div";
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       {...props}
       ref={ref}
-      data-slot="hero-title"
+      data-slot='hero-title'
       className={cn(
-        "text-xl font-semibold leading-none tracking-tight",
-        hidden ? "sr-only" : "not-sr-only",
+        'text-xl font-semibold leading-none tracking-tight',
+        hidden ? 'sr-only' : 'not-sr-only',
         className,
       )}
     />
   );
 };
-HeroTitle.displayName = "HeroTitle";
+HeroTitle.displayName = 'HeroTitle';

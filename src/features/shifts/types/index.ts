@@ -3,4 +3,4 @@
  * @author - @FL03
  * @file - types/index.ts
  */
-export * from "./database";
+export * from './database';

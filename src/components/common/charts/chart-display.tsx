@@ -4,13 +4,13 @@
  * @directory - src/components/common/charts
  * @file - chart-item.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { ClassNames } from "@pzzld/core";
-import { Slot } from "@radix-ui/react-slot";
+import * as React from 'react';
+import { ClassNames } from '@pzzld/core';
+import { Slot } from '@radix-ui/react-slot';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
 import {
   Item,
@@ -18,25 +18,20 @@ import {
   ItemContent,
   ItemDescription,
   ItemTitle,
-} from "@/components/ui/item";
+} from '@/components/ui/item';
 
 export const ChartContainer: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
     asChild?: boolean;
   }
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       ref={ref}
-      data-slot="chart-container"
+      data-slot='chart-container'
       className={cn(
-        "relative z-auto flex flex-1 flex-col h-full w-full",
+        'relative z-auto flex flex-1 flex-col h-full w-full',
         className,
       )}
       {...props}
@@ -45,69 +40,50 @@ export const ChartContainer: React.FC<
 };
 
 export const ChartContent: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
     asChild?: boolean;
   }
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       ref={ref}
-      data-slot="chart-content"
-      className={cn("flex-1 h-full w-full", className)}
+      data-slot='chart-content'
+      className={cn('flex-1 h-full w-full', className)}
       {...props}
     />
   );
 };
-ChartContent.displayName = "ChartContent";
+ChartContent.displayName = 'ChartContent';
 
 export const ChartHeader: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
     asChild?: boolean;
   }
-> = ({
-  ref,
-  className,
-  asChild,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+> = ({ ref, className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       ref={ref}
-      data-slot="chart-header"
-      className={cn(
-        "order-first py-4 w-full",
-        className,
-      )}
+      data-slot='chart-header'
+      className={cn('order-first py-4 w-full', className)}
       {...props}
     />
   );
 };
 
 export const ChartTitle: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
     asChild?: boolean;
   }
-> = ({
-  ref,
-  className,
-  asChild,
-  hidden,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+> = ({ ref, className, asChild, hidden, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       ref={ref}
       className={cn(
-        "font-semibold text-nowrap",
-        hidden ? "sr-only" : "not-sr-only",
+        'font-semibold text-nowrap',
+        hidden ? 'sr-only' : 'not-sr-only',
         className,
       )}
       {...props}
@@ -116,23 +92,17 @@ export const ChartTitle: React.FC<
 };
 
 export const ChartDescription: React.FC<
-  Omit<React.ComponentPropsWithRef<"div">, "title"> & {
+  Omit<React.ComponentPropsWithRef<'div'>, 'title'> & {
     asChild?: boolean;
   }
-> = ({
-  ref,
-  className,
-  asChild,
-  hidden,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "div";
+> = ({ ref, className, asChild, hidden, ...props }) => {
+  const Comp = asChild ? Slot : 'div';
   return (
     <Comp
       ref={ref}
       className={cn(
-        "text-muted-foreground text-sm truncate line-clamp-2",
-        hidden ? "sr-only" : "not-sr-only",
+        'text-muted-foreground text-sm truncate line-clamp-2',
+        hidden ? 'sr-only' : 'not-sr-only',
         className,
       )}
       {...props}
@@ -143,13 +113,13 @@ export const ChartDescription: React.FC<
 export const ChartDisplay: React.FC<
   React.ComponentPropsWithRef<typeof ChartContainer> & {
     classNames?: ClassNames<
-      | "action"
-      | "chart"
-      | "content"
-      | "description"
-      | "header"
-      | "footer"
-      | "title"
+      | 'action'
+      | 'chart'
+      | 'content'
+      | 'description'
+      | 'header'
+      | 'footer'
+      | 'title'
     >;
     actions?: React.ReactNode;
     description?: React.ReactNode;
@@ -157,36 +127,29 @@ export const ChartDisplay: React.FC<
     showDescription?: boolean;
     hideTitle?: boolean;
   }
-> = (
-  {
-    ref,
-    actions,
-    children,
-    classNames,
-    hideTitle,
-    showDescription,
-    description = "Visualize your earned tips over time!",
-    title = "Tips Over Time",
-    ...props
-  },
-) => (
+> = ({
+  ref,
+  actions,
+  children,
+  classNames,
+  hideTitle,
+  showDescription,
+  description = 'Visualize your earned tips over time!',
+  title = 'Tips Over Time',
+  ...props
+}) => (
   <ChartContainer ref={ref} {...props}>
     <ChartHeader asChild>
-      <Item
-        className={cn(
-          "flex-nowrap",
-          classNames?.headerClassName,
-        )}
-      >
+      <Item className={cn('flex-nowrap', classNames?.headerClassName)}>
         <ItemContent
-          className="flex-1 w-full"
+          className='flex-1 w-full'
           hidden={(!description && !title) || hideTitle}
         >
           {title && (
             <ItemTitle
               className={cn(
-                "text-lg leading-none tracking-tight",
-                hideTitle ? "sr-only" : "not-sr-only",
+                'text-lg leading-none tracking-tight',
+                hideTitle ? 'sr-only' : 'not-sr-only',
                 classNames?.titleClassName,
               )}
             >
@@ -196,9 +159,9 @@ export const ChartDisplay: React.FC<
           {description && (
             <ItemDescription
               className={cn(
-                "leading-none tracking-tight line-clamp-2 truncate",
+                'leading-none tracking-tight line-clamp-2 truncate',
                 classNames?.descriptionClassName,
-                showDescription ? "not-sr-only" : "sr-only",
+                showDescription ? 'not-sr-only' : 'sr-only',
               )}
             >
               {description}
@@ -219,4 +182,4 @@ export const ChartDisplay: React.FC<
     )}
   </ChartContainer>
 );
-ChartDisplay.displayName = "ChartDisplay";
+ChartDisplay.displayName = 'ChartDisplay';

@@ -4,11 +4,11 @@
  * @description - Profile Provider Component for managing user profiles in a React application.
  * @file - provider.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
+import * as React from 'react';
 // hooks
-import { useUserProfile } from "@/hooks/use-profile";
+import { useUserProfile } from '@/hooks/use-profile';
 
 type ProfileContext = ReturnType<typeof useUserProfile>;
 
@@ -18,7 +18,7 @@ const ProfileContext = React.createContext<ProfileContext | null>(null);
 export const useProfile = (): ProfileContext => {
   const context = React.useContext(ProfileContext);
   if (!context) {
-    throw new Error("The `useProfile` must be used within a `ProfileProvider`");
+    throw new Error('The `useProfile` must be used within a `ProfileProvider`');
   }
   return context;
 };
@@ -44,11 +44,9 @@ export const UserProfileProvider: React.FC<
     [profile, state, userProfile],
   );
   return (
-    <ProfileContext.Provider value={ctx}>
-      {children}
-    </ProfileContext.Provider>
+    <ProfileContext.Provider value={ctx}>{children}</ProfileContext.Provider>
   );
 };
-UserProfileProvider.displayName = "ProfileProvider";
+UserProfileProvider.displayName = 'ProfileProvider';
 
 export default UserProfileProvider;

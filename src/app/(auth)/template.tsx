@@ -3,9 +3,9 @@
  * @author - @FL03
  * @file - (auth)/template.tsx
  */
-"use server";
+'use server';
 // imports
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from 'react';
 
 /**
  * A custom template for authenticated routes.
@@ -21,9 +21,9 @@ import { PropsWithChildren } from "react";
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/template
  * @param {Readonly<PropsWithChildren>} props - the props for the template contains a read-only reference to the children, which are required.
  */
-export default async function Template(
-  { children }: Readonly<PropsWithChildren>,
-) {
+export default async function Template({
+  children,
+}: Readonly<PropsWithChildren>) {
   return children;
 }
-Template.displayName = "PlatformTemplate";
+Template.displayName = 'PlatformTemplate';

@@ -4,16 +4,16 @@
  * @directory - src/components/common
  * @file - theme.tsx
  */
-"use client";
+'use client';
 // imports
-import * as React from "react";
-import { MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
-import { ClassNames } from "@pzzld/core";
+import * as React from 'react';
+import { MoonIcon, SunIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { ClassNames } from '@pzzld/core';
 // project
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 // components
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -22,37 +22,37 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 export const ThemeButton: React.FC<
   React.ComponentProps<typeof Button> & {
     showLabel?: boolean;
-    classNames?: ClassNames<"icon" | "label">;
+    classNames?: ClassNames<'icon' | 'label'>;
   }
 > = ({
   ref,
   className,
   classNames,
-  size = "icon",
-  variant = "ghost",
+  size = 'icon',
+  variant = 'ghost',
   showLabel,
   ...props
 }) => {
   const { setTheme, resolvedTheme } = useTheme();
   // returns true if dark mode is enabled
-  const isDark = React.useMemo(() => resolvedTheme === "dark", [resolvedTheme]);
+  const isDark = React.useMemo(() => resolvedTheme === 'dark', [resolvedTheme]);
   // resolves the icon based on the current theme
   const Icon = ({ darkMode }: { darkMode?: boolean }) => {
     if (darkMode) {
-      return <MoonIcon className={cn("size-4", classNames?.iconClassName)} />;
+      return <MoonIcon className={cn('size-4', classNames?.iconClassName)} />;
     }
-    return <SunIcon className={cn("size-4", classNames?.iconClassName)} />;
+    return <SunIcon className={cn('size-4', classNames?.iconClassName)} />;
   };
   return (
     <TooltipProvider>
@@ -61,36 +61,34 @@ export const ThemeButton: React.FC<
           <Button
             {...props}
             ref={ref}
-            className={cn("relative w-full", className)}
+            className={cn('relative w-full', className)}
             size={size}
             variant={variant}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
               // toggle the theme between light and dark
-              setTheme(isDark ? "light" : "dark");
+              setTheme(isDark ? 'light' : 'dark');
             }}
           >
             <Icon darkMode={isDark} />
             <span
-              className={size?.startsWith("icon") ? "sr-only" : "not-sr-only"}
+              className={size?.startsWith('icon') ? 'sr-only' : 'not-sr-only'}
             >
               Theme
             </span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
-          Toggle the theme mode ({resolvedTheme})
-        </TooltipContent>
+        <TooltipContent>Toggle the theme mode ({resolvedTheme})</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 };
-ThemeButton.displayName = "ThemeButton";
+ThemeButton.displayName = 'ThemeButton';
 
 // ThemeSelector
 export const ThemeSelector: React.FC<
-  Omit<React.ComponentPropsWithoutRef<typeof Select>, "children"> & {
+  Omit<React.ComponentPropsWithoutRef<typeof Select>, 'children'> & {
     className?: string;
   }
 > = ({ className, onValueChange, ...props }) => {
@@ -98,9 +96,9 @@ export const ThemeSelector: React.FC<
   const { theme, setTheme } = useTheme();
   // a map defining the available themes
   const themes = {
-    system: "System",
-    dark: "Dark",
-    light: "Light",
+    system: 'System',
+    dark: 'Dark',
+    light: 'Light',
   };
   // handle any changes to the selected value
   const handleValueChange = (value: string) => {
@@ -113,27 +111,15 @@ export const ThemeSelector: React.FC<
   };
   // render the component
   return (
-    <Select
-      onValueChange={handleValueChange}
-      value={theme}
-      {...props}
-    >
-      <SelectTrigger
-        className={cn(
-          "w-[180px]",
-          className,
-        )}
-      >
-        <SelectValue placeholder="Theme" />
+    <Select onValueChange={handleValueChange} value={theme} {...props}>
+      <SelectTrigger className={cn('w-[180px]', className)}>
+        <SelectValue placeholder='Theme' />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Themes</SelectLabel>
           {Object.entries(themes).map(([value, label], index) => (
-            <SelectItem
-              key={index}
-              value={value}
-            >
+            <SelectItem key={index} value={value}>
               {label}
             </SelectItem>
           ))}
@@ -142,4 +128,4 @@ export const ThemeSelector: React.FC<
     </Select>
   );
 };
-ThemeSelector.displayName = "ThemeSelector";
+ThemeSelector.displayName = 'ThemeSelector';
