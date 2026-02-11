@@ -1,0 +1,65 @@
+
+## General
+
+*.lock
+*.lock.*
+
+*.log
+*.log.*
+
+*.md
+*.md.*
+
+*.mdx
+*.mdx.*
+
+*.json
+*.json.*
+
+*.toml
+*.toml.*
+
+### Directories
+**/.artifacts
+**/.claude
+**/.docker
+**/.github
+
+**/cache
+**/build
+**/dist
+**/out
+
+## Language specific
+
+### Python
+**/__pycache__
+**/.env
+**/.venv
+**/venv
+
+### Rust
+**/target
+
+### NodeJS
+**/node_modules
+
+#### TypeScript
+**/tsconfig.tsbuildinfo
+
+## Development
+
+### Git
+**/.git
+**/.github
+
+### IDEs
+
+#### Atom
+**/.atom
+
+#### JetBrains IntelliJ
+**/.idea
+
+#### Visual Studio Code
+**/.vscode
