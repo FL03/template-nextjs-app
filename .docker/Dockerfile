@@ -25,7 +25,7 @@ FROM builder-base AS install
 # create a temporary directory for production dependencies
 RUN mkdir -p /tmp/prod
 # configure environment variables for production install
-WORKDIR /tmp/dev
+WORKDIR /tmp/prod
 # copy package files to temp directory for production install
 COPY package.json bun.lock* /tmp/prod/
 # install production dependencies only
