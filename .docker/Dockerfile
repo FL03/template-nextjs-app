@@ -13,26 +13,25 @@ ENV NODE_ENV=production \
 FROM builder-base AS deps
 # make the installation of dependencies a separate step to leverage Docker caching
 RUN mkdir -p /tmp/dev
-# set the working directory to the app workspace for dependency installation
-WORKDIR /tmp/dev
 
 COPY package.json bun.lock* /tmp/dev/
 
-RUN bun install --frozen-lockfile || bun install
+RUN cd /tmp/dev && \
+    bun install --frozen-lockfile || bun install
 
 # === Install production dependencies only ===
 FROM builder-base AS install
 # create a temporary directory for production dependencies
 RUN mkdir -p /tmp/prod
-# configure environment variables for production install
-WORKDIR /tmp/prod
 # copy package files to temp directory for production install
 COPY package.json bun.lock* /tmp/prod/
 # install production dependencies only
-RUN bun install --production --frozen-lockfile || bun install --production
+RUN cd /tmp/prod && \
+    bun install --production --frozen-lockfile || bun install --production
 
 # === Build the Next.js app ===
 FROM builder-base AS builder
+
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_BUILD_OUTPUT="standalone"
