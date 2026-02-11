@@ -24,7 +24,7 @@
   "license": "Apache-2.0",
   "name": "@template-nextjs/app",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "build": "bun run --bun next build",
     "dev": "bun run --bun next dev",
