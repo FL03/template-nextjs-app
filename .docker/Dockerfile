@@ -13,21 +13,25 @@ ENV NODE_ENV=production \
 FROM builder-base AS deps
 # make the installation of dependencies a separate step to leverage Docker caching
 RUN mkdir -p /tmp/dev
-
+# change working directory to the temp directory for installing dependencies
+WORKDIR /tmp/dev
+# copy the necessary package files to a temporary directory for installing dependencies
 COPY package.json bun.lock* /tmp/dev/
-
-RUN cd /tmp/dev && \
-    bun install --frozen-lockfile || bun install
+# install the dependencies
+RUN bun install --frozen-lockfile || bun install
 
 # === Install production dependencies only ===
 FROM builder-base AS install
 # create a temporary directory for production dependencies
 RUN mkdir -p /tmp/prod
+# change working directory to the temp directory for production dependencies
+WORKDIR /tmp/prod
 # copy package files to temp directory for production install
 COPY package.json bun.lock* /tmp/prod/
+# fallback, copy the lockfile from the deps stage if it exists to speed up install
+COPY --from=deps /tmp/dev/bun.lock* /tmp/prod/
 # install production dependencies only
-RUN cd /tmp/prod && \
-    bun install --production --frozen-lockfile || bun install --production
+RUN bun install --production --frozen-lockfile || bun install --production
 
 # === Build the Next.js app ===
 FROM builder-base AS builder
@@ -36,13 +40,11 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_BUILD_OUTPUT="standalone"
 
-# set the working directory to the app workspace for building
-WORKDIR /usr/src/app
 # copy dependencies from the deps stage to the builder stage
 COPY --from=deps /tmp/dev/node_modules ./
 # copy source files to the builder stage
 COPY . .
-# build the workspace / app
+# build the workspace
 RUN bun run build
 
 # === Runtime ===
@@ -58,9 +60,8 @@ ENV NODE_ENV=production \
 # Create non-root user
 RUN addgroup --system --gid 1001 appgroup && \
     adduser --system --uid 1001 ausr
-
-WORKDIR /app
-
+# configure the working directory for the runtime stage
+WORKDIR /usr/src/app
 # Ensure prerender cache directory exists and is writable
 RUN mkdir -p build && \
     chown ausr:appgroup build && \
