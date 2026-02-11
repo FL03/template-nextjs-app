@@ -1,18 +1,22 @@
 version: 2
 
 updates:
-- package-ecosystem: docker
-  directory: /
-  schedule:
-    interval: monthly
-- package-ecosystem: docker-compose
-  directory: /
-  schedule:
-    interval: monthly
 - package-ecosystem: github-actions
   directory: /
   schedule:
     interval: monthly
+- package-ecosystem: docker
+  schedule:
+    interval: monthly
+  directories:
+    - /
+    - /.docker
+- package-ecosystem: docker-compose
+  schedule:
+    interval: monthly
+  directories:
+    - /
+    - /.docker
 - package-ecosystem: bun
   schedule:
     interval: monthly

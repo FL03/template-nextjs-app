@@ -28,8 +28,6 @@ RUN mkdir -p /tmp/prod
 WORKDIR /tmp/dev
 # copy package files to temp directory for production install
 COPY package.json bun.lock* /tmp/prod/
-# try copying the lockfile from the deps stage to leverage caching if it hasn't changed
-COPY --from=deps /tmp/dev/bun.lock* ./
 # install production dependencies only
 RUN bun install --production --frozen-lockfile || bun install --production
 
