@@ -118,11 +118,9 @@ export const AuthGate: React.FC<
       ref={ref}
       className={cn(authGateVariants({ position }), className)}
     >
-      <Card>
+      <Card className="w-full min-w-sm max-w-md">
         <CardContent className="flex-1 h-full w-full">
-          <CardHeader>
-            {renderForm()}
-          </CardHeader>
+          <CardHeader>{renderForm()}</CardHeader>
           {withTurnstile && (
             <CardFooter className="w-full">
               <CloudflareTurnstile
